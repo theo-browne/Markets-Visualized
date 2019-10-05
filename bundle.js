@@ -7686,17 +7686,23 @@ var parse = __webpack_require__(/*! ./parse */ "./parse.js");
 
 var raw = __webpack_require__(/*! ./companies2 */ "./companies2.js");
 
+var topo = __webpack_require__(/*! topojson-client */ "./node_modules/topojson-client/src/index.js");
+
+var geo = __webpack_require__(/*! d3-geomap */ "./node_modules/d3-geomap/src/index.js");
+
+var selection = __webpack_require__(/*! d3-selection */ "./node_modules/d3-selection/src/index.js");
+
 d3.select('body').append('svg').attr('width', 800).attr('height', 800).attr('transform', 'translate(50,50)');
 var el = d3.select("svg");
-var root = d3.hierarchy(parse(raw));
-console.log(root);
+var root = d3.hierarchy(parse(raw)); // console.log(root)
+
 var nodes = d3.pack();
 nodes.size([800, 800]);
 root.sum(function (el) {
   return el.value;
 });
-nodes(root);
-console.log(root.descendants());
+nodes(root); // console.log(root.descendants())
+
 d3.select('svg').attr('width', 800).attr('height', 800).selectAll('circle').data(root.descendants()).enter().append('circle').style("opacity", 0.1).attr("fill", function (d) {
   switch (d.data["name"]) {
     // case "Health Care":
@@ -7723,14 +7729,16 @@ d3.select('svg').attr('width', 800).attr('height', 800).selectAll('circle').data
   }
 }).on("mouseover", function () {
   d3.select(this).attr("stroke", "rgb(0,0,0)");
-  d3.select(this).attr("opacity", 1).append("text").text(function (d) {
+  d3.select(this).attr("opacity", .5); // d3.select(this).attr("fill", "red")
+
+  d3.select(this).append("text").text(function (d) {
     return d.children === undefined ? d.data.name : 'test';
-  });
+  }).attr("font-size", 80).attr("font-family", "sans-serif").attr("text-anchor", "middle").attr("fill", "black");
 }).on("mouseleave", function () {
   d3.select(this).attr("stroke", null);
 }).on("click", function (d) {
   if (d.data["sector"]) {
-    document.querySelector(".sector").textContent = d.data["sector"] + ": " + d.data.name;
+    document.querySelector(".sector").textContent = d.data["sector"] + " : " + d.data.name;
   } else {
     document.querySelector(".sector").textContent = d.data.name;
   }
@@ -7740,21 +7748,74 @@ d3.select('svg').attr('width', 800).attr('height', 800).selectAll('circle').data
   return d.y;
 }).attr('r', function (d) {
   return d.r;
-}); // var circles = d3.select('svg g')
-//     .selectAll('g')
-//     .data(root.descendants())
-//     .enter()
-//     .append('g')
-//     .attr('transform', function (d) { return 'translate(' + [d.x, d.y] + ')' })
-// circles
-//     .append('circle')
-//     .attr('r', function (d) { return d.r; })
-// circles
-//     .append('text')
-//     .attr('dy', 4)
-//     .text(function (d) {
-//         return d.children === undefined ? d.data.name : '';
-//     })
+});
+var data = [[10, 20, 30], [40, 60, 80], [100, 200, 300]];
+var correlation = d3.chord();
+var links = correlation(data);
+var ribbonGenerator = d3.ribbon().radius(100);
+console.log(links);
+var ele = d3.select(".info").attr('width', "20vw").attr('height', "20vh").append("svg").attr('width', "10vw").attr('height', "10vh") // d3.select('')
+.selectAll('path').data(links).enter().append('path').attr('d', ribbonGenerator) // .attr("margin-left", "100px")
+.attr('cx', function (d) {
+  // console.log(d)
+  return d.x;
+}).attr('cy', function (d) {
+  return d.y;
+}); // let projection = d3.geoEqualEarth()
+// let path = d3.geoPath(projection)
+// let map = d3.map()
+// var projection = d3.geoAzimuthalEqualArea()
+//     .scale(300)
+//     .center([-3.0026, 16.7666])
+//     .translate([480, 250])
+// let world = d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json").then(res => {
+//     let countries = topo.feature(res, res.objects.countries)
+//     let path = d3.geoPath(projection)
+//     let projection = d3.geoEqualEarth()
+//     let map = new Map
+//     d3.select(".map")
+//     .attr('width', "20vw")
+//     .attr('height', "20vh")
+//     .append("svg")
+//     .attr('width', "10vw")
+//     .attr('height', "10vh")
+//     .selectAll("path")
+//     .data(countries.features)
+//     .join("path")
+// })
+// let countries = topo.feature(world, world.objects.countries)
+// debugger
+// let path = d3.geoPath(projection)
+// let projection = d3.geoEqualEarth()
+// let map = new Map
+// d3.select(".map")
+//     .attr('width', "20vw")
+//     .attr('height', "20vh")
+//     .append("svg")
+//     .attr('width', "10vw")
+//     .attr('height', "10vh")
+//     .selectAll("path")
+//     .data(countries.features)
+//     .join("path")
+// const worldMap = geo.geomap();
+// worldMap.geofile('./node_modules/d3-geomap/src/world/countries.json');
+// // worldMap.draw()
+// worldMap.draw(selection.select('#map'))
+// var format = function (d) {
+//     d = d / 1000000;
+//     return d3.format(',.02f')(d) + 'M';
+// }
+// var map = d3.choropleth()
+//     .geofile('/d3-geomap/topojson/world/countries.json')
+//     .colors(d3.schemeYlGnBu[9])
+//     .column('YR2010')
+//     .format(format)
+//     .legend(true)
+//     .unitId('iso3');
+// d3.csv('/data/sp.pop.totl.csv').then(data => {
+//     var selection = d3.select('#map').datum(data);
+//     map.draw(selection);
+// });
 
 /***/ }),
 
@@ -18955,6 +19016,6207 @@ TransformStream.prototype = {
   polygonStart: function() { this.stream.polygonStart(); },
   polygonEnd: function() { this.stream.polygonEnd(); }
 };
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/array.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/array.js ***!
+  \*******************************************************************/
+/*! exports provided: slice, map */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "slice", function() { return slice; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "map", function() { return map; });
+var array = Array.prototype;
+
+var slice = array.slice;
+var map = array.map;
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/ascending.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/ascending.js ***!
+  \***********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(a, b) {
+  return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/bin.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/bin.js ***!
+  \*****************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _array_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./array.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/array.js");
+/* harmony import */ var _bisect_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bisect.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/bisect.js");
+/* harmony import */ var _constant_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./constant.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/constant.js");
+/* harmony import */ var _extent_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./extent.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/extent.js");
+/* harmony import */ var _identity_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./identity.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/identity.js");
+/* harmony import */ var _range_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./range.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/range.js");
+/* harmony import */ var _ticks_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ticks.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/ticks.js");
+/* harmony import */ var _threshold_sturges_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./threshold/sturges.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/threshold/sturges.js");
+
+
+
+
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function() {
+  var value = _identity_js__WEBPACK_IMPORTED_MODULE_4__["default"],
+      domain = _extent_js__WEBPACK_IMPORTED_MODULE_3__["default"],
+      threshold = _threshold_sturges_js__WEBPACK_IMPORTED_MODULE_7__["default"];
+
+  function histogram(data) {
+    if (!Array.isArray(data)) data = Array.from(data);
+
+    var i,
+        n = data.length,
+        x,
+        values = new Array(n);
+
+    for (i = 0; i < n; ++i) {
+      values[i] = value(data[i], i, data);
+    }
+
+    var xz = domain(values),
+        x0 = xz[0],
+        x1 = xz[1],
+        tz = threshold(values, x0, x1);
+
+    // Convert number of thresholds into uniform thresholds.
+    if (!Array.isArray(tz)) {
+      tz = Object(_ticks_js__WEBPACK_IMPORTED_MODULE_6__["tickStep"])(x0, x1, tz);
+      tz = Object(_range_js__WEBPACK_IMPORTED_MODULE_5__["default"])(Math.ceil(x0 / tz) * tz, x1, tz); // exclusive
+    }
+
+    // Remove any thresholds outside the domain.
+    var m = tz.length;
+    while (tz[0] <= x0) tz.shift(), --m;
+    while (tz[m - 1] > x1) tz.pop(), --m;
+
+    var bins = new Array(m + 1),
+        bin;
+
+    // Initialize bins.
+    for (i = 0; i <= m; ++i) {
+      bin = bins[i] = [];
+      bin.x0 = i > 0 ? tz[i - 1] : x0;
+      bin.x1 = i < m ? tz[i] : x1;
+    }
+
+    // Assign data to bins by value, ignoring any outside the domain.
+    for (i = 0; i < n; ++i) {
+      x = values[i];
+      if (x0 <= x && x <= x1) {
+        bins[Object(_bisect_js__WEBPACK_IMPORTED_MODULE_1__["default"])(tz, x, 0, m)].push(data[i]);
+      }
+    }
+
+    return bins;
+  }
+
+  histogram.value = function(_) {
+    return arguments.length ? (value = typeof _ === "function" ? _ : Object(_constant_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_), histogram) : value;
+  };
+
+  histogram.domain = function(_) {
+    return arguments.length ? (domain = typeof _ === "function" ? _ : Object(_constant_js__WEBPACK_IMPORTED_MODULE_2__["default"])([_[0], _[1]]), histogram) : domain;
+  };
+
+  histogram.thresholds = function(_) {
+    return arguments.length ? (threshold = typeof _ === "function" ? _ : Array.isArray(_) ? Object(_constant_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_array_js__WEBPACK_IMPORTED_MODULE_0__["slice"].call(_)) : Object(_constant_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_), histogram) : threshold;
+  };
+
+  return histogram;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/bisect.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/bisect.js ***!
+  \********************************************************************/
+/*! exports provided: bisectRight, bisectLeft, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "bisectRight", function() { return bisectRight; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "bisectLeft", function() { return bisectLeft; });
+/* harmony import */ var _ascending_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ascending.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/ascending.js");
+/* harmony import */ var _bisector_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bisector.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/bisector.js");
+
+
+
+var ascendingBisect = Object(_bisector_js__WEBPACK_IMPORTED_MODULE_1__["default"])(_ascending_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+var bisectRight = ascendingBisect.right;
+var bisectLeft = ascendingBisect.left;
+/* harmony default export */ __webpack_exports__["default"] = (bisectRight);
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/bisector.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/bisector.js ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _ascending_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ascending.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/ascending.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(compare) {
+  if (compare.length === 1) compare = ascendingComparator(compare);
+  return {
+    left: function(a, x, lo, hi) {
+      if (lo == null) lo = 0;
+      if (hi == null) hi = a.length;
+      while (lo < hi) {
+        var mid = lo + hi >>> 1;
+        if (compare(a[mid], x) < 0) lo = mid + 1;
+        else hi = mid;
+      }
+      return lo;
+    },
+    right: function(a, x, lo, hi) {
+      if (lo == null) lo = 0;
+      if (hi == null) hi = a.length;
+      while (lo < hi) {
+        var mid = lo + hi >>> 1;
+        if (compare(a[mid], x) > 0) hi = mid;
+        else lo = mid + 1;
+      }
+      return lo;
+    }
+  };
+});
+
+function ascendingComparator(f) {
+  return function(d, x) {
+    return Object(_ascending_js__WEBPACK_IMPORTED_MODULE_0__["default"])(f(d), x);
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/constant.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/constant.js ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(x) {
+  return function() {
+    return x;
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/count.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/count.js ***!
+  \*******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return count; });
+function count(values, valueof) {
+  let count = 0;
+  if (valueof === undefined) {
+    for (let value of values) {
+      if (value != null && (value = +value) >= value) {
+        ++count;
+      }
+    }
+  } else {
+    let index = -1;
+    for (let value of values) {
+      if ((value = valueof(value, ++index, values)) != null && (value = +value) >= value) {
+        ++count;
+      }
+    }
+  }
+  return count;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/cross.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/cross.js ***!
+  \*******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return cross; });
+function length(array) {
+  return array.length | 0;
+}
+
+function empty(length) {
+  return !(length > 0);
+}
+
+function arrayify(values) {
+  return typeof values !== "object" || "length" in values ? values : Array.from(values);
+}
+
+function reducer(reduce) {
+  return values => reduce(...values);
+}
+
+function cross(...values) {
+  const reduce = typeof values[values.length - 1] === "function" && reducer(values.pop());
+  values = values.map(arrayify);
+  const lengths = values.map(length);
+  const j = values.length - 1;
+  const index = new Array(j + 1).fill(0);
+  const product = [];
+  if (j < 0 || lengths.some(empty)) return product;
+  while (true) {
+    product.push(index.map((j, i) => values[i][j]));
+    let i = j;
+    while (++index[i] === lengths[i]) {
+      if (i === 0) return reduce ? product.map(reduce) : product;
+      index[i--] = 0;
+    }
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/descending.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/descending.js ***!
+  \************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(a, b) {
+  return b < a ? -1 : b > a ? 1 : b >= a ? 0 : NaN;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/deviation.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/deviation.js ***!
+  \***********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return deviation; });
+/* harmony import */ var _variance_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./variance.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/variance.js");
+
+
+function deviation(values, valueof) {
+  const v = Object(_variance_js__WEBPACK_IMPORTED_MODULE_0__["default"])(values, valueof);
+  return v ? Math.sqrt(v) : v;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/extent.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/extent.js ***!
+  \********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(values, valueof) {
+  let min;
+  let max;
+  if (valueof === undefined) {
+    for (const value of values) {
+      if (value != null) {
+        if (min === undefined) {
+          if (value >= value) min = max = value;
+        } else {
+          if (min > value) min = value;
+          if (max < value) max = value;
+        }
+      }
+    }
+  } else {
+    let index = -1;
+    for (let value of values) {
+      if ((value = valueof(value, ++index, values)) != null) {
+        if (min === undefined) {
+          if (value >= value) min = max = value;
+        } else {
+          if (min > value) min = value;
+          if (max < value) max = value;
+        }
+      }
+    }
+  }
+  return [min, max];
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/greatest.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/greatest.js ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return greatest; });
+/* harmony import */ var _ascending_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ascending.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/ascending.js");
+
+
+function greatest(values, compare = _ascending_js__WEBPACK_IMPORTED_MODULE_0__["default"]) {
+  let max;
+  let defined = false;
+  if (compare.length === 1) {
+    let maxValue;
+    for (const element of values) {
+      const value = compare(element);
+      if (defined
+          ? Object(_ascending_js__WEBPACK_IMPORTED_MODULE_0__["default"])(value, maxValue) > 0
+          : Object(_ascending_js__WEBPACK_IMPORTED_MODULE_0__["default"])(value, value) === 0) {
+        max = element;
+        maxValue = value;
+        defined = true;
+      }
+    }
+  } else {
+    for (const value of values) {
+      if (defined
+          ? compare(value, max) > 0
+          : compare(value, value) === 0) {
+        max = value;
+        defined = true;
+      }
+    }
+  }
+  return max;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/greatestIndex.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/greatestIndex.js ***!
+  \***************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return greatestIndex; });
+/* harmony import */ var _ascending_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ascending.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/ascending.js");
+/* harmony import */ var _maxIndex_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./maxIndex.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/maxIndex.js");
+
+
+
+function greatestIndex(values, compare = _ascending_js__WEBPACK_IMPORTED_MODULE_0__["default"]) {
+  if (compare.length === 1) return Object(_maxIndex_js__WEBPACK_IMPORTED_MODULE_1__["default"])(values, compare);
+  let maxValue;
+  let max = -1;
+  let index = -1;
+  for (const value of values) {
+    ++index;
+    if (max < 0
+        ? compare(value, value) === 0
+        : compare(value, maxValue) > 0) {
+      maxValue = value;
+      max = index;
+    }
+  }
+  return max;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/group.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/group.js ***!
+  \*******************************************************************/
+/*! exports provided: default, groups, rollup, rollups */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return group; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "groups", function() { return groups; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rollup", function() { return rollup; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rollups", function() { return rollups; });
+/* harmony import */ var _identity_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./identity.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/identity.js");
+
+
+function group(values, ...keys) {
+  return nest(values, _identity_js__WEBPACK_IMPORTED_MODULE_0__["default"], _identity_js__WEBPACK_IMPORTED_MODULE_0__["default"], keys);
+}
+
+function groups(values, ...keys) {
+  return nest(values, Array.from, _identity_js__WEBPACK_IMPORTED_MODULE_0__["default"], keys);
+}
+
+function rollup(values, reduce, ...keys) {
+  return nest(values, _identity_js__WEBPACK_IMPORTED_MODULE_0__["default"], reduce, keys);
+}
+
+function rollups(values, reduce, ...keys) {
+  return nest(values, Array.from, reduce, keys);
+}
+
+function nest(values, map, reduce, keys) {
+  return (function regroup(values, i) {
+    if (i >= keys.length) return reduce(values);
+    const groups = new Map();
+    const keyof = keys[i++];
+    let index = -1;
+    for (const value of values) {
+      const key = keyof(value, ++index, values);
+      const group = groups.get(key);
+      if (group) group.push(value);
+      else groups.set(key, [value]);
+    }
+    for (const [key, values] of groups) {
+      groups.set(key, regroup(values, i));
+    }
+    return map(groups);
+  })(values, 0);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/identity.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/identity.js ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(x) {
+  return x;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/index.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/index.js ***!
+  \*******************************************************************/
+/*! exports provided: bisect, bisectRight, bisectLeft, ascending, bisector, count, cross, descending, deviation, extent, group, groups, rollup, rollups, bin, histogram, thresholdFreedmanDiaconis, thresholdScott, thresholdSturges, max, maxIndex, mean, median, merge, min, minIndex, pairs, permute, quantile, quantileSorted, quickselect, range, least, leastIndex, greatest, greatestIndex, scan, shuffle, sum, ticks, tickIncrement, tickStep, transpose, variance, zip */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _bisect_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./bisect.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/bisect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "bisect", function() { return _bisect_js__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "bisectRight", function() { return _bisect_js__WEBPACK_IMPORTED_MODULE_0__["bisectRight"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "bisectLeft", function() { return _bisect_js__WEBPACK_IMPORTED_MODULE_0__["bisectLeft"]; });
+
+/* harmony import */ var _ascending_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ascending.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/ascending.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ascending", function() { return _ascending_js__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _bisector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./bisector.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/bisector.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "bisector", function() { return _bisector_js__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+/* harmony import */ var _count_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./count.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/count.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "count", function() { return _count_js__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+/* harmony import */ var _cross_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./cross.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/cross.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "cross", function() { return _cross_js__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+
+/* harmony import */ var _descending_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./descending.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/descending.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "descending", function() { return _descending_js__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+/* harmony import */ var _deviation_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./deviation.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/deviation.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "deviation", function() { return _deviation_js__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+
+/* harmony import */ var _extent_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./extent.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/extent.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "extent", function() { return _extent_js__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+
+/* harmony import */ var _group_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./group.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/group.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "group", function() { return _group_js__WEBPACK_IMPORTED_MODULE_8__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "groups", function() { return _group_js__WEBPACK_IMPORTED_MODULE_8__["groups"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "rollup", function() { return _group_js__WEBPACK_IMPORTED_MODULE_8__["rollup"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "rollups", function() { return _group_js__WEBPACK_IMPORTED_MODULE_8__["rollups"]; });
+
+/* harmony import */ var _bin_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./bin.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/bin.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "bin", function() { return _bin_js__WEBPACK_IMPORTED_MODULE_9__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "histogram", function() { return _bin_js__WEBPACK_IMPORTED_MODULE_9__["default"]; });
+
+/* harmony import */ var _threshold_freedmanDiaconis_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./threshold/freedmanDiaconis.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/threshold/freedmanDiaconis.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "thresholdFreedmanDiaconis", function() { return _threshold_freedmanDiaconis_js__WEBPACK_IMPORTED_MODULE_10__["default"]; });
+
+/* harmony import */ var _threshold_scott_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./threshold/scott.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/threshold/scott.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "thresholdScott", function() { return _threshold_scott_js__WEBPACK_IMPORTED_MODULE_11__["default"]; });
+
+/* harmony import */ var _threshold_sturges_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./threshold/sturges.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/threshold/sturges.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "thresholdSturges", function() { return _threshold_sturges_js__WEBPACK_IMPORTED_MODULE_12__["default"]; });
+
+/* harmony import */ var _max_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./max.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/max.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "max", function() { return _max_js__WEBPACK_IMPORTED_MODULE_13__["default"]; });
+
+/* harmony import */ var _maxIndex_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./maxIndex.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/maxIndex.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "maxIndex", function() { return _maxIndex_js__WEBPACK_IMPORTED_MODULE_14__["default"]; });
+
+/* harmony import */ var _mean_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./mean.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/mean.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mean", function() { return _mean_js__WEBPACK_IMPORTED_MODULE_15__["default"]; });
+
+/* harmony import */ var _median_js__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./median.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/median.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "median", function() { return _median_js__WEBPACK_IMPORTED_MODULE_16__["default"]; });
+
+/* harmony import */ var _merge_js__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./merge.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/merge.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "merge", function() { return _merge_js__WEBPACK_IMPORTED_MODULE_17__["default"]; });
+
+/* harmony import */ var _min_js__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./min.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/min.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "min", function() { return _min_js__WEBPACK_IMPORTED_MODULE_18__["default"]; });
+
+/* harmony import */ var _minIndex_js__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./minIndex.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/minIndex.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "minIndex", function() { return _minIndex_js__WEBPACK_IMPORTED_MODULE_19__["default"]; });
+
+/* harmony import */ var _pairs_js__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./pairs.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/pairs.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "pairs", function() { return _pairs_js__WEBPACK_IMPORTED_MODULE_20__["default"]; });
+
+/* harmony import */ var _permute_js__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./permute.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/permute.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "permute", function() { return _permute_js__WEBPACK_IMPORTED_MODULE_21__["default"]; });
+
+/* harmony import */ var _quantile_js__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./quantile.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/quantile.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quantile", function() { return _quantile_js__WEBPACK_IMPORTED_MODULE_22__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quantileSorted", function() { return _quantile_js__WEBPACK_IMPORTED_MODULE_22__["quantileSorted"]; });
+
+/* harmony import */ var _quickselect_js__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./quickselect.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/quickselect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quickselect", function() { return _quickselect_js__WEBPACK_IMPORTED_MODULE_23__["default"]; });
+
+/* harmony import */ var _range_js__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./range.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/range.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "range", function() { return _range_js__WEBPACK_IMPORTED_MODULE_24__["default"]; });
+
+/* harmony import */ var _least_js__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./least.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/least.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "least", function() { return _least_js__WEBPACK_IMPORTED_MODULE_25__["default"]; });
+
+/* harmony import */ var _leastIndex_js__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./leastIndex.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/leastIndex.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "leastIndex", function() { return _leastIndex_js__WEBPACK_IMPORTED_MODULE_26__["default"]; });
+
+/* harmony import */ var _greatest_js__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./greatest.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/greatest.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "greatest", function() { return _greatest_js__WEBPACK_IMPORTED_MODULE_27__["default"]; });
+
+/* harmony import */ var _greatestIndex_js__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./greatestIndex.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/greatestIndex.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "greatestIndex", function() { return _greatestIndex_js__WEBPACK_IMPORTED_MODULE_28__["default"]; });
+
+/* harmony import */ var _scan_js__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./scan.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/scan.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scan", function() { return _scan_js__WEBPACK_IMPORTED_MODULE_29__["default"]; });
+
+/* harmony import */ var _shuffle_js__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./shuffle.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/shuffle.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "shuffle", function() { return _shuffle_js__WEBPACK_IMPORTED_MODULE_30__["default"]; });
+
+/* harmony import */ var _sum_js__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./sum.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/sum.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "sum", function() { return _sum_js__WEBPACK_IMPORTED_MODULE_31__["default"]; });
+
+/* harmony import */ var _ticks_js__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./ticks.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/ticks.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ticks", function() { return _ticks_js__WEBPACK_IMPORTED_MODULE_32__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tickIncrement", function() { return _ticks_js__WEBPACK_IMPORTED_MODULE_32__["tickIncrement"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tickStep", function() { return _ticks_js__WEBPACK_IMPORTED_MODULE_32__["tickStep"]; });
+
+/* harmony import */ var _transpose_js__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./transpose.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/transpose.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "transpose", function() { return _transpose_js__WEBPACK_IMPORTED_MODULE_33__["default"]; });
+
+/* harmony import */ var _variance_js__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./variance.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/variance.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "variance", function() { return _variance_js__WEBPACK_IMPORTED_MODULE_34__["default"]; });
+
+/* harmony import */ var _zip_js__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./zip.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/zip.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "zip", function() { return _zip_js__WEBPACK_IMPORTED_MODULE_35__["default"]; });
+
+
+
+
+
+
+
+
+
+
+ // Deprecated; use bin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ // Deprecated; use leastIndex.
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/least.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/least.js ***!
+  \*******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return least; });
+/* harmony import */ var _ascending_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ascending.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/ascending.js");
+
+
+function least(values, compare = _ascending_js__WEBPACK_IMPORTED_MODULE_0__["default"]) {
+  let min;
+  let defined = false;
+  if (compare.length === 1) {
+    let minValue;
+    for (const element of values) {
+      const value = compare(element);
+      if (defined
+          ? Object(_ascending_js__WEBPACK_IMPORTED_MODULE_0__["default"])(value, minValue) < 0
+          : Object(_ascending_js__WEBPACK_IMPORTED_MODULE_0__["default"])(value, value) === 0) {
+        min = element;
+        minValue = value;
+        defined = true;
+      }
+    }
+  } else {
+    for (const value of values) {
+      if (defined
+          ? compare(value, min) < 0
+          : compare(value, value) === 0) {
+        min = value;
+        defined = true;
+      }
+    }
+  }
+  return min;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/leastIndex.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/leastIndex.js ***!
+  \************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return leastIndex; });
+/* harmony import */ var _ascending_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ascending.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/ascending.js");
+/* harmony import */ var _minIndex_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./minIndex.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/minIndex.js");
+
+
+
+function leastIndex(values, compare = _ascending_js__WEBPACK_IMPORTED_MODULE_0__["default"]) {
+  if (compare.length === 1) return Object(_minIndex_js__WEBPACK_IMPORTED_MODULE_1__["default"])(values, compare);
+  let minValue;
+  let min = -1;
+  let index = -1;
+  for (const value of values) {
+    ++index;
+    if (min < 0
+        ? compare(value, value) === 0
+        : compare(value, minValue) < 0) {
+      minValue = value;
+      min = index;
+    }
+  }
+  return min;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/max.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/max.js ***!
+  \*****************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return max; });
+function max(values, valueof) {
+  let max;
+  if (valueof === undefined) {
+    for (const value of values) {
+      if (value != null
+          && (max < value || (max === undefined && value >= value))) {
+        max = value;
+      }
+    }
+  } else {
+    let index = -1;
+    for (let value of values) {
+      if ((value = valueof(value, ++index, values)) != null
+          && (max < value || (max === undefined && value >= value))) {
+        max = value;
+      }
+    }
+  }
+  return max;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/maxIndex.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/maxIndex.js ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return maxIndex; });
+function maxIndex(values, valueof) {
+  let max;
+  let maxIndex = -1;
+  let index = -1;
+  if (valueof === undefined) {
+    for (const value of values) {
+      ++index;
+      if (value != null
+          && (max < value || (max === undefined && value >= value))) {
+        max = value, maxIndex = index;
+      }
+    }
+  } else {
+    for (let value of values) {
+      if ((value = valueof(value, ++index, values)) != null
+          && (max < value || (max === undefined && value >= value))) {
+        max = value, maxIndex = index;
+      }
+    }
+  }
+  return maxIndex;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/mean.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/mean.js ***!
+  \******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return mean; });
+function mean(values, valueof) {
+  let count = 0;
+  let sum = 0;
+  if (valueof === undefined) {
+    for (let value of values) {
+      if (value != null && (value = +value) >= value) {
+        ++count, sum += value;
+      }
+    }
+  } else {
+    let index = -1;
+    for (let value of values) {
+      if ((value = valueof(value, ++index, values)) != null && (value = +value) >= value) {
+        ++count, sum += value;
+      }
+    }
+  }
+  if (count) return sum / count;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/median.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/median.js ***!
+  \********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _number_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./number.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/number.js");
+/* harmony import */ var _quantile_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./quantile.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/quantile.js");
+/* harmony import */ var _quickselect_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./quickselect.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/quickselect.js");
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(values, valueof) {
+  values = Float64Array.from(Object(_number_js__WEBPACK_IMPORTED_MODULE_0__["numbers"])(values, valueof));
+  if (!values.length) return;
+  const n = values.length;
+  const i = n >> 1;
+  Object(_quickselect_js__WEBPACK_IMPORTED_MODULE_2__["default"])(values, i - 1, 0);
+  if ((n & 1) === 0) Object(_quickselect_js__WEBPACK_IMPORTED_MODULE_2__["default"])(values, i, i);
+  return Object(_quantile_js__WEBPACK_IMPORTED_MODULE_1__["default"])(values, 0.5);
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/merge.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/merge.js ***!
+  \*******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return merge; });
+function* flatten(arrays) {
+  for (const array of arrays) {
+    yield* array;
+  }
+}
+
+function merge(arrays) {
+  return Array.from(flatten(arrays));
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/min.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/min.js ***!
+  \*****************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return min; });
+function min(values, valueof) {
+  let min;
+  if (valueof === undefined) {
+    for (const value of values) {
+      if (value != null
+          && (min > value || (min === undefined && value >= value))) {
+        min = value;
+      }
+    }
+  } else {
+    let index = -1;
+    for (let value of values) {
+      if ((value = valueof(value, ++index, values)) != null
+          && (min > value || (min === undefined && value >= value))) {
+        min = value;
+      }
+    }
+  }
+  return min;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/minIndex.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/minIndex.js ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return minIndex; });
+function minIndex(values, valueof) {
+  let min;
+  let minIndex = -1;
+  let index = -1;
+  if (valueof === undefined) {
+    for (const value of values) {
+      ++index;
+      if (value != null
+          && (min > value || (min === undefined && value >= value))) {
+        min = value, minIndex = index;
+      }
+    }
+  } else {
+    for (let value of values) {
+      if ((value = valueof(value, ++index, values)) != null
+          && (min > value || (min === undefined && value >= value))) {
+        min = value, minIndex = index;
+      }
+    }
+  }
+  return minIndex;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/number.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/number.js ***!
+  \********************************************************************/
+/*! exports provided: default, numbers */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "numbers", function() { return numbers; });
+/* harmony default export */ __webpack_exports__["default"] = (function(x) {
+  return x === null ? NaN : +x;
+});
+
+function* numbers(values, valueof) {
+  if (valueof === undefined) {
+    for (let value of values) {
+      if (value != null && (value = +value) >= value) {
+        yield value;
+      }
+    }
+  } else {
+    let index = -1;
+    for (let value of values) {
+      if ((value = valueof(value, ++index, values)) != null && (value = +value) >= value) {
+        yield value;
+      }
+    }
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/pairs.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/pairs.js ***!
+  \*******************************************************************/
+/*! exports provided: default, pair */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return pairs; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pair", function() { return pair; });
+function pairs(values, pairof = pair) {
+  const pairs = [];
+  let previous;
+  let first = false;
+  for (const value of values) {
+    if (first) pairs.push(pairof(previous, value));
+    previous = value;
+    first = true;
+  }
+  return pairs;
+}
+
+function pair(a, b) {
+  return [a, b];
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/permute.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/permute.js ***!
+  \*********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(source, keys) {
+  return Array.from(keys, key => source[key]);
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/quantile.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/quantile.js ***!
+  \**********************************************************************/
+/*! exports provided: default, quantileSorted */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return quantile; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "quantileSorted", function() { return quantileSorted; });
+/* harmony import */ var _ascending_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ascending.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/ascending.js");
+/* harmony import */ var _number_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./number.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/number.js");
+
+
+
+function quantile(values, p, valueof) {
+  values = Float64Array.from(Object(_number_js__WEBPACK_IMPORTED_MODULE_1__["numbers"])(values, valueof));
+  values.sort(_ascending_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+  return quantileSorted(values, p);
+}
+
+function quantileSorted(values, p, valueof = _number_js__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  if (!(n = values.length)) return;
+  if ((p = +p) <= 0 || n < 2) return +valueof(values[0], 0, values);
+  if (p >= 1) return +valueof(values[n - 1], n - 1, values);
+  var n,
+      i = (n - 1) * p,
+      i0 = Math.floor(i),
+      value0 = +valueof(values[i0], i0, values),
+      value1 = +valueof(values[i0 + 1], i0 + 1, values);
+  return value0 + (value1 - value0) * (i - i0);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/quickselect.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/quickselect.js ***!
+  \*************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return quickselect; });
+/* harmony import */ var _ascending_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ascending.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/ascending.js");
+
+
+// Based on https://github.com/mourner/quickselect
+// ISC license, Copyright 2018 Vladimir Agafonkin.
+function quickselect(array, k, left = 0, right = array.length - 1, compare = _ascending_js__WEBPACK_IMPORTED_MODULE_0__["default"]) {
+  while (right > left) {
+    if (right - left > 600) {
+      const n = right - left + 1;
+      const m = k - left + 1;
+      const z = Math.log(n);
+      const s = 0.5 * Math.exp(2 * z / 3);
+      const sd = 0.5 * Math.sqrt(z * s * (n - s) / n) * (m - n / 2 < 0 ? -1 : 1);
+      const newLeft = Math.max(left, Math.floor(k - m * s / n + sd));
+      const newRight = Math.min(right, Math.floor(k + (n - m) * s / n + sd));
+      quickselect(array, k, newLeft, newRight, compare);
+    }
+
+    const t = array[k];
+    let i = left;
+    let j = right;
+
+    swap(array, left, k);
+    if (compare(array[right], t) > 0) swap(array, left, right);
+
+    while (i < j) {
+      swap(array, i, j), ++i, --j;
+      while (compare(array[i], t) < 0) ++i;
+      while (compare(array[j], t) > 0) --j;
+    }
+
+    if (compare(array[left], t) === 0) swap(array, left, j);
+    else ++j, swap(array, j, right);
+
+    if (j <= k) left = j + 1;
+    if (k <= j) right = j - 1;
+  }
+  return array;
+}
+
+function swap(array, i, j) {
+  const t = array[i];
+  array[i] = array[j];
+  array[j] = t;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/range.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/range.js ***!
+  \*******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(start, stop, step) {
+  start = +start, stop = +stop, step = (n = arguments.length) < 2 ? (stop = start, start = 0, 1) : n < 3 ? 1 : +step;
+
+  var i = -1,
+      n = Math.max(0, Math.ceil((stop - start) / step)) | 0,
+      range = new Array(n);
+
+  while (++i < n) {
+    range[i] = start + i * step;
+  }
+
+  return range;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/scan.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/scan.js ***!
+  \******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return scan; });
+/* harmony import */ var _leastIndex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./leastIndex.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/leastIndex.js");
+
+
+function scan(values, compare) {
+  const index = Object(_leastIndex_js__WEBPACK_IMPORTED_MODULE_0__["default"])(values, compare);
+  return index < 0 ? undefined : index;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/shuffle.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/shuffle.js ***!
+  \*********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return shuffle; });
+function shuffle(array, i0 = 0, i1 = array.length) {
+  var m = i1 - (i0 = +i0),
+      t,
+      i;
+
+  while (m) {
+    i = Math.random() * m-- | 0;
+    t = array[m + i0];
+    array[m + i0] = array[i + i0];
+    array[i + i0] = t;
+  }
+
+  return array;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/sum.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/sum.js ***!
+  \*****************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return sum; });
+function sum(values, valueof) {
+  let sum = 0;
+  if (valueof === undefined) {
+    for (let value of values) {
+      if (value = +value) {
+        sum += value;
+      }
+    }
+  } else {
+    let index = -1;
+    for (let value of values) {
+      if (value = +valueof(value, ++index, values)) {
+        sum += value;
+      }
+    }
+  }
+  return sum;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/threshold/freedmanDiaconis.js":
+/*!****************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/threshold/freedmanDiaconis.js ***!
+  \****************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _count_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../count.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/count.js");
+/* harmony import */ var _quantile_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../quantile.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/quantile.js");
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(values, min, max) {
+  return Math.ceil((max - min) / (2 * (Object(_quantile_js__WEBPACK_IMPORTED_MODULE_1__["default"])(values, 0.75) - Object(_quantile_js__WEBPACK_IMPORTED_MODULE_1__["default"])(values, 0.25)) * Math.pow(Object(_count_js__WEBPACK_IMPORTED_MODULE_0__["default"])(values), -1 / 3)));
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/threshold/scott.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/threshold/scott.js ***!
+  \*****************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _count_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../count.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/count.js");
+/* harmony import */ var _deviation_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../deviation.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/deviation.js");
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(values, min, max) {
+  return Math.ceil((max - min) / (3.5 * Object(_deviation_js__WEBPACK_IMPORTED_MODULE_1__["default"])(values) * Math.pow(Object(_count_js__WEBPACK_IMPORTED_MODULE_0__["default"])(values), -1 / 3)));
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/threshold/sturges.js":
+/*!*******************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/threshold/sturges.js ***!
+  \*******************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _count_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../count.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/count.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(values) {
+  return Math.ceil(Math.log(Object(_count_js__WEBPACK_IMPORTED_MODULE_0__["default"])(values)) / Math.LN2) + 1;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/ticks.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/ticks.js ***!
+  \*******************************************************************/
+/*! exports provided: default, tickIncrement, tickStep */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tickIncrement", function() { return tickIncrement; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tickStep", function() { return tickStep; });
+var e10 = Math.sqrt(50),
+    e5 = Math.sqrt(10),
+    e2 = Math.sqrt(2);
+
+/* harmony default export */ __webpack_exports__["default"] = (function(start, stop, count) {
+  var reverse,
+      i = -1,
+      n,
+      ticks,
+      step;
+
+  stop = +stop, start = +start, count = +count;
+  if (start === stop && count > 0) return [start];
+  if (reverse = stop < start) n = start, start = stop, stop = n;
+  if ((step = tickIncrement(start, stop, count)) === 0 || !isFinite(step)) return [];
+
+  if (step > 0) {
+    start = Math.ceil(start / step);
+    stop = Math.floor(stop / step);
+    ticks = new Array(n = Math.ceil(stop - start + 1));
+    while (++i < n) ticks[i] = (start + i) * step;
+  } else {
+    start = Math.floor(start * step);
+    stop = Math.ceil(stop * step);
+    ticks = new Array(n = Math.ceil(start - stop + 1));
+    while (++i < n) ticks[i] = (start - i) / step;
+  }
+
+  if (reverse) ticks.reverse();
+
+  return ticks;
+});
+
+function tickIncrement(start, stop, count) {
+  var step = (stop - start) / Math.max(0, count),
+      power = Math.floor(Math.log(step) / Math.LN10),
+      error = step / Math.pow(10, power);
+  return power >= 0
+      ? (error >= e10 ? 10 : error >= e5 ? 5 : error >= e2 ? 2 : 1) * Math.pow(10, power)
+      : -Math.pow(10, -power) / (error >= e10 ? 10 : error >= e5 ? 5 : error >= e2 ? 2 : 1);
+}
+
+function tickStep(start, stop, count) {
+  var step0 = Math.abs(stop - start) / Math.max(0, count),
+      step1 = Math.pow(10, Math.floor(Math.log(step0) / Math.LN10)),
+      error = step0 / step1;
+  if (error >= e10) step1 *= 10;
+  else if (error >= e5) step1 *= 5;
+  else if (error >= e2) step1 *= 2;
+  return stop < start ? -step1 : step1;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/transpose.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/transpose.js ***!
+  \***********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _min_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./min.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/min.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(matrix) {
+  if (!(n = matrix.length)) return [];
+  for (var i = -1, m = Object(_min_js__WEBPACK_IMPORTED_MODULE_0__["default"])(matrix, length), transpose = new Array(m); ++i < m;) {
+    for (var j = -1, n, row = transpose[i] = new Array(n); ++j < n;) {
+      row[j] = matrix[j][i];
+    }
+  }
+  return transpose;
+});
+
+function length(d) {
+  return d.length;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/variance.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/variance.js ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return variance; });
+function variance(values, valueof) {
+  let count = 0;
+  let delta;
+  let mean = 0;
+  let sum = 0;
+  if (valueof === undefined) {
+    for (let value of values) {
+      if (value != null && (value = +value) >= value) {
+        delta = value - mean;
+        mean += delta / ++count;
+        sum += delta * (value - mean);
+      }
+    }
+  } else {
+    let index = -1;
+    for (let value of values) {
+      if ((value = valueof(value, ++index, values)) != null && (value = +value) >= value) {
+        delta = value - mean;
+        mean += delta / ++count;
+        sum += delta * (value - mean);
+      }
+    }
+  }
+  if (count > 1) return sum / (count - 1);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-array/src/zip.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-array/src/zip.js ***!
+  \*****************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _transpose_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./transpose.js */ "./node_modules/d3-geomap/node_modules/d3-array/src/transpose.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function() {
+  return Object(_transpose_js__WEBPACK_IMPORTED_MODULE_0__["default"])(arguments);
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/band.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/band.js ***!
+  \******************************************************************/
+/*! exports provided: default, point */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return band; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "point", function() { return point; });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-geomap/node_modules/d3-array/src/index.js");
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./init.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js");
+/* harmony import */ var _ordinal_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ordinal.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/ordinal.js");
+
+
+
+
+function band() {
+  var scale = Object(_ordinal_js__WEBPACK_IMPORTED_MODULE_2__["default"])().unknown(undefined),
+      domain = scale.domain,
+      ordinalRange = scale.range,
+      r0 = 0,
+      r1 = 1,
+      step,
+      bandwidth,
+      round = false,
+      paddingInner = 0,
+      paddingOuter = 0,
+      align = 0.5;
+
+  delete scale.unknown;
+
+  function rescale() {
+    var n = domain().length,
+        reverse = r1 < r0,
+        start = reverse ? r1 : r0,
+        stop = reverse ? r0 : r1;
+    step = (stop - start) / Math.max(1, n - paddingInner + paddingOuter * 2);
+    if (round) step = Math.floor(step);
+    start += (stop - start - step * (n - paddingInner)) * align;
+    bandwidth = step * (1 - paddingInner);
+    if (round) start = Math.round(start), bandwidth = Math.round(bandwidth);
+    var values = Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["range"])(n).map(function(i) { return start + step * i; });
+    return ordinalRange(reverse ? values.reverse() : values);
+  }
+
+  scale.domain = function(_) {
+    return arguments.length ? (domain(_), rescale()) : domain();
+  };
+
+  scale.range = function(_) {
+    return arguments.length ? ([r0, r1] = _, r0 = +r0, r1 = +r1, rescale()) : [r0, r1];
+  };
+
+  scale.rangeRound = function(_) {
+    return [r0, r1] = _, r0 = +r0, r1 = +r1, round = true, rescale();
+  };
+
+  scale.bandwidth = function() {
+    return bandwidth;
+  };
+
+  scale.step = function() {
+    return step;
+  };
+
+  scale.round = function(_) {
+    return arguments.length ? (round = !!_, rescale()) : round;
+  };
+
+  scale.padding = function(_) {
+    return arguments.length ? (paddingInner = Math.min(1, paddingOuter = +_), rescale()) : paddingInner;
+  };
+
+  scale.paddingInner = function(_) {
+    return arguments.length ? (paddingInner = Math.min(1, _), rescale()) : paddingInner;
+  };
+
+  scale.paddingOuter = function(_) {
+    return arguments.length ? (paddingOuter = +_, rescale()) : paddingOuter;
+  };
+
+  scale.align = function(_) {
+    return arguments.length ? (align = Math.max(0, Math.min(1, _)), rescale()) : align;
+  };
+
+  scale.copy = function() {
+    return band(domain(), [r0, r1])
+        .round(round)
+        .paddingInner(paddingInner)
+        .paddingOuter(paddingOuter)
+        .align(align);
+  };
+
+  return _init_js__WEBPACK_IMPORTED_MODULE_1__["initRange"].apply(rescale(), arguments);
+}
+
+function pointish(scale) {
+  var copy = scale.copy;
+
+  scale.padding = scale.paddingOuter;
+  delete scale.paddingInner;
+  delete scale.paddingOuter;
+
+  scale.copy = function() {
+    return pointish(copy());
+  };
+
+  return scale;
+}
+
+function point() {
+  return pointish(band.apply(null, arguments).paddingInner(1));
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/constant.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/constant.js ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(x) {
+  return function() {
+    return x;
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/continuous.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/continuous.js ***!
+  \************************************************************************/
+/*! exports provided: identity, copy, transformer, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "identity", function() { return identity; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "copy", function() { return copy; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transformer", function() { return transformer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return continuous; });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-geomap/node_modules/d3-array/src/index.js");
+/* harmony import */ var d3_interpolate__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3-interpolate */ "./node_modules/d3-interpolate/src/index.js");
+/* harmony import */ var _constant_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./constant.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/constant.js");
+/* harmony import */ var _number_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./number.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/number.js");
+
+
+
+
+
+var unit = [0, 1];
+
+function identity(x) {
+  return x;
+}
+
+function normalize(a, b) {
+  return (b -= (a = +a))
+      ? function(x) { return (x - a) / b; }
+      : Object(_constant_js__WEBPACK_IMPORTED_MODULE_2__["default"])(isNaN(b) ? NaN : 0.5);
+}
+
+function clamper(a, b) {
+  var t;
+  if (a > b) t = a, a = b, b = t;
+  return function(x) { return Math.max(a, Math.min(b, x)); };
+}
+
+// normalize(a, b)(x) takes a domain value x in [a,b] and returns the corresponding parameter t in [0,1].
+// interpolate(a, b)(t) takes a parameter t in [0,1] and returns the corresponding range value x in [a,b].
+function bimap(domain, range, interpolate) {
+  var d0 = domain[0], d1 = domain[1], r0 = range[0], r1 = range[1];
+  if (d1 < d0) d0 = normalize(d1, d0), r0 = interpolate(r1, r0);
+  else d0 = normalize(d0, d1), r0 = interpolate(r0, r1);
+  return function(x) { return r0(d0(x)); };
+}
+
+function polymap(domain, range, interpolate) {
+  var j = Math.min(domain.length, range.length) - 1,
+      d = new Array(j),
+      r = new Array(j),
+      i = -1;
+
+  // Reverse descending domains.
+  if (domain[j] < domain[0]) {
+    domain = domain.slice().reverse();
+    range = range.slice().reverse();
+  }
+
+  while (++i < j) {
+    d[i] = normalize(domain[i], domain[i + 1]);
+    r[i] = interpolate(range[i], range[i + 1]);
+  }
+
+  return function(x) {
+    var i = Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["bisect"])(domain, x, 1, j) - 1;
+    return r[i](d[i](x));
+  };
+}
+
+function copy(source, target) {
+  return target
+      .domain(source.domain())
+      .range(source.range())
+      .interpolate(source.interpolate())
+      .clamp(source.clamp())
+      .unknown(source.unknown());
+}
+
+function transformer() {
+  var domain = unit,
+      range = unit,
+      interpolate = d3_interpolate__WEBPACK_IMPORTED_MODULE_1__["interpolate"],
+      transform,
+      untransform,
+      unknown,
+      clamp = identity,
+      piecewise,
+      output,
+      input;
+
+  function rescale() {
+    var n = Math.min(domain.length, range.length);
+    if (clamp !== identity) clamp = clamper(domain[0], domain[n - 1]);
+    piecewise = n > 2 ? polymap : bimap;
+    output = input = null;
+    return scale;
+  }
+
+  function scale(x) {
+    return isNaN(x = +x) ? unknown : (output || (output = piecewise(domain.map(transform), range, interpolate)))(transform(clamp(x)));
+  }
+
+  scale.invert = function(y) {
+    return clamp(untransform((input || (input = piecewise(range, domain.map(transform), d3_interpolate__WEBPACK_IMPORTED_MODULE_1__["interpolateNumber"])))(y)));
+  };
+
+  scale.domain = function(_) {
+    return arguments.length ? (domain = Array.from(_, _number_js__WEBPACK_IMPORTED_MODULE_3__["default"]), rescale()) : domain.slice();
+  };
+
+  scale.range = function(_) {
+    return arguments.length ? (range = Array.from(_), rescale()) : range.slice();
+  };
+
+  scale.rangeRound = function(_) {
+    return range = Array.from(_), interpolate = d3_interpolate__WEBPACK_IMPORTED_MODULE_1__["interpolateRound"], rescale();
+  };
+
+  scale.clamp = function(_) {
+    return arguments.length ? (clamp = _ ? true : identity, rescale()) : clamp !== identity;
+  };
+
+  scale.interpolate = function(_) {
+    return arguments.length ? (interpolate = _, rescale()) : interpolate;
+  };
+
+  scale.unknown = function(_) {
+    return arguments.length ? (unknown = _, scale) : unknown;
+  };
+
+  return function(t, u) {
+    transform = t, untransform = u;
+    return rescale();
+  };
+}
+
+function continuous() {
+  return transformer()(identity, identity);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/diverging.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/diverging.js ***!
+  \***********************************************************************/
+/*! exports provided: default, divergingLog, divergingSymlog, divergingPow, divergingSqrt */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return diverging; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "divergingLog", function() { return divergingLog; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "divergingSymlog", function() { return divergingSymlog; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "divergingPow", function() { return divergingPow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "divergingSqrt", function() { return divergingSqrt; });
+/* harmony import */ var _continuous_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./continuous.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/continuous.js");
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./init.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js");
+/* harmony import */ var _linear_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./linear.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/linear.js");
+/* harmony import */ var _log_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./log.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/log.js");
+/* harmony import */ var _sequential_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./sequential.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/sequential.js");
+/* harmony import */ var _symlog_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./symlog.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/symlog.js");
+/* harmony import */ var _pow_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./pow.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/pow.js");
+
+
+
+
+
+
+
+
+function transformer() {
+  var x0 = 0,
+      x1 = 0.5,
+      x2 = 1,
+      s = 1,
+      t0,
+      t1,
+      t2,
+      k10,
+      k21,
+      interpolator = _continuous_js__WEBPACK_IMPORTED_MODULE_0__["identity"],
+      transform,
+      clamp = false,
+      unknown;
+
+  function scale(x) {
+    return isNaN(x = +x) ? unknown : (x = 0.5 + ((x = +transform(x)) - t1) * (s * x < s * t1 ? k10 : k21), interpolator(clamp ? Math.max(0, Math.min(1, x)) : x));
+  }
+
+  scale.domain = function(_) {
+    return arguments.length ? ([x0, x1, x2] = _, t0 = transform(x0 = +x0), t1 = transform(x1 = +x1), t2 = transform(x2 = +x2), k10 = t0 === t1 ? 0 : 0.5 / (t1 - t0), k21 = t1 === t2 ? 0 : 0.5 / (t2 - t1), s = t1 < t0 ? -1 : 1, scale) : [x0, x1, x2];
+  };
+
+  scale.clamp = function(_) {
+    return arguments.length ? (clamp = !!_, scale) : clamp;
+  };
+
+  scale.interpolator = function(_) {
+    return arguments.length ? (interpolator = _, scale) : interpolator;
+  };
+
+  scale.range = function() {
+    return [interpolator(0), interpolator(0.5), interpolator(1)];
+  };
+
+  scale.unknown = function(_) {
+    return arguments.length ? (unknown = _, scale) : unknown;
+  };
+
+  return function(t) {
+    transform = t, t0 = t(x0), t1 = t(x1), t2 = t(x2), k10 = t0 === t1 ? 0 : 0.5 / (t1 - t0), k21 = t1 === t2 ? 0 : 0.5 / (t2 - t1), s = t1 < t0 ? -1 : 1;
+    return scale;
+  };
+}
+
+function diverging() {
+  var scale = Object(_linear_js__WEBPACK_IMPORTED_MODULE_2__["linearish"])(transformer()(_continuous_js__WEBPACK_IMPORTED_MODULE_0__["identity"]));
+
+  scale.copy = function() {
+    return Object(_sequential_js__WEBPACK_IMPORTED_MODULE_4__["copy"])(scale, diverging());
+  };
+
+  return _init_js__WEBPACK_IMPORTED_MODULE_1__["initInterpolator"].apply(scale, arguments);
+}
+
+function divergingLog() {
+  var scale = Object(_log_js__WEBPACK_IMPORTED_MODULE_3__["loggish"])(transformer()).domain([0.1, 1, 10]);
+
+  scale.copy = function() {
+    return Object(_sequential_js__WEBPACK_IMPORTED_MODULE_4__["copy"])(scale, divergingLog()).base(scale.base());
+  };
+
+  return _init_js__WEBPACK_IMPORTED_MODULE_1__["initInterpolator"].apply(scale, arguments);
+}
+
+function divergingSymlog() {
+  var scale = Object(_symlog_js__WEBPACK_IMPORTED_MODULE_5__["symlogish"])(transformer());
+
+  scale.copy = function() {
+    return Object(_sequential_js__WEBPACK_IMPORTED_MODULE_4__["copy"])(scale, divergingSymlog()).constant(scale.constant());
+  };
+
+  return _init_js__WEBPACK_IMPORTED_MODULE_1__["initInterpolator"].apply(scale, arguments);
+}
+
+function divergingPow() {
+  var scale = Object(_pow_js__WEBPACK_IMPORTED_MODULE_6__["powish"])(transformer());
+
+  scale.copy = function() {
+    return Object(_sequential_js__WEBPACK_IMPORTED_MODULE_4__["copy"])(scale, divergingPow()).exponent(scale.exponent());
+  };
+
+  return _init_js__WEBPACK_IMPORTED_MODULE_1__["initInterpolator"].apply(scale, arguments);
+}
+
+function divergingSqrt() {
+  return divergingPow.apply(null, arguments).exponent(0.5);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/identity.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/identity.js ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return identity; });
+/* harmony import */ var _linear_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./linear.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/linear.js");
+/* harmony import */ var _number_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./number.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/number.js");
+
+
+
+function identity(domain) {
+  var unknown;
+
+  function scale(x) {
+    return isNaN(x = +x) ? unknown : x;
+  }
+
+  scale.invert = scale;
+
+  scale.domain = scale.range = function(_) {
+    return arguments.length ? (domain = Array.from(_, _number_js__WEBPACK_IMPORTED_MODULE_1__["default"]), scale) : domain.slice();
+  };
+
+  scale.unknown = function(_) {
+    return arguments.length ? (unknown = _, scale) : unknown;
+  };
+
+  scale.copy = function() {
+    return identity(domain).unknown(unknown);
+  };
+
+  domain = arguments.length ? Array.from(domain, _number_js__WEBPACK_IMPORTED_MODULE_1__["default"]) : [0, 1];
+
+  return Object(_linear_js__WEBPACK_IMPORTED_MODULE_0__["linearish"])(scale);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/index.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/index.js ***!
+  \*******************************************************************/
+/*! exports provided: scaleBand, scalePoint, scaleIdentity, scaleLinear, scaleLog, scaleSymlog, scaleOrdinal, scaleImplicit, scalePow, scaleSqrt, scaleRadial, scaleQuantile, scaleQuantize, scaleThreshold, scaleTime, scaleUtc, scaleSequential, scaleSequentialLog, scaleSequentialPow, scaleSequentialSqrt, scaleSequentialSymlog, scaleSequentialQuantile, scaleDiverging, scaleDivergingLog, scaleDivergingPow, scaleDivergingSqrt, scaleDivergingSymlog, tickFormat */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _band_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./band.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/band.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleBand", function() { return _band_js__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scalePoint", function() { return _band_js__WEBPACK_IMPORTED_MODULE_0__["point"]; });
+
+/* harmony import */ var _identity_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./identity.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/identity.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleIdentity", function() { return _identity_js__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _linear_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./linear.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/linear.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleLinear", function() { return _linear_js__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+/* harmony import */ var _log_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./log.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/log.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleLog", function() { return _log_js__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+/* harmony import */ var _symlog_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./symlog.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/symlog.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleSymlog", function() { return _symlog_js__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+
+/* harmony import */ var _ordinal_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ordinal.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/ordinal.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleOrdinal", function() { return _ordinal_js__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleImplicit", function() { return _ordinal_js__WEBPACK_IMPORTED_MODULE_5__["implicit"]; });
+
+/* harmony import */ var _pow_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./pow.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/pow.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scalePow", function() { return _pow_js__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleSqrt", function() { return _pow_js__WEBPACK_IMPORTED_MODULE_6__["sqrt"]; });
+
+/* harmony import */ var _radial_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./radial.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/radial.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleRadial", function() { return _radial_js__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+
+/* harmony import */ var _quantile_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./quantile.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/quantile.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleQuantile", function() { return _quantile_js__WEBPACK_IMPORTED_MODULE_8__["default"]; });
+
+/* harmony import */ var _quantize_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./quantize.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/quantize.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleQuantize", function() { return _quantize_js__WEBPACK_IMPORTED_MODULE_9__["default"]; });
+
+/* harmony import */ var _threshold_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./threshold.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/threshold.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleThreshold", function() { return _threshold_js__WEBPACK_IMPORTED_MODULE_10__["default"]; });
+
+/* harmony import */ var _time_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./time.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/time.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleTime", function() { return _time_js__WEBPACK_IMPORTED_MODULE_11__["default"]; });
+
+/* harmony import */ var _utcTime_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./utcTime.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/utcTime.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleUtc", function() { return _utcTime_js__WEBPACK_IMPORTED_MODULE_12__["default"]; });
+
+/* harmony import */ var _sequential_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./sequential.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/sequential.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleSequential", function() { return _sequential_js__WEBPACK_IMPORTED_MODULE_13__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleSequentialLog", function() { return _sequential_js__WEBPACK_IMPORTED_MODULE_13__["sequentialLog"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleSequentialPow", function() { return _sequential_js__WEBPACK_IMPORTED_MODULE_13__["sequentialPow"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleSequentialSqrt", function() { return _sequential_js__WEBPACK_IMPORTED_MODULE_13__["sequentialSqrt"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleSequentialSymlog", function() { return _sequential_js__WEBPACK_IMPORTED_MODULE_13__["sequentialSymlog"]; });
+
+/* harmony import */ var _sequentialQuantile_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./sequentialQuantile.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/sequentialQuantile.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleSequentialQuantile", function() { return _sequentialQuantile_js__WEBPACK_IMPORTED_MODULE_14__["default"]; });
+
+/* harmony import */ var _diverging_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./diverging.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/diverging.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleDiverging", function() { return _diverging_js__WEBPACK_IMPORTED_MODULE_15__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleDivergingLog", function() { return _diverging_js__WEBPACK_IMPORTED_MODULE_15__["divergingLog"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleDivergingPow", function() { return _diverging_js__WEBPACK_IMPORTED_MODULE_15__["divergingPow"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleDivergingSqrt", function() { return _diverging_js__WEBPACK_IMPORTED_MODULE_15__["divergingSqrt"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "scaleDivergingSymlog", function() { return _diverging_js__WEBPACK_IMPORTED_MODULE_15__["divergingSymlog"]; });
+
+/* harmony import */ var _tickFormat_js__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./tickFormat.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/tickFormat.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tickFormat", function() { return _tickFormat_js__WEBPACK_IMPORTED_MODULE_16__["default"]; });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/init.js ***!
+  \******************************************************************/
+/*! exports provided: initRange, initInterpolator */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initRange", function() { return initRange; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initInterpolator", function() { return initInterpolator; });
+function initRange(domain, range) {
+  switch (arguments.length) {
+    case 0: break;
+    case 1: this.range(domain); break;
+    default: this.range(range).domain(domain); break;
+  }
+  return this;
+}
+
+function initInterpolator(domain, interpolator) {
+  switch (arguments.length) {
+    case 0: break;
+    case 1: this.interpolator(domain); break;
+    default: this.interpolator(interpolator).domain(domain); break;
+  }
+  return this;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/linear.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/linear.js ***!
+  \********************************************************************/
+/*! exports provided: linearish, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "linearish", function() { return linearish; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return linear; });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-geomap/node_modules/d3-array/src/index.js");
+/* harmony import */ var _continuous_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./continuous.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/continuous.js");
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./init.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js");
+/* harmony import */ var _tickFormat_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./tickFormat.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/tickFormat.js");
+
+
+
+
+
+function linearish(scale) {
+  var domain = scale.domain;
+
+  scale.ticks = function(count) {
+    var d = domain();
+    return Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["ticks"])(d[0], d[d.length - 1], count == null ? 10 : count);
+  };
+
+  scale.tickFormat = function(count, specifier) {
+    var d = domain();
+    return Object(_tickFormat_js__WEBPACK_IMPORTED_MODULE_3__["default"])(d[0], d[d.length - 1], count == null ? 10 : count, specifier);
+  };
+
+  scale.nice = function(count) {
+    if (count == null) count = 10;
+
+    var d = domain(),
+        i0 = 0,
+        i1 = d.length - 1,
+        start = d[i0],
+        stop = d[i1],
+        step;
+
+    if (stop < start) {
+      step = start, start = stop, stop = step;
+      step = i0, i0 = i1, i1 = step;
+    }
+
+    step = Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["tickIncrement"])(start, stop, count);
+
+    if (step > 0) {
+      start = Math.floor(start / step) * step;
+      stop = Math.ceil(stop / step) * step;
+      step = Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["tickIncrement"])(start, stop, count);
+    } else if (step < 0) {
+      start = Math.ceil(start * step) / step;
+      stop = Math.floor(stop * step) / step;
+      step = Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["tickIncrement"])(start, stop, count);
+    }
+
+    if (step > 0) {
+      d[i0] = Math.floor(start / step) * step;
+      d[i1] = Math.ceil(stop / step) * step;
+      domain(d);
+    } else if (step < 0) {
+      d[i0] = Math.ceil(start * step) / step;
+      d[i1] = Math.floor(stop * step) / step;
+      domain(d);
+    }
+
+    return scale;
+  };
+
+  return scale;
+}
+
+function linear() {
+  var scale = Object(_continuous_js__WEBPACK_IMPORTED_MODULE_1__["default"])();
+
+  scale.copy = function() {
+    return Object(_continuous_js__WEBPACK_IMPORTED_MODULE_1__["copy"])(scale, linear());
+  };
+
+  _init_js__WEBPACK_IMPORTED_MODULE_2__["initRange"].apply(scale, arguments);
+
+  return linearish(scale);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/log.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/log.js ***!
+  \*****************************************************************/
+/*! exports provided: loggish, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loggish", function() { return loggish; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return log; });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-geomap/node_modules/d3-array/src/index.js");
+/* harmony import */ var d3_format__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3-format */ "./node_modules/d3-format/src/index.js");
+/* harmony import */ var _nice_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./nice.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/nice.js");
+/* harmony import */ var _continuous_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./continuous.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/continuous.js");
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./init.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js");
+
+
+
+
+
+
+function transformLog(x) {
+  return Math.log(x);
+}
+
+function transformExp(x) {
+  return Math.exp(x);
+}
+
+function transformLogn(x) {
+  return -Math.log(-x);
+}
+
+function transformExpn(x) {
+  return -Math.exp(-x);
+}
+
+function pow10(x) {
+  return isFinite(x) ? +("1e" + x) : x < 0 ? 0 : x;
+}
+
+function powp(base) {
+  return base === 10 ? pow10
+      : base === Math.E ? Math.exp
+      : function(x) { return Math.pow(base, x); };
+}
+
+function logp(base) {
+  return base === Math.E ? Math.log
+      : base === 10 && Math.log10
+      || base === 2 && Math.log2
+      || (base = Math.log(base), function(x) { return Math.log(x) / base; });
+}
+
+function reflect(f) {
+  return function(x) {
+    return -f(-x);
+  };
+}
+
+function loggish(transform) {
+  var scale = transform(transformLog, transformExp),
+      domain = scale.domain,
+      base = 10,
+      logs,
+      pows;
+
+  function rescale() {
+    logs = logp(base), pows = powp(base);
+    if (domain()[0] < 0) {
+      logs = reflect(logs), pows = reflect(pows);
+      transform(transformLogn, transformExpn);
+    } else {
+      transform(transformLog, transformExp);
+    }
+    return scale;
+  }
+
+  scale.base = function(_) {
+    return arguments.length ? (base = +_, rescale()) : base;
+  };
+
+  scale.domain = function(_) {
+    return arguments.length ? (domain(_), rescale()) : domain();
+  };
+
+  scale.ticks = function(count) {
+    var d = domain(),
+        u = d[0],
+        v = d[d.length - 1],
+        r;
+
+    if (r = v < u) i = u, u = v, v = i;
+
+    var i = logs(u),
+        j = logs(v),
+        p,
+        k,
+        t,
+        n = count == null ? 10 : +count,
+        z = [];
+
+    if (!(base % 1) && j - i < n) {
+      i = Math.floor(i), j = Math.ceil(j);
+      if (u > 0) for (; i <= j; ++i) {
+        for (k = 1, p = pows(i); k < base; ++k) {
+          t = p * k;
+          if (t < u) continue;
+          if (t > v) break;
+          z.push(t);
+        }
+      } else for (; i <= j; ++i) {
+        for (k = base - 1, p = pows(i); k >= 1; --k) {
+          t = p * k;
+          if (t < u) continue;
+          if (t > v) break;
+          z.push(t);
+        }
+      }
+      if (!z.length) z = Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["ticks"])(u, v, n);
+    } else {
+      z = Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["ticks"])(i, j, Math.min(j - i, n)).map(pows);
+    }
+
+    return r ? z.reverse() : z;
+  };
+
+  scale.tickFormat = function(count, specifier) {
+    if (specifier == null) specifier = base === 10 ? ".0e" : ",";
+    if (typeof specifier !== "function") specifier = Object(d3_format__WEBPACK_IMPORTED_MODULE_1__["format"])(specifier);
+    if (count === Infinity) return specifier;
+    if (count == null) count = 10;
+    var k = Math.max(1, base * count / scale.ticks().length); // TODO fast estimate?
+    return function(d) {
+      var i = d / pows(Math.round(logs(d)));
+      if (i * base < base - 0.5) i *= base;
+      return i <= k ? specifier(d) : "";
+    };
+  };
+
+  scale.nice = function() {
+    return domain(Object(_nice_js__WEBPACK_IMPORTED_MODULE_2__["default"])(domain(), {
+      floor: function(x) { return pows(Math.floor(logs(x))); },
+      ceil: function(x) { return pows(Math.ceil(logs(x))); }
+    }));
+  };
+
+  return scale;
+}
+
+function log() {
+  var scale = loggish(Object(_continuous_js__WEBPACK_IMPORTED_MODULE_3__["transformer"])()).domain([1, 10]);
+
+  scale.copy = function() {
+    return Object(_continuous_js__WEBPACK_IMPORTED_MODULE_3__["copy"])(scale, log()).base(scale.base());
+  };
+
+  _init_js__WEBPACK_IMPORTED_MODULE_4__["initRange"].apply(scale, arguments);
+
+  return scale;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/nice.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/nice.js ***!
+  \******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(domain, interval) {
+  domain = domain.slice();
+
+  var i0 = 0,
+      i1 = domain.length - 1,
+      x0 = domain[i0],
+      x1 = domain[i1],
+      t;
+
+  if (x1 < x0) {
+    t = i0, i0 = i1, i1 = t;
+    t = x0, x0 = x1, x1 = t;
+  }
+
+  domain[i0] = interval.floor(x0);
+  domain[i1] = interval.ceil(x1);
+  return domain;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/number.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/number.js ***!
+  \********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(x) {
+  return +x;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/ordinal.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/ordinal.js ***!
+  \*********************************************************************/
+/*! exports provided: implicit, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "implicit", function() { return implicit; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ordinal; });
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./init.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js");
+
+
+const implicit = Symbol("implicit");
+
+function ordinal() {
+  var index = new Map(),
+      domain = [],
+      range = [],
+      unknown = implicit;
+
+  function scale(d) {
+    var key = d + "", i = index.get(key);
+    if (!i) {
+      if (unknown !== implicit) return unknown;
+      index.set(key, i = domain.push(d));
+    }
+    return range[(i - 1) % range.length];
+  }
+
+  scale.domain = function(_) {
+    if (!arguments.length) return domain.slice();
+    domain = [], index = new Map();
+    for (const value of _) {
+      const key = value + "";
+      if (index.has(key)) continue;
+      index.set(key, domain.push(value));
+    }
+    return scale;
+  };
+
+  scale.range = function(_) {
+    return arguments.length ? (range = Array.from(_), scale) : range.slice();
+  };
+
+  scale.unknown = function(_) {
+    return arguments.length ? (unknown = _, scale) : unknown;
+  };
+
+  scale.copy = function() {
+    return ordinal(domain, range).unknown(unknown);
+  };
+
+  _init_js__WEBPACK_IMPORTED_MODULE_0__["initRange"].apply(scale, arguments);
+
+  return scale;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/pow.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/pow.js ***!
+  \*****************************************************************/
+/*! exports provided: powish, default, sqrt */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "powish", function() { return powish; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return pow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sqrt", function() { return sqrt; });
+/* harmony import */ var _linear_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./linear.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/linear.js");
+/* harmony import */ var _continuous_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./continuous.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/continuous.js");
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./init.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js");
+
+
+
+
+function transformPow(exponent) {
+  return function(x) {
+    return x < 0 ? -Math.pow(-x, exponent) : Math.pow(x, exponent);
+  };
+}
+
+function transformSqrt(x) {
+  return x < 0 ? -Math.sqrt(-x) : Math.sqrt(x);
+}
+
+function transformSquare(x) {
+  return x < 0 ? -x * x : x * x;
+}
+
+function powish(transform) {
+  var scale = transform(_continuous_js__WEBPACK_IMPORTED_MODULE_1__["identity"], _continuous_js__WEBPACK_IMPORTED_MODULE_1__["identity"]),
+      exponent = 1;
+
+  function rescale() {
+    return exponent === 1 ? transform(_continuous_js__WEBPACK_IMPORTED_MODULE_1__["identity"], _continuous_js__WEBPACK_IMPORTED_MODULE_1__["identity"])
+        : exponent === 0.5 ? transform(transformSqrt, transformSquare)
+        : transform(transformPow(exponent), transformPow(1 / exponent));
+  }
+
+  scale.exponent = function(_) {
+    return arguments.length ? (exponent = +_, rescale()) : exponent;
+  };
+
+  return Object(_linear_js__WEBPACK_IMPORTED_MODULE_0__["linearish"])(scale);
+}
+
+function pow() {
+  var scale = powish(Object(_continuous_js__WEBPACK_IMPORTED_MODULE_1__["transformer"])());
+
+  scale.copy = function() {
+    return Object(_continuous_js__WEBPACK_IMPORTED_MODULE_1__["copy"])(scale, pow()).exponent(scale.exponent());
+  };
+
+  _init_js__WEBPACK_IMPORTED_MODULE_2__["initRange"].apply(scale, arguments);
+
+  return scale;
+}
+
+function sqrt() {
+  return pow.apply(null, arguments).exponent(0.5);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/quantile.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/quantile.js ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return quantile; });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-geomap/node_modules/d3-array/src/index.js");
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./init.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js");
+
+
+
+function quantile() {
+  var domain = [],
+      range = [],
+      thresholds = [],
+      unknown;
+
+  function rescale() {
+    var i = 0, n = Math.max(1, range.length);
+    thresholds = new Array(n - 1);
+    while (++i < n) thresholds[i - 1] = Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["quantile"])(domain, i / n);
+    return scale;
+  }
+
+  function scale(x) {
+    return isNaN(x = +x) ? unknown : range[Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["bisect"])(thresholds, x)];
+  }
+
+  scale.invertExtent = function(y) {
+    var i = range.indexOf(y);
+    return i < 0 ? [NaN, NaN] : [
+      i > 0 ? thresholds[i - 1] : domain[0],
+      i < thresholds.length ? thresholds[i] : domain[domain.length - 1]
+    ];
+  };
+
+  scale.domain = function(_) {
+    if (!arguments.length) return domain.slice();
+    domain = [];
+    for (let d of _) if (d != null && !isNaN(d = +d)) domain.push(d);
+    domain.sort(d3_array__WEBPACK_IMPORTED_MODULE_0__["ascending"]);
+    return rescale();
+  };
+
+  scale.range = function(_) {
+    return arguments.length ? (range = Array.from(_), rescale()) : range.slice();
+  };
+
+  scale.unknown = function(_) {
+    return arguments.length ? (unknown = _, scale) : unknown;
+  };
+
+  scale.quantiles = function() {
+    return thresholds.slice();
+  };
+
+  scale.copy = function() {
+    return quantile()
+        .domain(domain)
+        .range(range)
+        .unknown(unknown);
+  };
+
+  return _init_js__WEBPACK_IMPORTED_MODULE_1__["initRange"].apply(scale, arguments);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/quantize.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/quantize.js ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return quantize; });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-geomap/node_modules/d3-array/src/index.js");
+/* harmony import */ var _linear_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./linear.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/linear.js");
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./init.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js");
+
+
+
+
+function quantize() {
+  var x0 = 0,
+      x1 = 1,
+      n = 1,
+      domain = [0.5],
+      range = [0, 1],
+      unknown;
+
+  function scale(x) {
+    return x <= x ? range[Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["bisect"])(domain, x, 0, n)] : unknown;
+  }
+
+  function rescale() {
+    var i = -1;
+    domain = new Array(n);
+    while (++i < n) domain[i] = ((i + 1) * x1 - (i - n) * x0) / (n + 1);
+    return scale;
+  }
+
+  scale.domain = function(_) {
+    return arguments.length ? ([x0, x1] = _, x0 = +x0, x1 = +x1, rescale()) : [x0, x1];
+  };
+
+  scale.range = function(_) {
+    return arguments.length ? (n = (range = Array.from(_)).length - 1, rescale()) : range.slice();
+  };
+
+  scale.invertExtent = function(y) {
+    var i = range.indexOf(y);
+    return i < 0 ? [NaN, NaN]
+        : i < 1 ? [x0, domain[0]]
+        : i >= n ? [domain[n - 1], x1]
+        : [domain[i - 1], domain[i]];
+  };
+
+  scale.unknown = function(_) {
+    return arguments.length ? (unknown = _, scale) : scale;
+  };
+
+  scale.thresholds = function() {
+    return domain.slice();
+  };
+
+  scale.copy = function() {
+    return quantize()
+        .domain([x0, x1])
+        .range(range)
+        .unknown(unknown);
+  };
+
+  return _init_js__WEBPACK_IMPORTED_MODULE_2__["initRange"].apply(Object(_linear_js__WEBPACK_IMPORTED_MODULE_1__["linearish"])(scale), arguments);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/radial.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/radial.js ***!
+  \********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return radial; });
+/* harmony import */ var _continuous_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./continuous.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/continuous.js");
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./init.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js");
+/* harmony import */ var _linear_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./linear.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/linear.js");
+/* harmony import */ var _number_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./number.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/number.js");
+
+
+
+
+
+function square(x) {
+  return Math.sign(x) * x * x;
+}
+
+function unsquare(x) {
+  return Math.sign(x) * Math.sqrt(Math.abs(x));
+}
+
+function radial() {
+  var squared = Object(_continuous_js__WEBPACK_IMPORTED_MODULE_0__["default"])(),
+      range = [0, 1],
+      round = false,
+      unknown;
+
+  function scale(x) {
+    var y = unsquare(squared(x));
+    return isNaN(y) ? unknown : round ? Math.round(y) : y;
+  }
+
+  scale.invert = function(y) {
+    return squared.invert(square(y));
+  };
+
+  scale.domain = function(_) {
+    return arguments.length ? (squared.domain(_), scale) : squared.domain();
+  };
+
+  scale.range = function(_) {
+    return arguments.length ? (squared.range((range = Array.from(_, _number_js__WEBPACK_IMPORTED_MODULE_3__["default"])).map(square)), scale) : range.slice();
+  };
+
+  scale.rangeRound = function(_) {
+    return scale.range(_).round(true);
+  };
+
+  scale.round = function(_) {
+    return arguments.length ? (round = !!_, scale) : round;
+  };
+
+  scale.clamp = function(_) {
+    return arguments.length ? (squared.clamp(_), scale) : squared.clamp();
+  };
+
+  scale.unknown = function(_) {
+    return arguments.length ? (unknown = _, scale) : unknown;
+  };
+
+  scale.copy = function() {
+    return radial(squared.domain(), range)
+        .round(round)
+        .clamp(squared.clamp())
+        .unknown(unknown);
+  };
+
+  _init_js__WEBPACK_IMPORTED_MODULE_1__["initRange"].apply(scale, arguments);
+
+  return Object(_linear_js__WEBPACK_IMPORTED_MODULE_2__["linearish"])(scale);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/sequential.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/sequential.js ***!
+  \************************************************************************/
+/*! exports provided: copy, default, sequentialLog, sequentialSymlog, sequentialPow, sequentialSqrt */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "copy", function() { return copy; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return sequential; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sequentialLog", function() { return sequentialLog; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sequentialSymlog", function() { return sequentialSymlog; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sequentialPow", function() { return sequentialPow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sequentialSqrt", function() { return sequentialSqrt; });
+/* harmony import */ var _continuous_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./continuous.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/continuous.js");
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./init.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js");
+/* harmony import */ var _linear_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./linear.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/linear.js");
+/* harmony import */ var _log_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./log.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/log.js");
+/* harmony import */ var _symlog_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./symlog.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/symlog.js");
+/* harmony import */ var _pow_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./pow.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/pow.js");
+
+
+
+
+
+
+
+function transformer() {
+  var x0 = 0,
+      x1 = 1,
+      t0,
+      t1,
+      k10,
+      transform,
+      interpolator = _continuous_js__WEBPACK_IMPORTED_MODULE_0__["identity"],
+      clamp = false,
+      unknown;
+
+  function scale(x) {
+    return isNaN(x = +x) ? unknown : interpolator(k10 === 0 ? 0.5 : (x = (transform(x) - t0) * k10, clamp ? Math.max(0, Math.min(1, x)) : x));
+  }
+
+  scale.domain = function(_) {
+    return arguments.length ? ([x0, x1] = _, t0 = transform(x0 = +x0), t1 = transform(x1 = +x1), k10 = t0 === t1 ? 0 : 1 / (t1 - t0), scale) : [x0, x1];
+  };
+
+  scale.clamp = function(_) {
+    return arguments.length ? (clamp = !!_, scale) : clamp;
+  };
+
+  scale.interpolator = function(_) {
+    return arguments.length ? (interpolator = _, scale) : interpolator;
+  };
+
+  scale.range = function() {
+    return [interpolator(0), interpolator(1)];
+  };
+
+  scale.unknown = function(_) {
+    return arguments.length ? (unknown = _, scale) : unknown;
+  };
+
+  return function(t) {
+    transform = t, t0 = t(x0), t1 = t(x1), k10 = t0 === t1 ? 0 : 1 / (t1 - t0);
+    return scale;
+  };
+}
+
+function copy(source, target) {
+  return target
+      .domain(source.domain())
+      .interpolator(source.interpolator())
+      .clamp(source.clamp())
+      .unknown(source.unknown());
+}
+
+function sequential() {
+  var scale = Object(_linear_js__WEBPACK_IMPORTED_MODULE_2__["linearish"])(transformer()(_continuous_js__WEBPACK_IMPORTED_MODULE_0__["identity"]));
+
+  scale.copy = function() {
+    return copy(scale, sequential());
+  };
+
+  return _init_js__WEBPACK_IMPORTED_MODULE_1__["initInterpolator"].apply(scale, arguments);
+}
+
+function sequentialLog() {
+  var scale = Object(_log_js__WEBPACK_IMPORTED_MODULE_3__["loggish"])(transformer()).domain([1, 10]);
+
+  scale.copy = function() {
+    return copy(scale, sequentialLog()).base(scale.base());
+  };
+
+  return _init_js__WEBPACK_IMPORTED_MODULE_1__["initInterpolator"].apply(scale, arguments);
+}
+
+function sequentialSymlog() {
+  var scale = Object(_symlog_js__WEBPACK_IMPORTED_MODULE_4__["symlogish"])(transformer());
+
+  scale.copy = function() {
+    return copy(scale, sequentialSymlog()).constant(scale.constant());
+  };
+
+  return _init_js__WEBPACK_IMPORTED_MODULE_1__["initInterpolator"].apply(scale, arguments);
+}
+
+function sequentialPow() {
+  var scale = Object(_pow_js__WEBPACK_IMPORTED_MODULE_5__["powish"])(transformer());
+
+  scale.copy = function() {
+    return copy(scale, sequentialPow()).exponent(scale.exponent());
+  };
+
+  return _init_js__WEBPACK_IMPORTED_MODULE_1__["initInterpolator"].apply(scale, arguments);
+}
+
+function sequentialSqrt() {
+  return sequentialPow.apply(null, arguments).exponent(0.5);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/sequentialQuantile.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/sequentialQuantile.js ***!
+  \********************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return sequentialQuantile; });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-geomap/node_modules/d3-array/src/index.js");
+/* harmony import */ var _continuous_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./continuous.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/continuous.js");
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./init.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js");
+
+
+
+
+function sequentialQuantile() {
+  var domain = [],
+      interpolator = _continuous_js__WEBPACK_IMPORTED_MODULE_1__["identity"];
+
+  function scale(x) {
+    if (!isNaN(x = +x)) return interpolator((Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["bisect"])(domain, x, 1) - 1) / (domain.length - 1));
+  }
+
+  scale.domain = function(_) {
+    if (!arguments.length) return domain.slice();
+    domain = [];
+    for (let d of _) if (d != null && !isNaN(d = +d)) domain.push(d);
+    domain.sort(d3_array__WEBPACK_IMPORTED_MODULE_0__["ascending"]);
+    return scale;
+  };
+
+  scale.interpolator = function(_) {
+    return arguments.length ? (interpolator = _, scale) : interpolator;
+  };
+
+  scale.range = function() {
+    return domain.map((d, i) => interpolator(i / (domain.length - 1)));
+  };
+
+  scale.copy = function() {
+    return sequentialQuantile(interpolator).domain(domain);
+  };
+
+  return _init_js__WEBPACK_IMPORTED_MODULE_2__["initInterpolator"].apply(scale, arguments);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/symlog.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/symlog.js ***!
+  \********************************************************************/
+/*! exports provided: symlogish, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "symlogish", function() { return symlogish; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return symlog; });
+/* harmony import */ var _linear_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./linear.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/linear.js");
+/* harmony import */ var _continuous_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./continuous.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/continuous.js");
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./init.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js");
+
+
+
+
+function transformSymlog(c) {
+  return function(x) {
+    return Math.sign(x) * Math.log1p(Math.abs(x / c));
+  };
+}
+
+function transformSymexp(c) {
+  return function(x) {
+    return Math.sign(x) * Math.expm1(Math.abs(x)) * c;
+  };
+}
+
+function symlogish(transform) {
+  var c = 1, scale = transform(transformSymlog(c), transformSymexp(c));
+
+  scale.constant = function(_) {
+    return arguments.length ? transform(transformSymlog(c = +_), transformSymexp(c)) : c;
+  };
+
+  return Object(_linear_js__WEBPACK_IMPORTED_MODULE_0__["linearish"])(scale);
+}
+
+function symlog() {
+  var scale = symlogish(Object(_continuous_js__WEBPACK_IMPORTED_MODULE_1__["transformer"])());
+
+  scale.copy = function() {
+    return Object(_continuous_js__WEBPACK_IMPORTED_MODULE_1__["copy"])(scale, symlog()).constant(scale.constant());
+  };
+
+  return _init_js__WEBPACK_IMPORTED_MODULE_2__["initRange"].apply(scale, arguments);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/threshold.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/threshold.js ***!
+  \***********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return threshold; });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-geomap/node_modules/d3-array/src/index.js");
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./init.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js");
+
+
+
+function threshold() {
+  var domain = [0.5],
+      range = [0, 1],
+      unknown,
+      n = 1;
+
+  function scale(x) {
+    return x <= x ? range[Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["bisect"])(domain, x, 0, n)] : unknown;
+  }
+
+  scale.domain = function(_) {
+    return arguments.length ? (domain = Array.from(_), n = Math.min(domain.length, range.length - 1), scale) : domain.slice();
+  };
+
+  scale.range = function(_) {
+    return arguments.length ? (range = Array.from(_), n = Math.min(domain.length, range.length - 1), scale) : range.slice();
+  };
+
+  scale.invertExtent = function(y) {
+    var i = range.indexOf(y);
+    return [domain[i - 1], domain[i]];
+  };
+
+  scale.unknown = function(_) {
+    return arguments.length ? (unknown = _, scale) : unknown;
+  };
+
+  scale.copy = function() {
+    return threshold()
+        .domain(domain)
+        .range(range)
+        .unknown(unknown);
+  };
+
+  return _init_js__WEBPACK_IMPORTED_MODULE_1__["initRange"].apply(scale, arguments);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/tickFormat.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/tickFormat.js ***!
+  \************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-geomap/node_modules/d3-array/src/index.js");
+/* harmony import */ var d3_format__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3-format */ "./node_modules/d3-format/src/index.js");
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(start, stop, count, specifier) {
+  var step = Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["tickStep"])(start, stop, count),
+      precision;
+  specifier = Object(d3_format__WEBPACK_IMPORTED_MODULE_1__["formatSpecifier"])(specifier == null ? ",f" : specifier);
+  switch (specifier.type) {
+    case "s": {
+      var value = Math.max(Math.abs(start), Math.abs(stop));
+      if (specifier.precision == null && !isNaN(precision = Object(d3_format__WEBPACK_IMPORTED_MODULE_1__["precisionPrefix"])(step, value))) specifier.precision = precision;
+      return Object(d3_format__WEBPACK_IMPORTED_MODULE_1__["formatPrefix"])(specifier, value);
+    }
+    case "":
+    case "e":
+    case "g":
+    case "p":
+    case "r": {
+      if (specifier.precision == null && !isNaN(precision = Object(d3_format__WEBPACK_IMPORTED_MODULE_1__["precisionRound"])(step, Math.max(Math.abs(start), Math.abs(stop))))) specifier.precision = precision - (specifier.type === "e");
+      break;
+    }
+    case "f":
+    case "%": {
+      if (specifier.precision == null && !isNaN(precision = Object(d3_format__WEBPACK_IMPORTED_MODULE_1__["precisionFixed"])(step))) specifier.precision = precision - (specifier.type === "%") * 2;
+      break;
+    }
+  }
+  return Object(d3_format__WEBPACK_IMPORTED_MODULE_1__["format"])(specifier);
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/time.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/time.js ***!
+  \******************************************************************/
+/*! exports provided: calendar, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "calendar", function() { return calendar; });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-geomap/node_modules/d3-array/src/index.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/index.js");
+/* harmony import */ var d3_time_format__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3-time-format */ "./node_modules/d3-time-format/src/index.js");
+/* harmony import */ var _continuous_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./continuous.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/continuous.js");
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./init.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js");
+/* harmony import */ var _nice_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./nice.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/nice.js");
+
+
+
+
+
+
+
+var durationSecond = 1000,
+    durationMinute = durationSecond * 60,
+    durationHour = durationMinute * 60,
+    durationDay = durationHour * 24,
+    durationWeek = durationDay * 7,
+    durationMonth = durationDay * 30,
+    durationYear = durationDay * 365;
+
+function date(t) {
+  return new Date(t);
+}
+
+function number(t) {
+  return t instanceof Date ? +t : +new Date(+t);
+}
+
+function calendar(year, month, week, day, hour, minute, second, millisecond, format) {
+  var scale = Object(_continuous_js__WEBPACK_IMPORTED_MODULE_3__["default"])(),
+      invert = scale.invert,
+      domain = scale.domain;
+
+  var formatMillisecond = format(".%L"),
+      formatSecond = format(":%S"),
+      formatMinute = format("%I:%M"),
+      formatHour = format("%I %p"),
+      formatDay = format("%a %d"),
+      formatWeek = format("%b %d"),
+      formatMonth = format("%B"),
+      formatYear = format("%Y");
+
+  var tickIntervals = [
+    [second,  1,      durationSecond],
+    [second,  5,  5 * durationSecond],
+    [second, 15, 15 * durationSecond],
+    [second, 30, 30 * durationSecond],
+    [minute,  1,      durationMinute],
+    [minute,  5,  5 * durationMinute],
+    [minute, 15, 15 * durationMinute],
+    [minute, 30, 30 * durationMinute],
+    [  hour,  1,      durationHour  ],
+    [  hour,  3,  3 * durationHour  ],
+    [  hour,  6,  6 * durationHour  ],
+    [  hour, 12, 12 * durationHour  ],
+    [   day,  1,      durationDay   ],
+    [   day,  2,  2 * durationDay   ],
+    [  week,  1,      durationWeek  ],
+    [ month,  1,      durationMonth ],
+    [ month,  3,  3 * durationMonth ],
+    [  year,  1,      durationYear  ]
+  ];
+
+  function tickFormat(date) {
+    return (second(date) < date ? formatMillisecond
+        : minute(date) < date ? formatSecond
+        : hour(date) < date ? formatMinute
+        : day(date) < date ? formatHour
+        : month(date) < date ? (week(date) < date ? formatDay : formatWeek)
+        : year(date) < date ? formatMonth
+        : formatYear)(date);
+  }
+
+  function tickInterval(interval, start, stop) {
+    if (interval == null) interval = 10;
+
+    // If a desired tick count is specified, pick a reasonable tick interval
+    // based on the extent of the domain and a rough estimate of tick size.
+    // Otherwise, assume interval is already a time interval and use it.
+    if (typeof interval === "number") {
+      var target = Math.abs(stop - start) / interval,
+          i = Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["bisector"])(function(i) { return i[2]; }).right(tickIntervals, target),
+          step;
+      if (i === tickIntervals.length) {
+        step = Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["tickStep"])(start / durationYear, stop / durationYear, interval);
+        interval = year;
+      } else if (i) {
+        i = tickIntervals[target / tickIntervals[i - 1][2] < tickIntervals[i][2] / target ? i - 1 : i];
+        step = i[1];
+        interval = i[0];
+      } else {
+        step = Math.max(Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["tickStep"])(start, stop, interval), 1);
+        interval = millisecond;
+      }
+      return interval.every(step);
+    }
+
+    return interval;
+  }
+
+  scale.invert = function(y) {
+    return new Date(invert(y));
+  };
+
+  scale.domain = function(_) {
+    return arguments.length ? domain(Array.from(_, number)) : domain().map(date);
+  };
+
+  scale.ticks = function(interval) {
+    var d = domain(),
+        t0 = d[0],
+        t1 = d[d.length - 1],
+        r = t1 < t0,
+        t;
+    if (r) t = t0, t0 = t1, t1 = t;
+    t = tickInterval(interval, t0, t1);
+    t = t ? t.range(t0, t1 + 1) : []; // inclusive stop
+    return r ? t.reverse() : t;
+  };
+
+  scale.tickFormat = function(count, specifier) {
+    return specifier == null ? tickFormat : format(specifier);
+  };
+
+  scale.nice = function(interval) {
+    var d = domain();
+    return (interval = tickInterval(interval, d[0], d[d.length - 1]))
+        ? domain(Object(_nice_js__WEBPACK_IMPORTED_MODULE_5__["default"])(d, interval))
+        : scale;
+  };
+
+  scale.copy = function() {
+    return Object(_continuous_js__WEBPACK_IMPORTED_MODULE_3__["copy"])(scale, calendar(year, month, week, day, hour, minute, second, millisecond, format));
+  };
+
+  return scale;
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (function() {
+  return _init_js__WEBPACK_IMPORTED_MODULE_4__["initRange"].apply(calendar(d3_time__WEBPACK_IMPORTED_MODULE_1__["timeYear"], d3_time__WEBPACK_IMPORTED_MODULE_1__["timeMonth"], d3_time__WEBPACK_IMPORTED_MODULE_1__["timeWeek"], d3_time__WEBPACK_IMPORTED_MODULE_1__["timeDay"], d3_time__WEBPACK_IMPORTED_MODULE_1__["timeHour"], d3_time__WEBPACK_IMPORTED_MODULE_1__["timeMinute"], d3_time__WEBPACK_IMPORTED_MODULE_1__["timeSecond"], d3_time__WEBPACK_IMPORTED_MODULE_1__["timeMillisecond"], d3_time_format__WEBPACK_IMPORTED_MODULE_2__["timeFormat"]).domain([new Date(2000, 0, 1), new Date(2000, 0, 2)]), arguments);
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/d3-scale/src/utcTime.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/d3-scale/src/utcTime.js ***!
+  \*********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _time_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./time.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/time.js");
+/* harmony import */ var d3_time_format__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3-time-format */ "./node_modules/d3-time-format/src/index.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/index.js");
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./init.js */ "./node_modules/d3-geomap/node_modules/d3-scale/src/init.js");
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function() {
+  return _init_js__WEBPACK_IMPORTED_MODULE_3__["initRange"].apply(Object(_time_js__WEBPACK_IMPORTED_MODULE_0__["calendar"])(d3_time__WEBPACK_IMPORTED_MODULE_2__["utcYear"], d3_time__WEBPACK_IMPORTED_MODULE_2__["utcMonth"], d3_time__WEBPACK_IMPORTED_MODULE_2__["utcWeek"], d3_time__WEBPACK_IMPORTED_MODULE_2__["utcDay"], d3_time__WEBPACK_IMPORTED_MODULE_2__["utcHour"], d3_time__WEBPACK_IMPORTED_MODULE_2__["utcMinute"], d3_time__WEBPACK_IMPORTED_MODULE_2__["utcSecond"], d3_time__WEBPACK_IMPORTED_MODULE_2__["utcMillisecond"], d3_time_format__WEBPACK_IMPORTED_MODULE_1__["utcFormat"]).domain([Date.UTC(2000, 0, 1), Date.UTC(2000, 0, 2)]), arguments);
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/index.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/index.js ***!
+  \***************************************************************/
+/*! exports provided: bbox, feature, mesh, meshArcs, merge, mergeArcs, neighbors, quantize, transform, untransform, topology, filter, filterAttached, filterAttachedWeight, filterWeight, planarRingArea, planarTriangleArea, presimplify, quantile, simplify, sphericalRingArea, sphericalTriangleArea */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var topojson_client__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! topojson-client */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "bbox", function() { return topojson_client__WEBPACK_IMPORTED_MODULE_0__["bbox"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "feature", function() { return topojson_client__WEBPACK_IMPORTED_MODULE_0__["feature"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mesh", function() { return topojson_client__WEBPACK_IMPORTED_MODULE_0__["mesh"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "meshArcs", function() { return topojson_client__WEBPACK_IMPORTED_MODULE_0__["meshArcs"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "merge", function() { return topojson_client__WEBPACK_IMPORTED_MODULE_0__["merge"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mergeArcs", function() { return topojson_client__WEBPACK_IMPORTED_MODULE_0__["mergeArcs"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "neighbors", function() { return topojson_client__WEBPACK_IMPORTED_MODULE_0__["neighbors"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quantize", function() { return topojson_client__WEBPACK_IMPORTED_MODULE_0__["quantize"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "transform", function() { return topojson_client__WEBPACK_IMPORTED_MODULE_0__["transform"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "untransform", function() { return topojson_client__WEBPACK_IMPORTED_MODULE_0__["untransform"]; });
+
+/* harmony import */ var topojson_server__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! topojson-server */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "topology", function() { return topojson_server__WEBPACK_IMPORTED_MODULE_1__["topology"]; });
+
+/* harmony import */ var topojson_simplify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! topojson-simplify */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "filter", function() { return topojson_simplify__WEBPACK_IMPORTED_MODULE_2__["filter"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "filterAttached", function() { return topojson_simplify__WEBPACK_IMPORTED_MODULE_2__["filterAttached"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "filterAttachedWeight", function() { return topojson_simplify__WEBPACK_IMPORTED_MODULE_2__["filterAttachedWeight"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "filterWeight", function() { return topojson_simplify__WEBPACK_IMPORTED_MODULE_2__["filterWeight"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "planarRingArea", function() { return topojson_simplify__WEBPACK_IMPORTED_MODULE_2__["planarRingArea"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "planarTriangleArea", function() { return topojson_simplify__WEBPACK_IMPORTED_MODULE_2__["planarTriangleArea"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "presimplify", function() { return topojson_simplify__WEBPACK_IMPORTED_MODULE_2__["presimplify"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quantile", function() { return topojson_simplify__WEBPACK_IMPORTED_MODULE_2__["quantile"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "simplify", function() { return topojson_simplify__WEBPACK_IMPORTED_MODULE_2__["simplify"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "sphericalRingArea", function() { return topojson_simplify__WEBPACK_IMPORTED_MODULE_2__["sphericalRingArea"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "sphericalTriangleArea", function() { return topojson_simplify__WEBPACK_IMPORTED_MODULE_2__["sphericalTriangleArea"]; });
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/index.js":
+/*!********************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/index.js ***!
+  \********************************************************************************************/
+/*! exports provided: bbox, feature, mesh, meshArcs, merge, mergeArcs, neighbors, quantize, transform, untransform */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _src_bbox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/bbox */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/bbox.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "bbox", function() { return _src_bbox__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony import */ var _src_feature__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/feature */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/feature.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "feature", function() { return _src_feature__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _src_mesh__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./src/mesh */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/mesh.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mesh", function() { return _src_mesh__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "meshArcs", function() { return _src_mesh__WEBPACK_IMPORTED_MODULE_2__["meshArcs"]; });
+
+/* harmony import */ var _src_merge__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./src/merge */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/merge.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "merge", function() { return _src_merge__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mergeArcs", function() { return _src_merge__WEBPACK_IMPORTED_MODULE_3__["mergeArcs"]; });
+
+/* harmony import */ var _src_neighbors__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./src/neighbors */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/neighbors.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "neighbors", function() { return _src_neighbors__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+
+/* harmony import */ var _src_quantize__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./src/quantize */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/quantize.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quantize", function() { return _src_quantize__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+/* harmony import */ var _src_transform__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./src/transform */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/transform.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "transform", function() { return _src_transform__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+
+/* harmony import */ var _src_untransform__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./src/untransform */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/untransform.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "untransform", function() { return _src_untransform__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/bbox.js":
+/*!***********************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/bbox.js ***!
+  \***********************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _transform__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./transform */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/transform.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(topology) {
+  var t = Object(_transform__WEBPACK_IMPORTED_MODULE_0__["default"])(topology.transform), key,
+      x0 = Infinity, y0 = x0, x1 = -x0, y1 = -x0;
+
+  function bboxPoint(p) {
+    p = t(p);
+    if (p[0] < x0) x0 = p[0];
+    if (p[0] > x1) x1 = p[0];
+    if (p[1] < y0) y0 = p[1];
+    if (p[1] > y1) y1 = p[1];
+  }
+
+  function bboxGeometry(o) {
+    switch (o.type) {
+      case "GeometryCollection": o.geometries.forEach(bboxGeometry); break;
+      case "Point": bboxPoint(o.coordinates); break;
+      case "MultiPoint": o.coordinates.forEach(bboxPoint); break;
+    }
+  }
+
+  topology.arcs.forEach(function(arc) {
+    var i = -1, n = arc.length, p;
+    while (++i < n) {
+      p = t(arc[i], i);
+      if (p[0] < x0) x0 = p[0];
+      if (p[0] > x1) x1 = p[0];
+      if (p[1] < y0) y0 = p[1];
+      if (p[1] > y1) y1 = p[1];
+    }
+  });
+
+  for (key in topology.objects) {
+    bboxGeometry(topology.objects[key]);
+  }
+
+  return [x0, y0, x1, y1];
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/bisect.js":
+/*!*************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/bisect.js ***!
+  \*************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(a, x) {
+  var lo = 0, hi = a.length;
+  while (lo < hi) {
+    var mid = lo + hi >>> 1;
+    if (a[mid] < x) lo = mid + 1;
+    else hi = mid;
+  }
+  return lo;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/feature.js":
+/*!**************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/feature.js ***!
+  \**************************************************************************************************/
+/*! exports provided: default, feature, object */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "feature", function() { return feature; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "object", function() { return object; });
+/* harmony import */ var _reverse__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./reverse */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/reverse.js");
+/* harmony import */ var _transform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./transform */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/transform.js");
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(topology, o) {
+  return o.type === "GeometryCollection"
+      ? {type: "FeatureCollection", features: o.geometries.map(function(o) { return feature(topology, o); })}
+      : feature(topology, o);
+});
+
+function feature(topology, o) {
+  var id = o.id,
+      bbox = o.bbox,
+      properties = o.properties == null ? {} : o.properties,
+      geometry = object(topology, o);
+  return id == null && bbox == null ? {type: "Feature", properties: properties, geometry: geometry}
+      : bbox == null ? {type: "Feature", id: id, properties: properties, geometry: geometry}
+      : {type: "Feature", id: id, bbox: bbox, properties: properties, geometry: geometry};
+}
+
+function object(topology, o) {
+  var transformPoint = Object(_transform__WEBPACK_IMPORTED_MODULE_1__["default"])(topology.transform),
+      arcs = topology.arcs;
+
+  function arc(i, points) {
+    if (points.length) points.pop();
+    for (var a = arcs[i < 0 ? ~i : i], k = 0, n = a.length; k < n; ++k) {
+      points.push(transformPoint(a[k], k));
+    }
+    if (i < 0) Object(_reverse__WEBPACK_IMPORTED_MODULE_0__["default"])(points, n);
+  }
+
+  function point(p) {
+    return transformPoint(p);
+  }
+
+  function line(arcs) {
+    var points = [];
+    for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], points);
+    if (points.length < 2) points.push(points[0]); // This should never happen per the specification.
+    return points;
+  }
+
+  function ring(arcs) {
+    var points = line(arcs);
+    while (points.length < 4) points.push(points[0]); // This may happen if an arc has only two points.
+    return points;
+  }
+
+  function polygon(arcs) {
+    return arcs.map(ring);
+  }
+
+  function geometry(o) {
+    var type = o.type, coordinates;
+    switch (type) {
+      case "GeometryCollection": return {type: type, geometries: o.geometries.map(geometry)};
+      case "Point": coordinates = point(o.coordinates); break;
+      case "MultiPoint": coordinates = o.coordinates.map(point); break;
+      case "LineString": coordinates = line(o.arcs); break;
+      case "MultiLineString": coordinates = o.arcs.map(line); break;
+      case "Polygon": coordinates = polygon(o.arcs); break;
+      case "MultiPolygon": coordinates = o.arcs.map(polygon); break;
+      default: return null;
+    }
+    return {type: type, coordinates: coordinates};
+  }
+
+  return geometry(o);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/identity.js":
+/*!***************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/identity.js ***!
+  \***************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(x) {
+  return x;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/merge.js":
+/*!************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/merge.js ***!
+  \************************************************************************************************/
+/*! exports provided: default, mergeArcs */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mergeArcs", function() { return mergeArcs; });
+/* harmony import */ var _feature__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./feature */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/feature.js");
+/* harmony import */ var _stitch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./stitch */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/stitch.js");
+
+
+
+function planarRingArea(ring) {
+  var i = -1, n = ring.length, a, b = ring[n - 1], area = 0;
+  while (++i < n) a = b, b = ring[i], area += a[0] * b[1] - a[1] * b[0];
+  return Math.abs(area); // Note: doubled area!
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (function(topology) {
+  return Object(_feature__WEBPACK_IMPORTED_MODULE_0__["object"])(topology, mergeArcs.apply(this, arguments));
+});
+
+function mergeArcs(topology, objects) {
+  var polygonsByArc = {},
+      polygons = [],
+      groups = [];
+
+  objects.forEach(geometry);
+
+  function geometry(o) {
+    switch (o.type) {
+      case "GeometryCollection": o.geometries.forEach(geometry); break;
+      case "Polygon": extract(o.arcs); break;
+      case "MultiPolygon": o.arcs.forEach(extract); break;
+    }
+  }
+
+  function extract(polygon) {
+    polygon.forEach(function(ring) {
+      ring.forEach(function(arc) {
+        (polygonsByArc[arc = arc < 0 ? ~arc : arc] || (polygonsByArc[arc] = [])).push(polygon);
+      });
+    });
+    polygons.push(polygon);
+  }
+
+  function area(ring) {
+    return planarRingArea(Object(_feature__WEBPACK_IMPORTED_MODULE_0__["object"])(topology, {type: "Polygon", arcs: [ring]}).coordinates[0]);
+  }
+
+  polygons.forEach(function(polygon) {
+    if (!polygon._) {
+      var group = [],
+          neighbors = [polygon];
+      polygon._ = 1;
+      groups.push(group);
+      while (polygon = neighbors.pop()) {
+        group.push(polygon);
+        polygon.forEach(function(ring) {
+          ring.forEach(function(arc) {
+            polygonsByArc[arc < 0 ? ~arc : arc].forEach(function(polygon) {
+              if (!polygon._) {
+                polygon._ = 1;
+                neighbors.push(polygon);
+              }
+            });
+          });
+        });
+      }
+    }
+  });
+
+  polygons.forEach(function(polygon) {
+    delete polygon._;
+  });
+
+  return {
+    type: "MultiPolygon",
+    arcs: groups.map(function(polygons) {
+      var arcs = [], n;
+
+      // Extract the exterior (unique) arcs.
+      polygons.forEach(function(polygon) {
+        polygon.forEach(function(ring) {
+          ring.forEach(function(arc) {
+            if (polygonsByArc[arc < 0 ? ~arc : arc].length < 2) {
+              arcs.push(arc);
+            }
+          });
+        });
+      });
+
+      // Stitch the arcs into one or more rings.
+      arcs = Object(_stitch__WEBPACK_IMPORTED_MODULE_1__["default"])(topology, arcs);
+
+      // If more than one ring is returned,
+      // at most one of these rings can be the exterior;
+      // choose the one with the greatest absolute area.
+      if ((n = arcs.length) > 1) {
+        for (var i = 1, k = area(arcs[0]), ki, t; i < n; ++i) {
+          if ((ki = area(arcs[i])) > k) {
+            t = arcs[0], arcs[0] = arcs[i], arcs[i] = t, k = ki;
+          }
+        }
+      }
+
+      return arcs;
+    })
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/mesh.js":
+/*!***********************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/mesh.js ***!
+  \***********************************************************************************************/
+/*! exports provided: default, meshArcs */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "meshArcs", function() { return meshArcs; });
+/* harmony import */ var _feature__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./feature */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/feature.js");
+/* harmony import */ var _stitch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./stitch */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/stitch.js");
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(topology) {
+  return Object(_feature__WEBPACK_IMPORTED_MODULE_0__["object"])(topology, meshArcs.apply(this, arguments));
+});
+
+function meshArcs(topology, object, filter) {
+  var arcs, i, n;
+  if (arguments.length > 1) arcs = extractArcs(topology, object, filter);
+  else for (i = 0, arcs = new Array(n = topology.arcs.length); i < n; ++i) arcs[i] = i;
+  return {type: "MultiLineString", arcs: Object(_stitch__WEBPACK_IMPORTED_MODULE_1__["default"])(topology, arcs)};
+}
+
+function extractArcs(topology, object, filter) {
+  var arcs = [],
+      geomsByArc = [],
+      geom;
+
+  function extract0(i) {
+    var j = i < 0 ? ~i : i;
+    (geomsByArc[j] || (geomsByArc[j] = [])).push({i: i, g: geom});
+  }
+
+  function extract1(arcs) {
+    arcs.forEach(extract0);
+  }
+
+  function extract2(arcs) {
+    arcs.forEach(extract1);
+  }
+
+  function extract3(arcs) {
+    arcs.forEach(extract2);
+  }
+
+  function geometry(o) {
+    switch (geom = o, o.type) {
+      case "GeometryCollection": o.geometries.forEach(geometry); break;
+      case "LineString": extract1(o.arcs); break;
+      case "MultiLineString": case "Polygon": extract2(o.arcs); break;
+      case "MultiPolygon": extract3(o.arcs); break;
+    }
+  }
+
+  geometry(object);
+
+  geomsByArc.forEach(filter == null
+      ? function(geoms) { arcs.push(geoms[0].i); }
+      : function(geoms) { if (filter(geoms[0].g, geoms[geoms.length - 1].g)) arcs.push(geoms[0].i); });
+
+  return arcs;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/neighbors.js":
+/*!****************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/neighbors.js ***!
+  \****************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _bisect__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./bisect */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/bisect.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(objects) {
+  var indexesByArc = {}, // arc index -> array of object indexes
+      neighbors = objects.map(function() { return []; });
+
+  function line(arcs, i) {
+    arcs.forEach(function(a) {
+      if (a < 0) a = ~a;
+      var o = indexesByArc[a];
+      if (o) o.push(i);
+      else indexesByArc[a] = [i];
+    });
+  }
+
+  function polygon(arcs, i) {
+    arcs.forEach(function(arc) { line(arc, i); });
+  }
+
+  function geometry(o, i) {
+    if (o.type === "GeometryCollection") o.geometries.forEach(function(o) { geometry(o, i); });
+    else if (o.type in geometryType) geometryType[o.type](o.arcs, i);
+  }
+
+  var geometryType = {
+    LineString: line,
+    MultiLineString: polygon,
+    Polygon: polygon,
+    MultiPolygon: function(arcs, i) { arcs.forEach(function(arc) { polygon(arc, i); }); }
+  };
+
+  objects.forEach(geometry);
+
+  for (var i in indexesByArc) {
+    for (var indexes = indexesByArc[i], m = indexes.length, j = 0; j < m; ++j) {
+      for (var k = j + 1; k < m; ++k) {
+        var ij = indexes[j], ik = indexes[k], n;
+        if ((n = neighbors[ij])[i = Object(_bisect__WEBPACK_IMPORTED_MODULE_0__["default"])(n, ik)] !== ik) n.splice(i, 0, ik);
+        if ((n = neighbors[ik])[i = Object(_bisect__WEBPACK_IMPORTED_MODULE_0__["default"])(n, ij)] !== ij) n.splice(i, 0, ij);
+      }
+    }
+  }
+
+  return neighbors;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/quantize.js":
+/*!***************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/quantize.js ***!
+  \***************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _bbox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./bbox */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/bbox.js");
+/* harmony import */ var _untransform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./untransform */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/untransform.js");
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(topology, transform) {
+  if (topology.transform) throw new Error("already quantized");
+
+  if (!transform || !transform.scale) {
+    if (!((n = Math.floor(transform)) >= 2)) throw new Error("n must be ≥2");
+    box = topology.bbox || Object(_bbox__WEBPACK_IMPORTED_MODULE_0__["default"])(topology);
+    var x0 = box[0], y0 = box[1], x1 = box[2], y1 = box[3], n;
+    transform = {scale: [x1 - x0 ? (x1 - x0) / (n - 1) : 1, y1 - y0 ? (y1 - y0) / (n - 1) : 1], translate: [x0, y0]};
+  } else {
+    box = topology.bbox;
+  }
+
+  var t = Object(_untransform__WEBPACK_IMPORTED_MODULE_1__["default"])(transform), box, key, inputs = topology.objects, outputs = {};
+
+  function quantizePoint(point) {
+    return t(point);
+  }
+
+  function quantizeGeometry(input) {
+    var output;
+    switch (input.type) {
+      case "GeometryCollection": output = {type: "GeometryCollection", geometries: input.geometries.map(quantizeGeometry)}; break;
+      case "Point": output = {type: "Point", coordinates: quantizePoint(input.coordinates)}; break;
+      case "MultiPoint": output = {type: "MultiPoint", coordinates: input.coordinates.map(quantizePoint)}; break;
+      default: return input;
+    }
+    if (input.id != null) output.id = input.id;
+    if (input.bbox != null) output.bbox = input.bbox;
+    if (input.properties != null) output.properties = input.properties;
+    return output;
+  }
+
+  function quantizeArc(input) {
+    var i = 0, j = 1, n = input.length, p, output = new Array(n); // pessimistic
+    output[0] = t(input[0], 0);
+    while (++i < n) if ((p = t(input[i], i))[0] || p[1]) output[j++] = p; // non-coincident points
+    if (j === 1) output[j++] = [0, 0]; // an arc must have at least two points
+    output.length = j;
+    return output;
+  }
+
+  for (key in inputs) outputs[key] = quantizeGeometry(inputs[key]);
+
+  return {
+    type: "Topology",
+    bbox: box,
+    transform: transform,
+    objects: outputs,
+    arcs: topology.arcs.map(quantizeArc)
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/reverse.js":
+/*!**************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/reverse.js ***!
+  \**************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(array, n) {
+  var t, j = array.length, i = j - n;
+  while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/stitch.js":
+/*!*************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/stitch.js ***!
+  \*************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(topology, arcs) {
+  var stitchedArcs = {},
+      fragmentByStart = {},
+      fragmentByEnd = {},
+      fragments = [],
+      emptyIndex = -1;
+
+  // Stitch empty arcs first, since they may be subsumed by other arcs.
+  arcs.forEach(function(i, j) {
+    var arc = topology.arcs[i < 0 ? ~i : i], t;
+    if (arc.length < 3 && !arc[1][0] && !arc[1][1]) {
+      t = arcs[++emptyIndex], arcs[emptyIndex] = i, arcs[j] = t;
+    }
+  });
+
+  arcs.forEach(function(i) {
+    var e = ends(i),
+        start = e[0],
+        end = e[1],
+        f, g;
+
+    if (f = fragmentByEnd[start]) {
+      delete fragmentByEnd[f.end];
+      f.push(i);
+      f.end = end;
+      if (g = fragmentByStart[end]) {
+        delete fragmentByStart[g.start];
+        var fg = g === f ? f : f.concat(g);
+        fragmentByStart[fg.start = f.start] = fragmentByEnd[fg.end = g.end] = fg;
+      } else {
+        fragmentByStart[f.start] = fragmentByEnd[f.end] = f;
+      }
+    } else if (f = fragmentByStart[end]) {
+      delete fragmentByStart[f.start];
+      f.unshift(i);
+      f.start = start;
+      if (g = fragmentByEnd[start]) {
+        delete fragmentByEnd[g.end];
+        var gf = g === f ? f : g.concat(f);
+        fragmentByStart[gf.start = g.start] = fragmentByEnd[gf.end = f.end] = gf;
+      } else {
+        fragmentByStart[f.start] = fragmentByEnd[f.end] = f;
+      }
+    } else {
+      f = [i];
+      fragmentByStart[f.start = start] = fragmentByEnd[f.end = end] = f;
+    }
+  });
+
+  function ends(i) {
+    var arc = topology.arcs[i < 0 ? ~i : i], p0 = arc[0], p1;
+    if (topology.transform) p1 = [0, 0], arc.forEach(function(dp) { p1[0] += dp[0], p1[1] += dp[1]; });
+    else p1 = arc[arc.length - 1];
+    return i < 0 ? [p1, p0] : [p0, p1];
+  }
+
+  function flush(fragmentByEnd, fragmentByStart) {
+    for (var k in fragmentByEnd) {
+      var f = fragmentByEnd[k];
+      delete fragmentByStart[f.start];
+      delete f.start;
+      delete f.end;
+      f.forEach(function(i) { stitchedArcs[i < 0 ? ~i : i] = 1; });
+      fragments.push(f);
+    }
+  }
+
+  flush(fragmentByEnd, fragmentByStart);
+  flush(fragmentByStart, fragmentByEnd);
+  arcs.forEach(function(i) { if (!stitchedArcs[i < 0 ? ~i : i]) fragments.push([i]); });
+
+  return fragments;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/transform.js":
+/*!****************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/transform.js ***!
+  \****************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _identity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./identity */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/identity.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(transform) {
+  if (transform == null) return _identity__WEBPACK_IMPORTED_MODULE_0__["default"];
+  var x0,
+      y0,
+      kx = transform.scale[0],
+      ky = transform.scale[1],
+      dx = transform.translate[0],
+      dy = transform.translate[1];
+  return function(input, i) {
+    if (!i) x0 = y0 = 0;
+    var j = 2, n = input.length, output = new Array(n);
+    output[0] = (x0 += input[0]) * kx + dx;
+    output[1] = (y0 += input[1]) * ky + dy;
+    while (j < n) output[j] = input[j], ++j;
+    return output;
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/untransform.js":
+/*!******************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/untransform.js ***!
+  \******************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _identity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./identity */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/src/identity.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(transform) {
+  if (transform == null) return _identity__WEBPACK_IMPORTED_MODULE_0__["default"];
+  var x0,
+      y0,
+      kx = transform.scale[0],
+      ky = transform.scale[1],
+      dx = transform.translate[0],
+      dy = transform.translate[1];
+  return function(input, i) {
+    if (!i) x0 = y0 = 0;
+    var j = 2,
+        n = input.length,
+        output = new Array(n),
+        x1 = Math.round((input[0] - dx) / kx),
+        y1 = Math.round((input[1] - dy) / ky);
+    output[0] = x1 - x0, x0 = x1;
+    output[1] = y1 - y0, y0 = y1;
+    while (j < n) output[j] = input[j], ++j;
+    return output;
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/index.js":
+/*!********************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/index.js ***!
+  \********************************************************************************************/
+/*! exports provided: topology */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _src_topology__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/topology */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/topology.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "topology", function() { return _src_topology__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/bounds.js":
+/*!*************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/bounds.js ***!
+  \*************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// Computes the bounding box of the specified hash of GeoJSON objects.
+/* harmony default export */ __webpack_exports__["default"] = (function(objects) {
+  var x0 = Infinity,
+      y0 = Infinity,
+      x1 = -Infinity,
+      y1 = -Infinity;
+
+  function boundGeometry(geometry) {
+    if (geometry != null && boundGeometryType.hasOwnProperty(geometry.type)) boundGeometryType[geometry.type](geometry);
+  }
+
+  var boundGeometryType = {
+    GeometryCollection: function(o) { o.geometries.forEach(boundGeometry); },
+    Point: function(o) { boundPoint(o.coordinates); },
+    MultiPoint: function(o) { o.coordinates.forEach(boundPoint); },
+    LineString: function(o) { boundLine(o.arcs); },
+    MultiLineString: function(o) { o.arcs.forEach(boundLine); },
+    Polygon: function(o) { o.arcs.forEach(boundLine); },
+    MultiPolygon: function(o) { o.arcs.forEach(boundMultiLine); }
+  };
+
+  function boundPoint(coordinates) {
+    var x = coordinates[0],
+        y = coordinates[1];
+    if (x < x0) x0 = x;
+    if (x > x1) x1 = x;
+    if (y < y0) y0 = y;
+    if (y > y1) y1 = y;
+  }
+
+  function boundLine(coordinates) {
+    coordinates.forEach(boundPoint);
+  }
+
+  function boundMultiLine(coordinates) {
+    coordinates.forEach(boundLine);
+  }
+
+  for (var key in objects) {
+    boundGeometry(objects[key]);
+  }
+
+  return x1 >= x0 && y1 >= y0 ? [x0, y0, x1, y1] : undefined;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/cut.js":
+/*!**********************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/cut.js ***!
+  \**********************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _join__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./join */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/join.js");
+
+
+// Given an extracted (pre-)topology, cuts (or rotates) arcs so that all shared
+// point sequences are identified. The topology can then be subsequently deduped
+// to remove exact duplicate arcs.
+/* harmony default export */ __webpack_exports__["default"] = (function(topology) {
+  var junctions = Object(_join__WEBPACK_IMPORTED_MODULE_0__["default"])(topology),
+      coordinates = topology.coordinates,
+      lines = topology.lines,
+      rings = topology.rings,
+      next,
+      i, n;
+
+  for (i = 0, n = lines.length; i < n; ++i) {
+    var line = lines[i],
+        lineMid = line[0],
+        lineEnd = line[1];
+    while (++lineMid < lineEnd) {
+      if (junctions.has(coordinates[lineMid])) {
+        next = {0: lineMid, 1: line[1]};
+        line[1] = lineMid;
+        line = line.next = next;
+      }
+    }
+  }
+
+  for (i = 0, n = rings.length; i < n; ++i) {
+    var ring = rings[i],
+        ringStart = ring[0],
+        ringMid = ringStart,
+        ringEnd = ring[1],
+        ringFixed = junctions.has(coordinates[ringStart]);
+    while (++ringMid < ringEnd) {
+      if (junctions.has(coordinates[ringMid])) {
+        if (ringFixed) {
+          next = {0: ringMid, 1: ring[1]};
+          ring[1] = ringMid;
+          ring = ring.next = next;
+        } else { // For the first junction, we can rotate rather than cut.
+          rotateArray(coordinates, ringStart, ringEnd, ringEnd - ringMid);
+          coordinates[ringEnd] = coordinates[ringStart];
+          ringFixed = true;
+          ringMid = ringStart; // restart; we may have skipped junctions
+        }
+      }
+    }
+  }
+
+  return topology;
+});
+
+function rotateArray(array, start, end, offset) {
+  reverse(array, start, end);
+  reverse(array, start, start + offset);
+  reverse(array, start + offset, end);
+}
+
+function reverse(array, start, end) {
+  for (var mid = start + ((end-- - start) >> 1), t; start < mid; ++start, --end) {
+    t = array[start], array[start] = array[end], array[end] = t;
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/dedup.js":
+/*!************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/dedup.js ***!
+  \************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _hash_hashmap__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hash/hashmap */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/hashmap.js");
+/* harmony import */ var _hash_point_equal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./hash/point-equal */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/point-equal.js");
+/* harmony import */ var _hash_point_hash__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./hash/point-hash */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/point-hash.js");
+
+
+
+
+// Given a cut topology, combines duplicate arcs.
+/* harmony default export */ __webpack_exports__["default"] = (function(topology) {
+  var coordinates = topology.coordinates,
+      lines = topology.lines, line,
+      rings = topology.rings, ring,
+      arcCount = lines.length + rings.length,
+      i, n;
+
+  delete topology.lines;
+  delete topology.rings;
+
+  // Count the number of (non-unique) arcs to initialize the hashmap safely.
+  for (i = 0, n = lines.length; i < n; ++i) {
+    line = lines[i]; while (line = line.next) ++arcCount;
+  }
+  for (i = 0, n = rings.length; i < n; ++i) {
+    ring = rings[i]; while (ring = ring.next) ++arcCount;
+  }
+
+  var arcsByEnd = Object(_hash_hashmap__WEBPACK_IMPORTED_MODULE_0__["default"])(arcCount * 2 * 1.4, _hash_point_hash__WEBPACK_IMPORTED_MODULE_2__["default"], _hash_point_equal__WEBPACK_IMPORTED_MODULE_1__["default"]),
+      arcs = topology.arcs = [];
+
+  for (i = 0, n = lines.length; i < n; ++i) {
+    line = lines[i];
+    do {
+      dedupLine(line);
+    } while (line = line.next);
+  }
+
+  for (i = 0, n = rings.length; i < n; ++i) {
+    ring = rings[i];
+    if (ring.next) { // arc is no longer closed
+      do {
+        dedupLine(ring);
+      } while (ring = ring.next);
+    } else {
+      dedupRing(ring);
+    }
+  }
+
+  function dedupLine(arc) {
+    var startPoint,
+        endPoint,
+        startArcs, startArc,
+        endArcs, endArc,
+        i, n;
+
+    // Does this arc match an existing arc in order?
+    if (startArcs = arcsByEnd.get(startPoint = coordinates[arc[0]])) {
+      for (i = 0, n = startArcs.length; i < n; ++i) {
+        startArc = startArcs[i];
+        if (equalLine(startArc, arc)) {
+          arc[0] = startArc[0];
+          arc[1] = startArc[1];
+          return;
+        }
+      }
+    }
+
+    // Does this arc match an existing arc in reverse order?
+    if (endArcs = arcsByEnd.get(endPoint = coordinates[arc[1]])) {
+      for (i = 0, n = endArcs.length; i < n; ++i) {
+        endArc = endArcs[i];
+        if (reverseEqualLine(endArc, arc)) {
+          arc[1] = endArc[0];
+          arc[0] = endArc[1];
+          return;
+        }
+      }
+    }
+
+    if (startArcs) startArcs.push(arc); else arcsByEnd.set(startPoint, [arc]);
+    if (endArcs) endArcs.push(arc); else arcsByEnd.set(endPoint, [arc]);
+    arcs.push(arc);
+  }
+
+  function dedupRing(arc) {
+    var endPoint,
+        endArcs,
+        endArc,
+        i, n;
+
+    // Does this arc match an existing line in order, or reverse order?
+    // Rings are closed, so their start point and end point is the same.
+    if (endArcs = arcsByEnd.get(endPoint = coordinates[arc[0]])) {
+      for (i = 0, n = endArcs.length; i < n; ++i) {
+        endArc = endArcs[i];
+        if (equalRing(endArc, arc)) {
+          arc[0] = endArc[0];
+          arc[1] = endArc[1];
+          return;
+        }
+        if (reverseEqualRing(endArc, arc)) {
+          arc[0] = endArc[1];
+          arc[1] = endArc[0];
+          return;
+        }
+      }
+    }
+
+    // Otherwise, does this arc match an existing ring in order, or reverse order?
+    if (endArcs = arcsByEnd.get(endPoint = coordinates[arc[0] + findMinimumOffset(arc)])) {
+      for (i = 0, n = endArcs.length; i < n; ++i) {
+        endArc = endArcs[i];
+        if (equalRing(endArc, arc)) {
+          arc[0] = endArc[0];
+          arc[1] = endArc[1];
+          return;
+        }
+        if (reverseEqualRing(endArc, arc)) {
+          arc[0] = endArc[1];
+          arc[1] = endArc[0];
+          return;
+        }
+      }
+    }
+
+    if (endArcs) endArcs.push(arc); else arcsByEnd.set(endPoint, [arc]);
+    arcs.push(arc);
+  }
+
+  function equalLine(arcA, arcB) {
+    var ia = arcA[0], ib = arcB[0],
+        ja = arcA[1], jb = arcB[1];
+    if (ia - ja !== ib - jb) return false;
+    for (; ia <= ja; ++ia, ++ib) if (!Object(_hash_point_equal__WEBPACK_IMPORTED_MODULE_1__["default"])(coordinates[ia], coordinates[ib])) return false;
+    return true;
+  }
+
+  function reverseEqualLine(arcA, arcB) {
+    var ia = arcA[0], ib = arcB[0],
+        ja = arcA[1], jb = arcB[1];
+    if (ia - ja !== ib - jb) return false;
+    for (; ia <= ja; ++ia, --jb) if (!Object(_hash_point_equal__WEBPACK_IMPORTED_MODULE_1__["default"])(coordinates[ia], coordinates[jb])) return false;
+    return true;
+  }
+
+  function equalRing(arcA, arcB) {
+    var ia = arcA[0], ib = arcB[0],
+        ja = arcA[1], jb = arcB[1],
+        n = ja - ia;
+    if (n !== jb - ib) return false;
+    var ka = findMinimumOffset(arcA),
+        kb = findMinimumOffset(arcB);
+    for (var i = 0; i < n; ++i) {
+      if (!Object(_hash_point_equal__WEBPACK_IMPORTED_MODULE_1__["default"])(coordinates[ia + (i + ka) % n], coordinates[ib + (i + kb) % n])) return false;
+    }
+    return true;
+  }
+
+  function reverseEqualRing(arcA, arcB) {
+    var ia = arcA[0], ib = arcB[0],
+        ja = arcA[1], jb = arcB[1],
+        n = ja - ia;
+    if (n !== jb - ib) return false;
+    var ka = findMinimumOffset(arcA),
+        kb = n - findMinimumOffset(arcB);
+    for (var i = 0; i < n; ++i) {
+      if (!Object(_hash_point_equal__WEBPACK_IMPORTED_MODULE_1__["default"])(coordinates[ia + (i + ka) % n], coordinates[jb - (i + kb) % n])) return false;
+    }
+    return true;
+  }
+
+  // Rings are rotated to a consistent, but arbitrary, start point.
+  // This is necessary to detect when a ring and a rotated copy are dupes.
+  function findMinimumOffset(arc) {
+    var start = arc[0],
+        end = arc[1],
+        mid = start,
+        minimum = mid,
+        minimumPoint = coordinates[mid];
+    while (++mid < end) {
+      var point = coordinates[mid];
+      if (point[0] < minimumPoint[0] || point[0] === minimumPoint[0] && point[1] < minimumPoint[1]) {
+        minimum = mid;
+        minimumPoint = point;
+      }
+    }
+    return minimum - start;
+  }
+
+  return topology;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/delta.js":
+/*!************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/delta.js ***!
+  \************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// Given an array of arcs in absolute (but already quantized!) coordinates,
+// converts to fixed-point delta encoding.
+// This is a destructive operation that modifies the given arcs!
+/* harmony default export */ __webpack_exports__["default"] = (function(arcs) {
+  var i = -1,
+      n = arcs.length;
+
+  while (++i < n) {
+    var arc = arcs[i],
+        j = 0,
+        k = 1,
+        m = arc.length,
+        point = arc[0],
+        x0 = point[0],
+        y0 = point[1],
+        x1,
+        y1;
+
+    while (++j < m) {
+      point = arc[j], x1 = point[0], y1 = point[1];
+      if (x1 !== x0 || y1 !== y0) arc[k++] = [x1 - x0, y1 - y0], x0 = x1, y0 = y1;
+    }
+
+    if (k === 1) arc[k++] = [0, 0]; // Each arc must be an array of two or more positions.
+
+    arc.length = k;
+  }
+
+  return arcs;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/extract.js":
+/*!**************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/extract.js ***!
+  \**************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// Extracts the lines and rings from the specified hash of geometry objects.
+//
+// Returns an object with three properties:
+//
+// * coordinates - shared buffer of [x, y] coordinates
+// * lines - lines extracted from the hash, of the form [start, end]
+// * rings - rings extracted from the hash, of the form [start, end]
+//
+// For each ring or line, start and end represent inclusive indexes into the
+// coordinates buffer. For rings (and closed lines), coordinates[start] equals
+// coordinates[end].
+//
+// For each line or polygon geometry in the input hash, including nested
+// geometries as in geometry collections, the `coordinates` array is replaced
+// with an equivalent `arcs` array that, for each line (for line string
+// geometries) or ring (for polygon geometries), points to one of the above
+// lines or rings.
+/* harmony default export */ __webpack_exports__["default"] = (function(objects) {
+  var index = -1,
+      lines = [],
+      rings = [],
+      coordinates = [];
+
+  function extractGeometry(geometry) {
+    if (geometry && extractGeometryType.hasOwnProperty(geometry.type)) extractGeometryType[geometry.type](geometry);
+  }
+
+  var extractGeometryType = {
+    GeometryCollection: function(o) { o.geometries.forEach(extractGeometry); },
+    LineString: function(o) { o.arcs = extractLine(o.arcs); },
+    MultiLineString: function(o) { o.arcs = o.arcs.map(extractLine); },
+    Polygon: function(o) { o.arcs = o.arcs.map(extractRing); },
+    MultiPolygon: function(o) { o.arcs = o.arcs.map(extractMultiRing); }
+  };
+
+  function extractLine(line) {
+    for (var i = 0, n = line.length; i < n; ++i) coordinates[++index] = line[i];
+    var arc = {0: index - n + 1, 1: index};
+    lines.push(arc);
+    return arc;
+  }
+
+  function extractRing(ring) {
+    for (var i = 0, n = ring.length; i < n; ++i) coordinates[++index] = ring[i];
+    var arc = {0: index - n + 1, 1: index};
+    rings.push(arc);
+    return arc;
+  }
+
+  function extractMultiRing(rings) {
+    return rings.map(extractRing);
+  }
+
+  for (var key in objects) {
+    extractGeometry(objects[key]);
+  }
+
+  return {
+    type: "Topology",
+    coordinates: coordinates,
+    lines: lines,
+    rings: rings,
+    objects: objects
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/geometry.js":
+/*!***************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/geometry.js ***!
+  \***************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// Given a hash of GeoJSON objects, returns a hash of GeoJSON geometry objects.
+// Any null input geometry objects are represented as {type: null} in the output.
+// Any feature.{id,properties,bbox} are transferred to the output geometry object.
+// Each output geometry object is a shallow copy of the input (e.g., properties, coordinates)!
+/* harmony default export */ __webpack_exports__["default"] = (function(inputs) {
+  var outputs = {}, key;
+  for (key in inputs) outputs[key] = geomifyObject(inputs[key]);
+  return outputs;
+});
+
+function geomifyObject(input) {
+  return input == null ? {type: null}
+      : (input.type === "FeatureCollection" ? geomifyFeatureCollection
+      : input.type === "Feature" ? geomifyFeature
+      : geomifyGeometry)(input);
+}
+
+function geomifyFeatureCollection(input) {
+  var output = {type: "GeometryCollection", geometries: input.features.map(geomifyFeature)};
+  if (input.bbox != null) output.bbox = input.bbox;
+  return output;
+}
+
+function geomifyFeature(input) {
+  var output = geomifyGeometry(input.geometry), key; // eslint-disable-line no-unused-vars
+  if (input.id != null) output.id = input.id;
+  if (input.bbox != null) output.bbox = input.bbox;
+  for (key in input.properties) { output.properties = input.properties; break; }
+  return output;
+}
+
+function geomifyGeometry(input) {
+  if (input == null) return {type: null};
+  var output = input.type === "GeometryCollection" ? {type: "GeometryCollection", geometries: input.geometries.map(geomifyGeometry)}
+      : input.type === "Point" || input.type === "MultiPoint" ? {type: input.type, coordinates: input.coordinates}
+      : {type: input.type, arcs: input.coordinates}; // TODO Check for unknown types?
+  if (input.bbox != null) output.bbox = input.bbox;
+  return output;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/hashmap.js":
+/*!*******************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/hashmap.js ***!
+  \*******************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(size, hash, equal, keyType, keyEmpty, valueType) {
+  if (arguments.length === 3) {
+    keyType = valueType = Array;
+    keyEmpty = null;
+  }
+
+  var keystore = new keyType(size = 1 << Math.max(4, Math.ceil(Math.log(size) / Math.LN2))),
+      valstore = new valueType(size),
+      mask = size - 1;
+
+  for (var i = 0; i < size; ++i) {
+    keystore[i] = keyEmpty;
+  }
+
+  function set(key, value) {
+    var index = hash(key) & mask,
+        matchKey = keystore[index],
+        collisions = 0;
+    while (matchKey != keyEmpty) {
+      if (equal(matchKey, key)) return valstore[index] = value;
+      if (++collisions >= size) throw new Error("full hashmap");
+      matchKey = keystore[index = (index + 1) & mask];
+    }
+    keystore[index] = key;
+    valstore[index] = value;
+    return value;
+  }
+
+  function maybeSet(key, value) {
+    var index = hash(key) & mask,
+        matchKey = keystore[index],
+        collisions = 0;
+    while (matchKey != keyEmpty) {
+      if (equal(matchKey, key)) return valstore[index];
+      if (++collisions >= size) throw new Error("full hashmap");
+      matchKey = keystore[index = (index + 1) & mask];
+    }
+    keystore[index] = key;
+    valstore[index] = value;
+    return value;
+  }
+
+  function get(key, missingValue) {
+    var index = hash(key) & mask,
+        matchKey = keystore[index],
+        collisions = 0;
+    while (matchKey != keyEmpty) {
+      if (equal(matchKey, key)) return valstore[index];
+      if (++collisions >= size) break;
+      matchKey = keystore[index = (index + 1) & mask];
+    }
+    return missingValue;
+  }
+
+  function keys() {
+    var keys = [];
+    for (var i = 0, n = keystore.length; i < n; ++i) {
+      var matchKey = keystore[i];
+      if (matchKey != keyEmpty) keys.push(matchKey);
+    }
+    return keys;
+  }
+
+  return {
+    set: set,
+    maybeSet: maybeSet, // set if unset
+    get: get,
+    keys: keys
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/hashset.js":
+/*!*******************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/hashset.js ***!
+  \*******************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(size, hash, equal, type, empty) {
+  if (arguments.length === 3) {
+    type = Array;
+    empty = null;
+  }
+
+  var store = new type(size = 1 << Math.max(4, Math.ceil(Math.log(size) / Math.LN2))),
+      mask = size - 1;
+
+  for (var i = 0; i < size; ++i) {
+    store[i] = empty;
+  }
+
+  function add(value) {
+    var index = hash(value) & mask,
+        match = store[index],
+        collisions = 0;
+    while (match != empty) {
+      if (equal(match, value)) return true;
+      if (++collisions >= size) throw new Error("full hashset");
+      match = store[index = (index + 1) & mask];
+    }
+    store[index] = value;
+    return true;
+  }
+
+  function has(value) {
+    var index = hash(value) & mask,
+        match = store[index],
+        collisions = 0;
+    while (match != empty) {
+      if (equal(match, value)) return true;
+      if (++collisions >= size) break;
+      match = store[index = (index + 1) & mask];
+    }
+    return false;
+  }
+
+  function values() {
+    var values = [];
+    for (var i = 0, n = store.length; i < n; ++i) {
+      var match = store[i];
+      if (match != empty) values.push(match);
+    }
+    return values;
+  }
+
+  return {
+    add: add,
+    has: has,
+    values: values
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/point-equal.js":
+/*!***********************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/point-equal.js ***!
+  \***********************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(pointA, pointB) {
+  return pointA[0] === pointB[0] && pointA[1] === pointB[1];
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/point-hash.js":
+/*!**********************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/point-hash.js ***!
+  \**********************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// TODO if quantized, use simpler Int32 hashing?
+
+var buffer = new ArrayBuffer(16),
+    floats = new Float64Array(buffer),
+    uints = new Uint32Array(buffer);
+
+/* harmony default export */ __webpack_exports__["default"] = (function(point) {
+  floats[0] = point[0];
+  floats[1] = point[1];
+  var hash = uints[0] ^ uints[1];
+  hash = hash << 5 ^ hash >> 7 ^ uints[2] ^ uints[3];
+  return hash & 0x7fffffff;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/join.js":
+/*!***********************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/join.js ***!
+  \***********************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _hash_hashset__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hash/hashset */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/hashset.js");
+/* harmony import */ var _hash_hashmap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./hash/hashmap */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/hashmap.js");
+/* harmony import */ var _hash_point_equal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./hash/point-equal */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/point-equal.js");
+/* harmony import */ var _hash_point_hash__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./hash/point-hash */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/point-hash.js");
+
+
+
+
+
+// Given an extracted (pre-)topology, identifies all of the junctions. These are
+// the points at which arcs (lines or rings) will need to be cut so that each
+// arc is represented uniquely.
+//
+// A junction is a point where at least one arc deviates from another arc going
+// through the same point. For example, consider the point B. If there is a arc
+// through ABC and another arc through CBA, then B is not a junction because in
+// both cases the adjacent point pairs are {A,C}. However, if there is an
+// additional arc ABD, then {A,D} != {A,C}, and thus B becomes a junction.
+//
+// For a closed ring ABCA, the first point A’s adjacent points are the second
+// and last point {B,C}. For a line, the first and last point are always
+// considered junctions, even if the line is closed; this ensures that a closed
+// line is never rotated.
+/* harmony default export */ __webpack_exports__["default"] = (function(topology) {
+  var coordinates = topology.coordinates,
+      lines = topology.lines,
+      rings = topology.rings,
+      indexes = index(),
+      visitedByIndex = new Int32Array(coordinates.length),
+      leftByIndex = new Int32Array(coordinates.length),
+      rightByIndex = new Int32Array(coordinates.length),
+      junctionByIndex = new Int8Array(coordinates.length),
+      junctionCount = 0, // upper bound on number of junctions
+      i, n,
+      previousIndex,
+      currentIndex,
+      nextIndex;
+
+  for (i = 0, n = coordinates.length; i < n; ++i) {
+    visitedByIndex[i] = leftByIndex[i] = rightByIndex[i] = -1;
+  }
+
+  for (i = 0, n = lines.length; i < n; ++i) {
+    var line = lines[i],
+        lineStart = line[0],
+        lineEnd = line[1];
+    currentIndex = indexes[lineStart];
+    nextIndex = indexes[++lineStart];
+    ++junctionCount, junctionByIndex[currentIndex] = 1; // start
+    while (++lineStart <= lineEnd) {
+      sequence(i, previousIndex = currentIndex, currentIndex = nextIndex, nextIndex = indexes[lineStart]);
+    }
+    ++junctionCount, junctionByIndex[nextIndex] = 1; // end
+  }
+
+  for (i = 0, n = coordinates.length; i < n; ++i) {
+    visitedByIndex[i] = -1;
+  }
+
+  for (i = 0, n = rings.length; i < n; ++i) {
+    var ring = rings[i],
+        ringStart = ring[0] + 1,
+        ringEnd = ring[1];
+    previousIndex = indexes[ringEnd - 1];
+    currentIndex = indexes[ringStart - 1];
+    nextIndex = indexes[ringStart];
+    sequence(i, previousIndex, currentIndex, nextIndex);
+    while (++ringStart <= ringEnd) {
+      sequence(i, previousIndex = currentIndex, currentIndex = nextIndex, nextIndex = indexes[ringStart]);
+    }
+  }
+
+  function sequence(i, previousIndex, currentIndex, nextIndex) {
+    if (visitedByIndex[currentIndex] === i) return; // ignore self-intersection
+    visitedByIndex[currentIndex] = i;
+    var leftIndex = leftByIndex[currentIndex];
+    if (leftIndex >= 0) {
+      var rightIndex = rightByIndex[currentIndex];
+      if ((leftIndex !== previousIndex || rightIndex !== nextIndex)
+        && (leftIndex !== nextIndex || rightIndex !== previousIndex)) {
+        ++junctionCount, junctionByIndex[currentIndex] = 1;
+      }
+    } else {
+      leftByIndex[currentIndex] = previousIndex;
+      rightByIndex[currentIndex] = nextIndex;
+    }
+  }
+
+  function index() {
+    var indexByPoint = Object(_hash_hashmap__WEBPACK_IMPORTED_MODULE_1__["default"])(coordinates.length * 1.4, hashIndex, equalIndex, Int32Array, -1, Int32Array),
+        indexes = new Int32Array(coordinates.length);
+
+    for (var i = 0, n = coordinates.length; i < n; ++i) {
+      indexes[i] = indexByPoint.maybeSet(i, i);
+    }
+
+    return indexes;
+  }
+
+  function hashIndex(i) {
+    return Object(_hash_point_hash__WEBPACK_IMPORTED_MODULE_3__["default"])(coordinates[i]);
+  }
+
+  function equalIndex(i, j) {
+    return Object(_hash_point_equal__WEBPACK_IMPORTED_MODULE_2__["default"])(coordinates[i], coordinates[j]);
+  }
+
+  visitedByIndex = leftByIndex = rightByIndex = null;
+
+  var junctionByPoint = Object(_hash_hashset__WEBPACK_IMPORTED_MODULE_0__["default"])(junctionCount * 1.4, _hash_point_hash__WEBPACK_IMPORTED_MODULE_3__["default"], _hash_point_equal__WEBPACK_IMPORTED_MODULE_2__["default"]), j;
+
+  // Convert back to a standard hashset by point for caller convenience.
+  for (i = 0, n = coordinates.length; i < n; ++i) {
+    if (junctionByIndex[j = indexes[i]]) {
+      junctionByPoint.add(coordinates[j]);
+    }
+  }
+
+  return junctionByPoint;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/prequantize.js":
+/*!******************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/prequantize.js ***!
+  \******************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(objects, bbox, n) {
+  var x0 = bbox[0],
+      y0 = bbox[1],
+      x1 = bbox[2],
+      y1 = bbox[3],
+      kx = x1 - x0 ? (n - 1) / (x1 - x0) : 1,
+      ky = y1 - y0 ? (n - 1) / (y1 - y0) : 1;
+
+  function quantizePoint(input) {
+    return [Math.round((input[0] - x0) * kx), Math.round((input[1] - y0) * ky)];
+  }
+
+  function quantizePoints(input, m) {
+    var i = -1,
+        j = 0,
+        n = input.length,
+        output = new Array(n), // pessimistic
+        pi,
+        px,
+        py,
+        x,
+        y;
+
+    while (++i < n) {
+      pi = input[i];
+      x = Math.round((pi[0] - x0) * kx);
+      y = Math.round((pi[1] - y0) * ky);
+      if (x !== px || y !== py) output[j++] = [px = x, py = y]; // non-coincident points
+    }
+
+    output.length = j;
+    while (j < m) j = output.push([output[0][0], output[0][1]]);
+    return output;
+  }
+
+  function quantizeLine(input) {
+    return quantizePoints(input, 2);
+  }
+
+  function quantizeRing(input) {
+    return quantizePoints(input, 4);
+  }
+
+  function quantizePolygon(input) {
+    return input.map(quantizeRing);
+  }
+
+  function quantizeGeometry(o) {
+    if (o != null && quantizeGeometryType.hasOwnProperty(o.type)) quantizeGeometryType[o.type](o);
+  }
+
+  var quantizeGeometryType = {
+    GeometryCollection: function(o) { o.geometries.forEach(quantizeGeometry); },
+    Point: function(o) { o.coordinates = quantizePoint(o.coordinates); },
+    MultiPoint: function(o) { o.coordinates = o.coordinates.map(quantizePoint); },
+    LineString: function(o) { o.arcs = quantizeLine(o.arcs); },
+    MultiLineString: function(o) { o.arcs = o.arcs.map(quantizeLine); },
+    Polygon: function(o) { o.arcs = quantizePolygon(o.arcs); },
+    MultiPolygon: function(o) { o.arcs = o.arcs.map(quantizePolygon); }
+  };
+
+  for (var key in objects) {
+    quantizeGeometry(objects[key]);
+  }
+
+  return {
+    scale: [1 / kx, 1 / ky],
+    translate: [x0, y0]
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/topology.js":
+/*!***************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/topology.js ***!
+  \***************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _bounds__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./bounds */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/bounds.js");
+/* harmony import */ var _cut__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./cut */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/cut.js");
+/* harmony import */ var _dedup__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./dedup */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/dedup.js");
+/* harmony import */ var _delta__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./delta */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/delta.js");
+/* harmony import */ var _extract__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./extract */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/extract.js");
+/* harmony import */ var _geometry__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./geometry */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/geometry.js");
+/* harmony import */ var _hash_hashmap__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./hash/hashmap */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/hash/hashmap.js");
+/* harmony import */ var _prequantize__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./prequantize */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-server/src/prequantize.js");
+
+
+
+
+
+
+
+
+
+// Constructs the TopoJSON Topology for the specified hash of features.
+// Each object in the specified hash must be a GeoJSON object,
+// meaning FeatureCollection, a Feature or a geometry object.
+/* harmony default export */ __webpack_exports__["default"] = (function(objects, quantization) {
+  var bbox = Object(_bounds__WEBPACK_IMPORTED_MODULE_0__["default"])(objects = Object(_geometry__WEBPACK_IMPORTED_MODULE_5__["default"])(objects)),
+      transform = quantization > 0 && bbox && Object(_prequantize__WEBPACK_IMPORTED_MODULE_7__["default"])(objects, bbox, quantization),
+      topology = Object(_dedup__WEBPACK_IMPORTED_MODULE_2__["default"])(Object(_cut__WEBPACK_IMPORTED_MODULE_1__["default"])(Object(_extract__WEBPACK_IMPORTED_MODULE_4__["default"])(objects))),
+      coordinates = topology.coordinates,
+      indexByArc = Object(_hash_hashmap__WEBPACK_IMPORTED_MODULE_6__["default"])(topology.arcs.length * 1.4, hashArc, equalArc);
+
+  objects = topology.objects; // for garbage collection
+  topology.bbox = bbox;
+  topology.arcs = topology.arcs.map(function(arc, i) {
+    indexByArc.set(arc, i);
+    return coordinates.slice(arc[0], arc[1] + 1);
+  });
+
+  delete topology.coordinates;
+  coordinates = null;
+
+  function indexGeometry(geometry) {
+    if (geometry && indexGeometryType.hasOwnProperty(geometry.type)) indexGeometryType[geometry.type](geometry);
+  }
+
+  var indexGeometryType = {
+    GeometryCollection: function(o) { o.geometries.forEach(indexGeometry); },
+    LineString: function(o) { o.arcs = indexArcs(o.arcs); },
+    MultiLineString: function(o) { o.arcs = o.arcs.map(indexArcs); },
+    Polygon: function(o) { o.arcs = o.arcs.map(indexArcs); },
+    MultiPolygon: function(o) { o.arcs = o.arcs.map(indexMultiArcs); }
+  };
+
+  function indexArcs(arc) {
+    var indexes = [];
+    do {
+      var index = indexByArc.get(arc);
+      indexes.push(arc[0] < arc[1] ? index : ~index);
+    } while (arc = arc.next);
+    return indexes;
+  }
+
+  function indexMultiArcs(arcs) {
+    return arcs.map(indexArcs);
+  }
+
+  for (var key in objects) {
+    indexGeometry(objects[key]);
+  }
+
+  if (transform) {
+    topology.transform = transform;
+    topology.arcs = Object(_delta__WEBPACK_IMPORTED_MODULE_3__["default"])(topology.arcs);
+  }
+
+  return topology;
+});
+
+function hashArc(arc) {
+  var i = arc[0], j = arc[1], t;
+  if (j < i) t = i, i = j, j = t;
+  return i + 31 * j;
+}
+
+function equalArc(arcA, arcB) {
+  var ia = arcA[0], ja = arcA[1],
+      ib = arcB[0], jb = arcB[1], t;
+  if (ja < ia) t = ia, ia = ja, ja = t;
+  if (jb < ib) t = ib, ib = jb, jb = t;
+  return ia === ib && ja === jb;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/index.js":
+/*!**********************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/index.js ***!
+  \**********************************************************************************************/
+/*! exports provided: filter, filterAttached, filterAttachedWeight, filterWeight, planarRingArea, planarTriangleArea, presimplify, quantile, simplify, sphericalRingArea, sphericalTriangleArea */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _src_filter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/filter */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/filter.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "filter", function() { return _src_filter__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony import */ var _src_filterAttached__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/filterAttached */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/filterAttached.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "filterAttached", function() { return _src_filterAttached__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _src_filterAttachedWeight__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./src/filterAttachedWeight */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/filterAttachedWeight.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "filterAttachedWeight", function() { return _src_filterAttachedWeight__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+/* harmony import */ var _src_filterWeight__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./src/filterWeight */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/filterWeight.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "filterWeight", function() { return _src_filterWeight__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+/* harmony import */ var _src_planar__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./src/planar */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/planar.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "planarRingArea", function() { return _src_planar__WEBPACK_IMPORTED_MODULE_4__["planarRingArea"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "planarTriangleArea", function() { return _src_planar__WEBPACK_IMPORTED_MODULE_4__["planarTriangleArea"]; });
+
+/* harmony import */ var _src_presimplify__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./src/presimplify */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/presimplify.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "presimplify", function() { return _src_presimplify__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+/* harmony import */ var _src_quantile__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./src/quantile */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/quantile.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quantile", function() { return _src_quantile__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+
+/* harmony import */ var _src_simplify__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./src/simplify */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/simplify.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "simplify", function() { return _src_simplify__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+
+/* harmony import */ var _src_spherical__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./src/spherical */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/spherical.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "sphericalRingArea", function() { return _src_spherical__WEBPACK_IMPORTED_MODULE_8__["sphericalRingArea"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "sphericalTriangleArea", function() { return _src_spherical__WEBPACK_IMPORTED_MODULE_8__["sphericalTriangleArea"]; });
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/filter.js":
+/*!***************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/filter.js ***!
+  \***************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _prune__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./prune */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/prune.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(topology, filter) {
+  var oldObjects = topology.objects,
+      newObjects = {},
+      key;
+
+  if (filter == null) filter = filterTrue;
+
+  function filterGeometry(input) {
+    var output, arcs;
+    switch (input.type) {
+      case "Polygon": {
+        arcs = filterRings(input.arcs);
+        output = arcs ? {type: "Polygon", arcs: arcs} : {type: null};
+        break;
+      }
+      case "MultiPolygon": {
+        arcs = input.arcs.map(filterRings).filter(filterIdentity);
+        output = arcs.length ? {type: "MultiPolygon", arcs: arcs} : {type: null};
+        break;
+      }
+      case "GeometryCollection": {
+        arcs = input.geometries.map(filterGeometry).filter(filterNotNull);
+        output = arcs.length ? {type: "GeometryCollection", geometries: arcs} : {type: null};
+        break;
+      }
+      default: return input;
+    }
+    if (input.id != null) output.id = input.id;
+    if (input.bbox != null) output.bbox = input.bbox;
+    if (input.properties != null) output.properties = input.properties;
+    return output;
+  }
+
+  function filterRings(arcs) {
+    return arcs.length && filterExteriorRing(arcs[0]) // if the exterior is small, ignore any holes
+        ? [arcs[0]].concat(arcs.slice(1).filter(filterInteriorRing))
+        : null;
+  }
+
+  function filterExteriorRing(ring) {
+    return filter(ring, false);
+  }
+
+  function filterInteriorRing(ring) {
+    return filter(ring, true);
+  }
+
+  for (key in oldObjects) {
+    newObjects[key] = filterGeometry(oldObjects[key]);
+  }
+
+  return Object(_prune__WEBPACK_IMPORTED_MODULE_0__["default"])({
+    type: "Topology",
+    bbox: topology.bbox,
+    transform: topology.transform,
+    objects: newObjects,
+    arcs: topology.arcs
+  });
+});
+
+function filterTrue() {
+  return true;
+}
+
+function filterIdentity(x) {
+  return x;
+}
+
+function filterNotNull(geometry) {
+  return geometry.type != null;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/filterAttached.js":
+/*!***********************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/filterAttached.js ***!
+  \***********************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(topology) {
+  var ownerByArc = new Array(topology.arcs.length), // arc index -> index of unique associated ring, or -1 if used by multiple rings
+      ownerIndex = 0,
+      key;
+
+  function testGeometry(o) {
+    switch (o.type) {
+      case "GeometryCollection": o.geometries.forEach(testGeometry); break;
+      case "Polygon": testArcs(o.arcs); break;
+      case "MultiPolygon": o.arcs.forEach(testArcs); break;
+    }
+  }
+
+  function testArcs(arcs) {
+    for (var i = 0, n = arcs.length; i < n; ++i, ++ownerIndex) {
+      for (var ring = arcs[i], j = 0, m = ring.length; j < m; ++j) {
+        var arc = ring[j];
+        if (arc < 0) arc = ~arc;
+        var owner = ownerByArc[arc];
+        if (owner == null) ownerByArc[arc] = ownerIndex;
+        else if (owner !== ownerIndex) ownerByArc[arc] = -1;
+      }
+    }
+  }
+
+  for (key in topology.objects) {
+    testGeometry(topology.objects[key]);
+  }
+
+  return function(ring) {
+    for (var j = 0, m = ring.length, arc; j < m; ++j) {
+      if (ownerByArc[(arc = ring[j]) < 0 ? ~arc : arc] === -1) {
+        return true;
+      }
+    }
+    return false;
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/filterAttachedWeight.js":
+/*!*****************************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/filterAttachedWeight.js ***!
+  \*****************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _filterAttached__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./filterAttached */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/filterAttached.js");
+/* harmony import */ var _filterWeight__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./filterWeight */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/filterWeight.js");
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(topology, minWeight, weight) {
+  var a = Object(_filterAttached__WEBPACK_IMPORTED_MODULE_0__["default"])(topology),
+      w = Object(_filterWeight__WEBPACK_IMPORTED_MODULE_1__["default"])(topology, minWeight, weight);
+  return function(ring, interior) {
+    return a(ring, interior) || w(ring, interior);
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/filterWeight.js":
+/*!*********************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/filterWeight.js ***!
+  \*********************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var topojson_client__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! topojson-client */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/index.js");
+/* harmony import */ var _planar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./planar */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/planar.js");
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(topology, minWeight, weight) {
+  minWeight = minWeight == null ? Number.MIN_VALUE : +minWeight;
+
+  if (weight == null) weight = _planar__WEBPACK_IMPORTED_MODULE_1__["planarRingArea"];
+
+  return function(ring, interior) {
+    return weight(Object(topojson_client__WEBPACK_IMPORTED_MODULE_0__["feature"])(topology, {type: "Polygon", arcs: [ring]}).geometry.coordinates[0], interior) >= minWeight;
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/heap.js":
+/*!*************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/heap.js ***!
+  \*************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function compare(a, b) {
+  return a[1][2] - b[1][2];
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (function() {
+  var heap = {},
+      array = [],
+      size = 0;
+
+  heap.push = function(object) {
+    up(array[object._ = size] = object, size++);
+    return size;
+  };
+
+  heap.pop = function() {
+    if (size <= 0) return;
+    var removed = array[0], object;
+    if (--size > 0) object = array[size], down(array[object._ = 0] = object, 0);
+    return removed;
+  };
+
+  heap.remove = function(removed) {
+    var i = removed._, object;
+    if (array[i] !== removed) return; // invalid request
+    if (i !== --size) object = array[size], (compare(object, removed) < 0 ? up : down)(array[object._ = i] = object, i);
+    return i;
+  };
+
+  function up(object, i) {
+    while (i > 0) {
+      var j = ((i + 1) >> 1) - 1,
+          parent = array[j];
+      if (compare(object, parent) >= 0) break;
+      array[parent._ = i] = parent;
+      array[object._ = i = j] = object;
+    }
+  }
+
+  function down(object, i) {
+    while (true) {
+      var r = (i + 1) << 1,
+          l = r - 1,
+          j = i,
+          child = array[j];
+      if (l < size && compare(array[l], child) < 0) child = array[j = l];
+      if (r < size && compare(array[r], child) < 0) child = array[j = r];
+      if (j === i) break;
+      array[child._ = i] = child;
+      array[object._ = i = j] = object;
+    }
+  }
+
+  return heap;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/planar.js":
+/*!***************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/planar.js ***!
+  \***************************************************************************************************/
+/*! exports provided: planarTriangleArea, planarRingArea */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "planarTriangleArea", function() { return planarTriangleArea; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "planarRingArea", function() { return planarRingArea; });
+function planarTriangleArea(triangle) {
+  var a = triangle[0], b = triangle[1], c = triangle[2];
+  return Math.abs((a[0] - c[0]) * (b[1] - a[1]) - (a[0] - b[0]) * (c[1] - a[1])) / 2;
+}
+
+function planarRingArea(ring) {
+  var i = -1, n = ring.length, a, b = ring[n - 1], area = 0;
+  while (++i < n) a = b, b = ring[i], area += a[0] * b[1] - a[1] * b[0];
+  return Math.abs(area) / 2;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/presimplify.js":
+/*!********************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/presimplify.js ***!
+  \********************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var topojson_client__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! topojson-client */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-client/index.js");
+/* harmony import */ var _heap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./heap */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/heap.js");
+/* harmony import */ var _planar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./planar */ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/planar.js");
+
+
+
+
+function copy(point) {
+  return [point[0], point[1], 0];
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (function(topology, weight) {
+  var point = topology.transform ? Object(topojson_client__WEBPACK_IMPORTED_MODULE_0__["transform"])(topology.transform) : copy,
+      heap = Object(_heap__WEBPACK_IMPORTED_MODULE_1__["default"])();
+
+  if (weight == null) weight = _planar__WEBPACK_IMPORTED_MODULE_2__["planarTriangleArea"];
+
+  var arcs = topology.arcs.map(function(arc) {
+    var triangles = [],
+        maxWeight = 0,
+        triangle,
+        i,
+        n;
+
+    arc = arc.map(point);
+
+    for (i = 1, n = arc.length - 1; i < n; ++i) {
+      triangle = [arc[i - 1], arc[i], arc[i + 1]];
+      triangle[1][2] = weight(triangle);
+      triangles.push(triangle);
+      heap.push(triangle);
+    }
+
+    // Always keep the arc endpoints!
+    arc[0][2] = arc[n][2] = Infinity;
+
+    for (i = 0, n = triangles.length; i < n; ++i) {
+      triangle = triangles[i];
+      triangle.previous = triangles[i - 1];
+      triangle.next = triangles[i + 1];
+    }
+
+    while (triangle = heap.pop()) {
+      var previous = triangle.previous,
+          next = triangle.next;
+
+      // If the weight of the current point is less than that of the previous
+      // point to be eliminated, use the latter’s weight instead. This ensures
+      // that the current point cannot be eliminated without eliminating
+      // previously- eliminated points.
+      if (triangle[1][2] < maxWeight) triangle[1][2] = maxWeight;
+      else maxWeight = triangle[1][2];
+
+      if (previous) {
+        previous.next = next;
+        previous[2] = triangle[2];
+        update(previous);
+      }
+
+      if (next) {
+        next.previous = previous;
+        next[0] = triangle[0];
+        update(next);
+      }
+    }
+
+    return arc;
+  });
+
+  function update(triangle) {
+    heap.remove(triangle);
+    triangle[1][2] = weight(triangle);
+    heap.push(triangle);
+  }
+
+  return {
+    type: "Topology",
+    bbox: topology.bbox,
+    objects: topology.objects,
+    arcs: arcs
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/prune.js":
+/*!**************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/prune.js ***!
+  \**************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(topology) {
+  var oldObjects = topology.objects,
+      newObjects = {},
+      oldArcs = topology.arcs,
+      oldArcsLength = oldArcs.length,
+      oldIndex = -1,
+      newIndexByOldIndex = new Array(oldArcsLength),
+      newArcsLength = 0,
+      newArcs,
+      newIndex = -1,
+      key;
+
+  function scanGeometry(input) {
+    switch (input.type) {
+      case "GeometryCollection": input.geometries.forEach(scanGeometry); break;
+      case "LineString": scanArcs(input.arcs); break;
+      case "MultiLineString": input.arcs.forEach(scanArcs); break;
+      case "Polygon": input.arcs.forEach(scanArcs); break;
+      case "MultiPolygon": input.arcs.forEach(scanMultiArcs); break;
+    }
+  }
+
+  function scanArc(index) {
+    if (index < 0) index = ~index;
+    if (!newIndexByOldIndex[index]) newIndexByOldIndex[index] = 1, ++newArcsLength;
+  }
+
+  function scanArcs(arcs) {
+    arcs.forEach(scanArc);
+  }
+
+  function scanMultiArcs(arcs) {
+    arcs.forEach(scanArcs);
+  }
+
+  function reindexGeometry(input) {
+    var output;
+    switch (input.type) {
+      case "GeometryCollection": output = {type: "GeometryCollection", geometries: input.geometries.map(reindexGeometry)}; break;
+      case "LineString": output = {type: "LineString", arcs: reindexArcs(input.arcs)}; break;
+      case "MultiLineString": output = {type: "MultiLineString", arcs: input.arcs.map(reindexArcs)}; break;
+      case "Polygon": output = {type: "Polygon", arcs: input.arcs.map(reindexArcs)}; break;
+      case "MultiPolygon": output = {type: "MultiPolygon", arcs: input.arcs.map(reindexMultiArcs)}; break;
+      default: return input;
+    }
+    if (input.id != null) output.id = input.id;
+    if (input.bbox != null) output.bbox = input.bbox;
+    if (input.properties != null) output.properties = input.properties;
+    return output;
+  }
+
+  function reindexArc(oldIndex) {
+    return oldIndex < 0 ? ~newIndexByOldIndex[~oldIndex] : newIndexByOldIndex[oldIndex];
+  }
+
+  function reindexArcs(arcs) {
+    return arcs.map(reindexArc);
+  }
+
+  function reindexMultiArcs(arcs) {
+    return arcs.map(reindexArcs);
+  }
+
+  for (key in oldObjects) {
+    scanGeometry(oldObjects[key]);
+  }
+
+  newArcs = new Array(newArcsLength);
+
+  while (++oldIndex < oldArcsLength) {
+    if (newIndexByOldIndex[oldIndex]) {
+      newIndexByOldIndex[oldIndex] = ++newIndex;
+      newArcs[newIndex] = oldArcs[oldIndex];
+    }
+  }
+
+  for (key in oldObjects) {
+    newObjects[key] = reindexGeometry(oldObjects[key]);
+  }
+
+  return {
+    type: "Topology",
+    bbox: topology.bbox,
+    transform: topology.transform,
+    objects: newObjects,
+    arcs: newArcs
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/quantile.js":
+/*!*****************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/quantile.js ***!
+  \*****************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(topology, p) {
+  var array = [];
+
+  topology.arcs.forEach(function(arc) {
+    arc.forEach(function(point) {
+      if (isFinite(point[2])) { // Ignore endpoints, whose weight is Infinity.
+        array.push(point[2]);
+      }
+    });
+  });
+
+  return array.length && quantile(array.sort(descending), p);
+});
+
+function quantile(array, p) {
+  if (!(n = array.length)) return;
+  if ((p = +p) <= 0 || n < 2) return array[0];
+  if (p >= 1) return array[n - 1];
+  var n,
+      h = (n - 1) * p,
+      i = Math.floor(h),
+      a = array[i],
+      b = array[i + 1];
+  return a + (b - a) * (h - i);
+}
+
+function descending(a, b) {
+  return b - a;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/simplify.js":
+/*!*****************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/simplify.js ***!
+  \*****************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(topology, minWeight) {
+  minWeight = minWeight == null ? Number.MIN_VALUE : +minWeight;
+
+  // Remove points whose weight is less than the minimum weight.
+  var arcs = topology.arcs.map(function(input) {
+    var i = -1,
+        j = 0,
+        n = input.length,
+        output = new Array(n), // pessimistic
+        point;
+
+    while (++i < n) {
+      if ((point = input[i])[2] >= minWeight) {
+        output[j++] = [point[0], point[1]];
+      }
+    }
+
+    output.length = j;
+    return output;
+  });
+
+  return {
+    type: "Topology",
+    transform: topology.transform,
+    bbox: topology.bbox,
+    objects: topology.objects,
+    arcs: arcs
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/spherical.js":
+/*!******************************************************************************************************!*\
+  !*** ./node_modules/d3-geomap/node_modules/topojson/node_modules/topojson-simplify/src/spherical.js ***!
+  \******************************************************************************************************/
+/*! exports provided: sphericalRingArea, sphericalTriangleArea */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sphericalRingArea", function() { return sphericalRingArea; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sphericalTriangleArea", function() { return sphericalTriangleArea; });
+var pi = Math.PI,
+    tau = 2 * pi,
+    quarterPi = pi / 4,
+    radians = pi / 180,
+    abs = Math.abs,
+    atan2 = Math.atan2,
+    cos = Math.cos,
+    sin = Math.sin;
+
+function halfArea(ring, closed) {
+  var i = 0,
+      n = ring.length,
+      sum = 0,
+      point = ring[closed ? i++ : n - 1],
+      lambda0, lambda1 = point[0] * radians,
+      phi1 = (point[1] * radians) / 2 + quarterPi,
+      cosPhi0, cosPhi1 = cos(phi1),
+      sinPhi0, sinPhi1 = sin(phi1);
+
+  for (; i < n; ++i) {
+    point = ring[i];
+    lambda0 = lambda1, lambda1 = point[0] * radians;
+    phi1 = (point[1] * radians) / 2 + quarterPi;
+    cosPhi0 = cosPhi1, cosPhi1 = cos(phi1);
+    sinPhi0 = sinPhi1, sinPhi1 = sin(phi1);
+
+    // Spherical excess E for a spherical triangle with vertices: south pole,
+    // previous point, current point.  Uses a formula derived from Cagnoli’s
+    // theorem.  See Todhunter, Spherical Trig. (1871), Sec. 103, Eq. (2).
+    // See https://github.com/d3/d3-geo/blob/master/README.md#geoArea
+    var dLambda = lambda1 - lambda0,
+        sdLambda = dLambda >= 0 ? 1 : -1,
+        adLambda = sdLambda * dLambda,
+        k = sinPhi0 * sinPhi1,
+        u = cosPhi0 * cosPhi1 + k * cos(adLambda),
+        v = k * sdLambda * sin(adLambda);
+    sum += atan2(v, u);
+  }
+
+  return sum;
+}
+
+function sphericalRingArea(ring, interior) {
+  var sum = halfArea(ring, true);
+  if (interior) sum *= -1;
+  return (sum < 0 ? tau + sum : sum) * 2;
+}
+
+function sphericalTriangleArea(t) {
+  return abs(halfArea(t, false)) * 2;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/src/index.js":
+/*!*********************************************!*\
+  !*** ./node_modules/d3-geomap/src/index.js ***!
+  \*********************************************/
+/*! exports provided: geomap, choropleth */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "geomap", function() { return geomap; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "choropleth", function() { return choropleth; });
+/* harmony import */ var _js_geomap_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./js/geomap.js */ "./node_modules/d3-geomap/src/js/geomap.js");
+/* harmony import */ var _js_choropleth_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./js/choropleth.js */ "./node_modules/d3-geomap/src/js/choropleth.js");
+
+
+
+
+function geomap() {
+    return new _js_geomap_js__WEBPACK_IMPORTED_MODULE_0__["Geomap"]();
+}
+function choropleth() {
+    return new _js_choropleth_js__WEBPACK_IMPORTED_MODULE_1__["Choropleth"]();
+}
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/src/js/choropleth.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/d3-geomap/src/js/choropleth.js ***!
+  \*****************************************************/
+/*! exports provided: Choropleth */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Choropleth", function() { return Choropleth; });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-geomap/node_modules/d3-array/src/index.js");
+/* harmony import */ var d3_scale__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3-scale */ "./node_modules/d3-geomap/node_modules/d3-scale/src/index.js");
+/* harmony import */ var d3_format__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3-format */ "./node_modules/d3-format/src/index.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils */ "./node_modules/d3-geomap/src/js/utils.js");
+/* harmony import */ var _geomap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./geomap */ "./node_modules/d3-geomap/src/js/geomap.js");
+
+
+
+
+
+
+
+const D3_CHROMATIC_SCHEME_OrRd9 = [
+  '#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000',
+];
+
+class Choropleth extends _geomap__WEBPACK_IMPORTED_MODULE_4__["Geomap"] {
+    constructor() {
+        super();
+
+        let properties = {
+            colors: Choropleth.DEFAULT_COLORS,
+            column: null,
+            domain: null,
+            duration: null,
+            format: Object(d3_format__WEBPACK_IMPORTED_MODULE_2__["format"])(',.02f'),
+            legend: false,
+            valueScale: d3_scale__WEBPACK_IMPORTED_MODULE_1__["scaleQuantize"]
+        };
+
+        for (let key in properties) {
+            this.properties[key] = properties[key];
+            Object(_utils__WEBPACK_IMPORTED_MODULE_3__["addAccessor"])(this, key, properties[key]);
+        }
+    }
+
+    columnVal(d) {
+        return +d[this.properties.column];
+    }
+
+    defined(val) {
+        return !(isNaN(val) || 'undefined' === typeof val || '' === val);
+    }
+
+    update() {
+        let self = this;
+        self.extent = Object(d3_array__WEBPACK_IMPORTED_MODULE_0__["extent"])(self.data, self.columnVal.bind(self));
+        self.colorScale = self.properties.valueScale()
+            .domain(self.properties.domain || self.extent)
+            .range(self.properties.colors);
+
+        // Remove fill styles that may have been set previously.
+        self.svg.selectAll('path.unit').style('fill', null);
+
+        // Add new fill styles based on data values.
+        self.data.forEach((d) => {
+            let uid = d[self.properties.unitId].toString().trim(),
+                val = d[self.properties.column].toString().trim();
+
+            // selectAll must be called and not just select, otherwise the data
+            // attribute of the selected path object is overwritten with self.data.
+            let unit = self.svg.selectAll(`.${self.properties.unitPrefix}${uid}`);
+            // Data can contain values for non existing units and values can be empty or NaN.
+            if (!unit.empty() && self.defined(val)) {
+                let fill = self.colorScale(val),
+                    text = self.properties.unitTitle(unit.datum());
+                if (self.properties.duration)
+                    unit.transition().duration(self.properties.duration).style('fill', fill);
+                else
+                    unit.style('fill', fill);
+
+                // New title with column and value.
+                val = self.properties.format(val);
+                unit.select('title').text(`${text}\n\n${self.properties.column}: ${val}`);
+            }
+        });
+
+        if (self.properties.legend)
+            self.drawLegend(self.properties.legend);
+
+        // Make sure postUpdate function is run if set.
+        super.update();
+    }
+
+    /**
+     * Draw legend including color scale and labels.
+     *
+     * If bounds is set to true, legend dimensions will be calculated based on
+     * the map dimensions. Otherwise bounds must be an object with width and
+     * height attributes.
+     */
+    drawLegend(bounds=null) {
+        let self = this,
+            steps = self.properties.colors.length,
+            wBox,
+            hBox;
+
+        const wFactor = 10,
+            hFactor = 3;
+
+        if (bounds === true) {
+            wBox = self.properties.width / wFactor;
+            hBox = self.properties.height / hFactor;
+        } else {
+            wBox = bounds.width;
+            hBox = bounds.height;
+        }
+
+        const wRect = wBox / (wFactor * .75),
+            hLegend = hBox - (hBox / (hFactor * 1.8)),
+            offsetText = wRect / 2,
+            offsetY = self.properties.height - hBox,
+            tr = 'translate(' + offsetText + ',' + offsetText * 3 + ')';
+
+        // Remove possibly existing legend, before drawing.
+        self.svg.select('g.legend').remove();
+
+        // Reverse a copy to not alter colors array.
+        const colors = self.properties.colors.slice().reverse(),
+            hRect = hLegend / steps,
+            offsetYFactor = hFactor / hRect;
+
+        let legend = self.svg.append('g')
+            .attr('class', 'legend')
+            .attr('width', wBox)
+            .attr('height', hBox)
+            .attr('transform', 'translate(0,' + offsetY + ')');
+
+        legend.append('rect')
+            .style('fill', '#fff')
+            .attr('class', 'legend-bg')
+            .attr('width', wBox)
+            .attr('height', hBox);
+
+        // Draw a rectangle around the color scale to add a border.
+        legend.append('rect')
+            .attr('class', 'legend-bar')
+            .attr('width', wRect)
+            .attr('height', hLegend)
+            .attr('transform', tr);
+
+        let sg = legend.append('g')
+            .attr('transform', tr);
+
+        // Draw color scale.
+        sg.selectAll('rect')
+            .data(colors)
+            .enter().append('rect')
+            .attr('y', (d, i) => i * hRect)
+            .attr('fill', (d, i) => colors[i])
+            .attr('width', wRect)
+            .attr('height', hRect);
+
+        // Determine display values for lower and upper thresholds. If the
+        // minimum data value is lower than the first element in the domain
+        // draw a less than sign. If the maximum data value is larger than the
+        // second domain element, draw a greater than sign.
+        let minDisplay = self.extent[0],
+            maxDisplay = self.extent[1],
+            addLower = false,
+            addGreater = false;
+
+        if (self.properties.domain) {
+            if (self.properties.domain[1] < maxDisplay)
+                addGreater = true;
+            maxDisplay = self.properties.domain[1];
+
+            if (self.properties.domain[0] > minDisplay)
+                addLower = true;
+            minDisplay = self.properties.domain[0];
+        }
+
+        // Draw color scale labels.
+        sg.selectAll('text')
+            .data(colors)
+            .enter().append('text')
+            .text((d, i) => {
+                // The last element in the colors list corresponds to the lower threshold.
+                if (i === steps - 1) {
+                    let text = self.properties.format(minDisplay);
+                    if (addLower)
+                        text = `< ${text}`;
+                    return text;
+                }
+                return self.properties.format(self.colorScale.invertExtent(d)[0]);
+            })
+            .attr('class', (d, i) => 'text-' + i)
+            .attr('x', wRect + offsetText)
+            .attr('y', (d, i) => i * hRect + (hRect + hRect * offsetYFactor));
+
+        // Draw label for end of extent.
+        sg.append('text')
+            .text(() => {
+                let text = self.properties.format(maxDisplay);
+                if (addGreater)
+                    text = `> ${text}`;
+                return text;
+            })
+            .attr('x', wRect + offsetText)
+            .attr('y', offsetText * offsetYFactor * 2);
+    }
+}
+
+Choropleth.DEFAULT_COLORS = D3_CHROMATIC_SCHEME_OrRd9;
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/src/js/geomap.js":
+/*!*************************************************!*\
+  !*** ./node_modules/d3-geomap/src/js/geomap.js ***!
+  \*************************************************/
+/*! exports provided: Geomap */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Geomap", function() { return Geomap; });
+/* harmony import */ var d3_selection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-selection */ "./node_modules/d3-selection/src/index.js");
+/* harmony import */ var d3_transition__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3-transition */ "./node_modules/d3-transition/src/index.js");
+/* harmony import */ var topojson__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! topojson */ "./node_modules/d3-geomap/node_modules/topojson/index.js");
+/* harmony import */ var d3_fetch__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! d3-fetch */ "./node_modules/d3-fetch/src/index.js");
+/* harmony import */ var d3_geo__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! d3-geo */ "./node_modules/d3-geo/src/index.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils */ "./node_modules/d3-geomap/src/js/utils.js");
+ // selections are passed into draw
+ // selections are transitioned
+
+
+
+
+
+
+
+
+class Geomap {
+    constructor() {
+        // Set default properties optimized for naturalEarth projection.
+        this.properties = {
+            /**
+             * URL to TopoJSON file to load when geomap is drawn. Ignored if geoData is specified.
+             *
+             * @type {string|null}
+             */
+            geofile: null,
+            /**
+             * Contents of TopoJSON file. If specified, geofile is ignored.
+             *
+             * @type {Promise<object>|object|null}
+             */
+            geoData: null,
+            height: null,
+            postUpdate: null,
+            projection: d3_geo__WEBPACK_IMPORTED_MODULE_4__["geoNaturalEarth1"],
+            rotate: [0, 0, 0],
+            scale: null,
+            translate: null,
+            unitId: 'iso3',
+            unitPrefix: 'unit-',
+            units: 'units',
+            unitTitle: (d) => d.properties.name,
+            width: null,
+            zoomFactor: 4
+        };
+
+        // Setup methods to access properties.
+        for (let key in this.properties)
+            Object(_utils__WEBPACK_IMPORTED_MODULE_5__["addAccessor"])(this, key, this.properties[key]);
+
+        // Store internal properties.
+        this._ = {};
+    }
+
+    clicked(d) {
+        let k = 1,
+            x0 = this.properties.width / 2,
+            y0 = this.properties.height / 2,
+            x = x0,
+            y = y0;
+
+        if (d && d.hasOwnProperty('geometry') && this._.centered !== d) {
+            let centroid = this.path.centroid(d);
+            x = centroid[0];
+            y = centroid[1];
+            k = this.properties.zoomFactor;
+            this._.centered = d;
+        } else {
+            this._.centered = null;
+        }
+
+        this.svg.selectAll('path.unit')
+           .classed('active', this._.centered && ((_) => _ === this._.centered));
+
+        this.svg.selectAll('g.zoom')
+            .transition()
+            .duration(750)
+            .attr('transform', `translate(${x0}, ${y0})scale(${k})translate(-${x}, -${y})`);
+    }
+
+    /**
+     * Load geo data once here and draw map. Call update at the end.
+     *
+     * By default map dimensions are calculated based on the width of the
+     * selection container element so they are responsive. Properties set before
+     * will be kept.
+     */
+    draw(selection) {
+        let self = this;
+        self.data = selection.datum();
+
+        if (!self.properties.width)
+            self.properties.width = selection.node().getBoundingClientRect().width;
+
+        if (!self.properties.height)
+            self.properties.height = self.properties.width / 1.92;
+
+        if (!self.properties.scale)
+            self.properties.scale = self.properties.width / 5.4;
+
+        if (!self.properties.translate)
+            self.properties.translate = [self.properties.width / 2, self.properties.height / 2];
+
+        self.svg = selection.append('svg')
+            .attr('width', self.properties.width)
+            .attr('height', self.properties.height);
+
+        self.svg.append('rect')
+            .attr('class', 'background')
+            .attr('width', self.properties.width)
+            .attr('height', self.properties.height)
+            .on('click', self.clicked.bind(self));
+
+        // Set map projection and path.
+        let proj = self.properties.projection()
+            .scale(self.properties.scale)
+            .translate(self.properties.translate)
+            .precision(.1);
+
+        // Not every projection supports rotation, e. g. albersUsa does not.
+        if (proj.hasOwnProperty('rotate') && self.properties.rotate)
+            proj.rotate(self.properties.rotate);
+
+        self.path = Object(d3_geo__WEBPACK_IMPORTED_MODULE_4__["geoPath"])().projection(proj);
+
+        const drawGeoData = geo => {
+            self.geo = geo;
+            self.svg.append('g').attr('class', 'units zoom')
+                .selectAll('path')
+                .data(Object(topojson__WEBPACK_IMPORTED_MODULE_2__["feature"])(geo, geo.objects[self.properties.units]).features)
+                .enter().append('path')
+                    .attr('class', (d) => `unit ${self.properties.unitPrefix}${d.properties[self.properties.unitId]}`)
+                    .attr('d', self.path)
+                    .on('click', self.clicked.bind(self))
+                    .append('title')
+                        .text(self.properties.unitTitle);
+            self.update();
+        };
+
+        Promise.resolve()
+            .then(() => {
+                if (self.properties.geoData) {
+                    return self.properties.geoData;
+                }
+                return Object(d3_fetch__WEBPACK_IMPORTED_MODULE_3__["json"])(self.properties.geofile);
+            })
+            .then(geo => drawGeoData(geo));
+    }
+
+    update() {
+        if (this.properties.postUpdate)
+            this.properties.postUpdate();
+    }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-geomap/src/js/utils.js":
+/*!************************************************!*\
+  !*** ./node_modules/d3-geomap/src/js/utils.js ***!
+  \************************************************/
+/*! exports provided: addAccessor */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "addAccessor", function() { return addAccessor; });
+function addAccessor(obj, name, value) {
+    obj[name] = (_) => {
+        if (typeof _ === 'undefined')
+            return obj.properties[name] || value;
+        obj.properties[name] = _;
+        return obj;
+    };
+}
 
 
 /***/ }),
@@ -36900,6 +43162,721 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/topojson-client/src/bbox.js":
+/*!**************************************************!*\
+  !*** ./node_modules/topojson-client/src/bbox.js ***!
+  \**************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _transform__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./transform */ "./node_modules/topojson-client/src/transform.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(topology) {
+  var t = Object(_transform__WEBPACK_IMPORTED_MODULE_0__["default"])(topology.transform), key,
+      x0 = Infinity, y0 = x0, x1 = -x0, y1 = -x0;
+
+  function bboxPoint(p) {
+    p = t(p);
+    if (p[0] < x0) x0 = p[0];
+    if (p[0] > x1) x1 = p[0];
+    if (p[1] < y0) y0 = p[1];
+    if (p[1] > y1) y1 = p[1];
+  }
+
+  function bboxGeometry(o) {
+    switch (o.type) {
+      case "GeometryCollection": o.geometries.forEach(bboxGeometry); break;
+      case "Point": bboxPoint(o.coordinates); break;
+      case "MultiPoint": o.coordinates.forEach(bboxPoint); break;
+    }
+  }
+
+  topology.arcs.forEach(function(arc) {
+    var i = -1, n = arc.length, p;
+    while (++i < n) {
+      p = t(arc[i], i);
+      if (p[0] < x0) x0 = p[0];
+      if (p[0] > x1) x1 = p[0];
+      if (p[1] < y0) y0 = p[1];
+      if (p[1] > y1) y1 = p[1];
+    }
+  });
+
+  for (key in topology.objects) {
+    bboxGeometry(topology.objects[key]);
+  }
+
+  return [x0, y0, x1, y1];
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/topojson-client/src/bisect.js":
+/*!****************************************************!*\
+  !*** ./node_modules/topojson-client/src/bisect.js ***!
+  \****************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(a, x) {
+  var lo = 0, hi = a.length;
+  while (lo < hi) {
+    var mid = lo + hi >>> 1;
+    if (a[mid] < x) lo = mid + 1;
+    else hi = mid;
+  }
+  return lo;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/topojson-client/src/feature.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/topojson-client/src/feature.js ***!
+  \*****************************************************/
+/*! exports provided: default, feature, object */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "feature", function() { return feature; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "object", function() { return object; });
+/* harmony import */ var _reverse__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./reverse */ "./node_modules/topojson-client/src/reverse.js");
+/* harmony import */ var _transform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./transform */ "./node_modules/topojson-client/src/transform.js");
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(topology, o) {
+  return o.type === "GeometryCollection"
+      ? {type: "FeatureCollection", features: o.geometries.map(function(o) { return feature(topology, o); })}
+      : feature(topology, o);
+});
+
+function feature(topology, o) {
+  var id = o.id,
+      bbox = o.bbox,
+      properties = o.properties == null ? {} : o.properties,
+      geometry = object(topology, o);
+  return id == null && bbox == null ? {type: "Feature", properties: properties, geometry: geometry}
+      : bbox == null ? {type: "Feature", id: id, properties: properties, geometry: geometry}
+      : {type: "Feature", id: id, bbox: bbox, properties: properties, geometry: geometry};
+}
+
+function object(topology, o) {
+  var transformPoint = Object(_transform__WEBPACK_IMPORTED_MODULE_1__["default"])(topology.transform),
+      arcs = topology.arcs;
+
+  function arc(i, points) {
+    if (points.length) points.pop();
+    for (var a = arcs[i < 0 ? ~i : i], k = 0, n = a.length; k < n; ++k) {
+      points.push(transformPoint(a[k], k));
+    }
+    if (i < 0) Object(_reverse__WEBPACK_IMPORTED_MODULE_0__["default"])(points, n);
+  }
+
+  function point(p) {
+    return transformPoint(p);
+  }
+
+  function line(arcs) {
+    var points = [];
+    for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], points);
+    if (points.length < 2) points.push(points[0]); // This should never happen per the specification.
+    return points;
+  }
+
+  function ring(arcs) {
+    var points = line(arcs);
+    while (points.length < 4) points.push(points[0]); // This may happen if an arc has only two points.
+    return points;
+  }
+
+  function polygon(arcs) {
+    return arcs.map(ring);
+  }
+
+  function geometry(o) {
+    var type = o.type, coordinates;
+    switch (type) {
+      case "GeometryCollection": return {type: type, geometries: o.geometries.map(geometry)};
+      case "Point": coordinates = point(o.coordinates); break;
+      case "MultiPoint": coordinates = o.coordinates.map(point); break;
+      case "LineString": coordinates = line(o.arcs); break;
+      case "MultiLineString": coordinates = o.arcs.map(line); break;
+      case "Polygon": coordinates = polygon(o.arcs); break;
+      case "MultiPolygon": coordinates = o.arcs.map(polygon); break;
+      default: return null;
+    }
+    return {type: type, coordinates: coordinates};
+  }
+
+  return geometry(o);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/topojson-client/src/identity.js":
+/*!******************************************************!*\
+  !*** ./node_modules/topojson-client/src/identity.js ***!
+  \******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(x) {
+  return x;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/topojson-client/src/index.js":
+/*!***************************************************!*\
+  !*** ./node_modules/topojson-client/src/index.js ***!
+  \***************************************************/
+/*! exports provided: bbox, feature, mesh, meshArcs, merge, mergeArcs, neighbors, quantize, transform, untransform */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _bbox_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./bbox.js */ "./node_modules/topojson-client/src/bbox.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "bbox", function() { return _bbox_js__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony import */ var _feature_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./feature.js */ "./node_modules/topojson-client/src/feature.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "feature", function() { return _feature_js__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _mesh_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./mesh.js */ "./node_modules/topojson-client/src/mesh.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mesh", function() { return _mesh_js__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "meshArcs", function() { return _mesh_js__WEBPACK_IMPORTED_MODULE_2__["meshArcs"]; });
+
+/* harmony import */ var _merge_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./merge.js */ "./node_modules/topojson-client/src/merge.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "merge", function() { return _merge_js__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mergeArcs", function() { return _merge_js__WEBPACK_IMPORTED_MODULE_3__["mergeArcs"]; });
+
+/* harmony import */ var _neighbors_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./neighbors.js */ "./node_modules/topojson-client/src/neighbors.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "neighbors", function() { return _neighbors_js__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+
+/* harmony import */ var _quantize_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./quantize.js */ "./node_modules/topojson-client/src/quantize.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quantize", function() { return _quantize_js__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+/* harmony import */ var _transform_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./transform.js */ "./node_modules/topojson-client/src/transform.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "transform", function() { return _transform_js__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+
+/* harmony import */ var _untransform_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./untransform.js */ "./node_modules/topojson-client/src/untransform.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "untransform", function() { return _untransform_js__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/topojson-client/src/merge.js":
+/*!***************************************************!*\
+  !*** ./node_modules/topojson-client/src/merge.js ***!
+  \***************************************************/
+/*! exports provided: default, mergeArcs */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mergeArcs", function() { return mergeArcs; });
+/* harmony import */ var _feature__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./feature */ "./node_modules/topojson-client/src/feature.js");
+/* harmony import */ var _stitch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./stitch */ "./node_modules/topojson-client/src/stitch.js");
+
+
+
+function planarRingArea(ring) {
+  var i = -1, n = ring.length, a, b = ring[n - 1], area = 0;
+  while (++i < n) a = b, b = ring[i], area += a[0] * b[1] - a[1] * b[0];
+  return Math.abs(area); // Note: doubled area!
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (function(topology) {
+  return Object(_feature__WEBPACK_IMPORTED_MODULE_0__["object"])(topology, mergeArcs.apply(this, arguments));
+});
+
+function mergeArcs(topology, objects) {
+  var polygonsByArc = {},
+      polygons = [],
+      groups = [];
+
+  objects.forEach(geometry);
+
+  function geometry(o) {
+    switch (o.type) {
+      case "GeometryCollection": o.geometries.forEach(geometry); break;
+      case "Polygon": extract(o.arcs); break;
+      case "MultiPolygon": o.arcs.forEach(extract); break;
+    }
+  }
+
+  function extract(polygon) {
+    polygon.forEach(function(ring) {
+      ring.forEach(function(arc) {
+        (polygonsByArc[arc = arc < 0 ? ~arc : arc] || (polygonsByArc[arc] = [])).push(polygon);
+      });
+    });
+    polygons.push(polygon);
+  }
+
+  function area(ring) {
+    return planarRingArea(Object(_feature__WEBPACK_IMPORTED_MODULE_0__["object"])(topology, {type: "Polygon", arcs: [ring]}).coordinates[0]);
+  }
+
+  polygons.forEach(function(polygon) {
+    if (!polygon._) {
+      var group = [],
+          neighbors = [polygon];
+      polygon._ = 1;
+      groups.push(group);
+      while (polygon = neighbors.pop()) {
+        group.push(polygon);
+        polygon.forEach(function(ring) {
+          ring.forEach(function(arc) {
+            polygonsByArc[arc < 0 ? ~arc : arc].forEach(function(polygon) {
+              if (!polygon._) {
+                polygon._ = 1;
+                neighbors.push(polygon);
+              }
+            });
+          });
+        });
+      }
+    }
+  });
+
+  polygons.forEach(function(polygon) {
+    delete polygon._;
+  });
+
+  return {
+    type: "MultiPolygon",
+    arcs: groups.map(function(polygons) {
+      var arcs = [], n;
+
+      // Extract the exterior (unique) arcs.
+      polygons.forEach(function(polygon) {
+        polygon.forEach(function(ring) {
+          ring.forEach(function(arc) {
+            if (polygonsByArc[arc < 0 ? ~arc : arc].length < 2) {
+              arcs.push(arc);
+            }
+          });
+        });
+      });
+
+      // Stitch the arcs into one or more rings.
+      arcs = Object(_stitch__WEBPACK_IMPORTED_MODULE_1__["default"])(topology, arcs);
+
+      // If more than one ring is returned,
+      // at most one of these rings can be the exterior;
+      // choose the one with the greatest absolute area.
+      if ((n = arcs.length) > 1) {
+        for (var i = 1, k = area(arcs[0]), ki, t; i < n; ++i) {
+          if ((ki = area(arcs[i])) > k) {
+            t = arcs[0], arcs[0] = arcs[i], arcs[i] = t, k = ki;
+          }
+        }
+      }
+
+      return arcs;
+    }).filter(function(arcs) {
+      return arcs.length > 0;
+    })
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/topojson-client/src/mesh.js":
+/*!**************************************************!*\
+  !*** ./node_modules/topojson-client/src/mesh.js ***!
+  \**************************************************/
+/*! exports provided: default, meshArcs */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "meshArcs", function() { return meshArcs; });
+/* harmony import */ var _feature__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./feature */ "./node_modules/topojson-client/src/feature.js");
+/* harmony import */ var _stitch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./stitch */ "./node_modules/topojson-client/src/stitch.js");
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(topology) {
+  return Object(_feature__WEBPACK_IMPORTED_MODULE_0__["object"])(topology, meshArcs.apply(this, arguments));
+});
+
+function meshArcs(topology, object, filter) {
+  var arcs, i, n;
+  if (arguments.length > 1) arcs = extractArcs(topology, object, filter);
+  else for (i = 0, arcs = new Array(n = topology.arcs.length); i < n; ++i) arcs[i] = i;
+  return {type: "MultiLineString", arcs: Object(_stitch__WEBPACK_IMPORTED_MODULE_1__["default"])(topology, arcs)};
+}
+
+function extractArcs(topology, object, filter) {
+  var arcs = [],
+      geomsByArc = [],
+      geom;
+
+  function extract0(i) {
+    var j = i < 0 ? ~i : i;
+    (geomsByArc[j] || (geomsByArc[j] = [])).push({i: i, g: geom});
+  }
+
+  function extract1(arcs) {
+    arcs.forEach(extract0);
+  }
+
+  function extract2(arcs) {
+    arcs.forEach(extract1);
+  }
+
+  function extract3(arcs) {
+    arcs.forEach(extract2);
+  }
+
+  function geometry(o) {
+    switch (geom = o, o.type) {
+      case "GeometryCollection": o.geometries.forEach(geometry); break;
+      case "LineString": extract1(o.arcs); break;
+      case "MultiLineString": case "Polygon": extract2(o.arcs); break;
+      case "MultiPolygon": extract3(o.arcs); break;
+    }
+  }
+
+  geometry(object);
+
+  geomsByArc.forEach(filter == null
+      ? function(geoms) { arcs.push(geoms[0].i); }
+      : function(geoms) { if (filter(geoms[0].g, geoms[geoms.length - 1].g)) arcs.push(geoms[0].i); });
+
+  return arcs;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/topojson-client/src/neighbors.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/topojson-client/src/neighbors.js ***!
+  \*******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _bisect__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./bisect */ "./node_modules/topojson-client/src/bisect.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(objects) {
+  var indexesByArc = {}, // arc index -> array of object indexes
+      neighbors = objects.map(function() { return []; });
+
+  function line(arcs, i) {
+    arcs.forEach(function(a) {
+      if (a < 0) a = ~a;
+      var o = indexesByArc[a];
+      if (o) o.push(i);
+      else indexesByArc[a] = [i];
+    });
+  }
+
+  function polygon(arcs, i) {
+    arcs.forEach(function(arc) { line(arc, i); });
+  }
+
+  function geometry(o, i) {
+    if (o.type === "GeometryCollection") o.geometries.forEach(function(o) { geometry(o, i); });
+    else if (o.type in geometryType) geometryType[o.type](o.arcs, i);
+  }
+
+  var geometryType = {
+    LineString: line,
+    MultiLineString: polygon,
+    Polygon: polygon,
+    MultiPolygon: function(arcs, i) { arcs.forEach(function(arc) { polygon(arc, i); }); }
+  };
+
+  objects.forEach(geometry);
+
+  for (var i in indexesByArc) {
+    for (var indexes = indexesByArc[i], m = indexes.length, j = 0; j < m; ++j) {
+      for (var k = j + 1; k < m; ++k) {
+        var ij = indexes[j], ik = indexes[k], n;
+        if ((n = neighbors[ij])[i = Object(_bisect__WEBPACK_IMPORTED_MODULE_0__["default"])(n, ik)] !== ik) n.splice(i, 0, ik);
+        if ((n = neighbors[ik])[i = Object(_bisect__WEBPACK_IMPORTED_MODULE_0__["default"])(n, ij)] !== ij) n.splice(i, 0, ij);
+      }
+    }
+  }
+
+  return neighbors;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/topojson-client/src/quantize.js":
+/*!******************************************************!*\
+  !*** ./node_modules/topojson-client/src/quantize.js ***!
+  \******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _bbox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./bbox */ "./node_modules/topojson-client/src/bbox.js");
+/* harmony import */ var _untransform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./untransform */ "./node_modules/topojson-client/src/untransform.js");
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(topology, transform) {
+  if (topology.transform) throw new Error("already quantized");
+
+  if (!transform || !transform.scale) {
+    if (!((n = Math.floor(transform)) >= 2)) throw new Error("n must be ≥2");
+    box = topology.bbox || Object(_bbox__WEBPACK_IMPORTED_MODULE_0__["default"])(topology);
+    var x0 = box[0], y0 = box[1], x1 = box[2], y1 = box[3], n;
+    transform = {scale: [x1 - x0 ? (x1 - x0) / (n - 1) : 1, y1 - y0 ? (y1 - y0) / (n - 1) : 1], translate: [x0, y0]};
+  } else {
+    box = topology.bbox;
+  }
+
+  var t = Object(_untransform__WEBPACK_IMPORTED_MODULE_1__["default"])(transform), box, key, inputs = topology.objects, outputs = {};
+
+  function quantizePoint(point) {
+    return t(point);
+  }
+
+  function quantizeGeometry(input) {
+    var output;
+    switch (input.type) {
+      case "GeometryCollection": output = {type: "GeometryCollection", geometries: input.geometries.map(quantizeGeometry)}; break;
+      case "Point": output = {type: "Point", coordinates: quantizePoint(input.coordinates)}; break;
+      case "MultiPoint": output = {type: "MultiPoint", coordinates: input.coordinates.map(quantizePoint)}; break;
+      default: return input;
+    }
+    if (input.id != null) output.id = input.id;
+    if (input.bbox != null) output.bbox = input.bbox;
+    if (input.properties != null) output.properties = input.properties;
+    return output;
+  }
+
+  function quantizeArc(input) {
+    var i = 0, j = 1, n = input.length, p, output = new Array(n); // pessimistic
+    output[0] = t(input[0], 0);
+    while (++i < n) if ((p = t(input[i], i))[0] || p[1]) output[j++] = p; // non-coincident points
+    if (j === 1) output[j++] = [0, 0]; // an arc must have at least two points
+    output.length = j;
+    return output;
+  }
+
+  for (key in inputs) outputs[key] = quantizeGeometry(inputs[key]);
+
+  return {
+    type: "Topology",
+    bbox: box,
+    transform: transform,
+    objects: outputs,
+    arcs: topology.arcs.map(quantizeArc)
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/topojson-client/src/reverse.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/topojson-client/src/reverse.js ***!
+  \*****************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(array, n) {
+  var t, j = array.length, i = j - n;
+  while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/topojson-client/src/stitch.js":
+/*!****************************************************!*\
+  !*** ./node_modules/topojson-client/src/stitch.js ***!
+  \****************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(topology, arcs) {
+  var stitchedArcs = {},
+      fragmentByStart = {},
+      fragmentByEnd = {},
+      fragments = [],
+      emptyIndex = -1;
+
+  // Stitch empty arcs first, since they may be subsumed by other arcs.
+  arcs.forEach(function(i, j) {
+    var arc = topology.arcs[i < 0 ? ~i : i], t;
+    if (arc.length < 3 && !arc[1][0] && !arc[1][1]) {
+      t = arcs[++emptyIndex], arcs[emptyIndex] = i, arcs[j] = t;
+    }
+  });
+
+  arcs.forEach(function(i) {
+    var e = ends(i),
+        start = e[0],
+        end = e[1],
+        f, g;
+
+    if (f = fragmentByEnd[start]) {
+      delete fragmentByEnd[f.end];
+      f.push(i);
+      f.end = end;
+      if (g = fragmentByStart[end]) {
+        delete fragmentByStart[g.start];
+        var fg = g === f ? f : f.concat(g);
+        fragmentByStart[fg.start = f.start] = fragmentByEnd[fg.end = g.end] = fg;
+      } else {
+        fragmentByStart[f.start] = fragmentByEnd[f.end] = f;
+      }
+    } else if (f = fragmentByStart[end]) {
+      delete fragmentByStart[f.start];
+      f.unshift(i);
+      f.start = start;
+      if (g = fragmentByEnd[start]) {
+        delete fragmentByEnd[g.end];
+        var gf = g === f ? f : g.concat(f);
+        fragmentByStart[gf.start = g.start] = fragmentByEnd[gf.end = f.end] = gf;
+      } else {
+        fragmentByStart[f.start] = fragmentByEnd[f.end] = f;
+      }
+    } else {
+      f = [i];
+      fragmentByStart[f.start = start] = fragmentByEnd[f.end = end] = f;
+    }
+  });
+
+  function ends(i) {
+    var arc = topology.arcs[i < 0 ? ~i : i], p0 = arc[0], p1;
+    if (topology.transform) p1 = [0, 0], arc.forEach(function(dp) { p1[0] += dp[0], p1[1] += dp[1]; });
+    else p1 = arc[arc.length - 1];
+    return i < 0 ? [p1, p0] : [p0, p1];
+  }
+
+  function flush(fragmentByEnd, fragmentByStart) {
+    for (var k in fragmentByEnd) {
+      var f = fragmentByEnd[k];
+      delete fragmentByStart[f.start];
+      delete f.start;
+      delete f.end;
+      f.forEach(function(i) { stitchedArcs[i < 0 ? ~i : i] = 1; });
+      fragments.push(f);
+    }
+  }
+
+  flush(fragmentByEnd, fragmentByStart);
+  flush(fragmentByStart, fragmentByEnd);
+  arcs.forEach(function(i) { if (!stitchedArcs[i < 0 ? ~i : i]) fragments.push([i]); });
+
+  return fragments;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/topojson-client/src/transform.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/topojson-client/src/transform.js ***!
+  \*******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _identity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./identity */ "./node_modules/topojson-client/src/identity.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(transform) {
+  if (transform == null) return _identity__WEBPACK_IMPORTED_MODULE_0__["default"];
+  var x0,
+      y0,
+      kx = transform.scale[0],
+      ky = transform.scale[1],
+      dx = transform.translate[0],
+      dy = transform.translate[1];
+  return function(input, i) {
+    if (!i) x0 = y0 = 0;
+    var j = 2, n = input.length, output = new Array(n);
+    output[0] = (x0 += input[0]) * kx + dx;
+    output[1] = (y0 += input[1]) * ky + dy;
+    while (j < n) output[j] = input[j], ++j;
+    return output;
+  };
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/topojson-client/src/untransform.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/topojson-client/src/untransform.js ***!
+  \*********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _identity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./identity */ "./node_modules/topojson-client/src/identity.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function(transform) {
+  if (transform == null) return _identity__WEBPACK_IMPORTED_MODULE_0__["default"];
+  var x0,
+      y0,
+      kx = transform.scale[0],
+      ky = transform.scale[1],
+      dx = transform.translate[0],
+      dy = transform.translate[1];
+  return function(input, i) {
+    if (!i) x0 = y0 = 0;
+    var j = 2,
+        n = input.length,
+        output = new Array(n),
+        x1 = Math.round((input[0] - dx) / kx),
+        y1 = Math.round((input[1] - dy) / ky);
+    output[0] = x1 - x0, x0 = x1;
+    output[1] = y1 - y0, y0 = y1;
+    while (j < n) output[j] = input[j], ++j;
+    return output;
+  };
+});
+
+
+/***/ }),
+
 /***/ "./parse.js":
 /*!******************!*\
   !*** ./parse.js ***!
@@ -36936,7583 +43913,8088 @@ var parse = function parse(data) {
   return res;
 };
 
-module.exports = parse;
-console.log(parse([{
-  "Symbol": "MMM",
-  "Name": "3M Company",
-  "Sector": "Industrials",
-  "Price": 222.89,
-  "Price/Earnings": 24.31,
-  "Dividend Yield": 2.3328617,
-  "Earnings/Share": 7.92,
-  "52 Week Low": 259.77,
-  "52 Week High": 175.49,
-  "Market Cap": 138721055226,
-  "EBITDA": 9048000000,
-  "Price/Sales": 4.3902707,
-  "Price/Book": 11.34,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MMM"
-}, {
-  "Symbol": "AOS",
-  "Name": "A.O. Smith Corp",
-  "Sector": "Industrials",
-  "Price": 60.24,
-  "Price/Earnings": 27.76,
-  "Dividend Yield": 1.1479592,
-  "Earnings/Share": 1.7,
-  "52 Week Low": 68.39,
-  "52 Week High": 48.925,
-  "Market Cap": 10783419933,
-  "EBITDA": 601000000,
-  "Price/Sales": 3.5754826,
-  "Price/Book": 6.35,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AOS"
-}, {
-  "Symbol": "ABT",
-  "Name": "Abbott Laboratories",
-  "Sector": "Health Care",
-  "Price": 56.27,
-  "Price/Earnings": 22.51,
-  "Dividend Yield": 1.9089824,
-  "Earnings/Share": 0.26,
-  "52 Week Low": 64.6,
-  "52 Week High": 42.28,
-  "Market Cap": 102121042306,
-  "EBITDA": 5744000000,
-  "Price/Sales": 3.7404804,
-  "Price/Book": 3.19,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ABT"
-}, {
-  "Symbol": "ABBV",
-  "Name": "AbbVie Inc.",
-  "Sector": "Health Care",
-  "Price": 108.48,
-  "Price/Earnings": 19.41,
-  "Dividend Yield": 2.4995599,
-  "Earnings/Share": 3.29,
-  "52 Week Low": 125.86,
-  "52 Week High": 60.05,
-  "Market Cap": 181386347059,
-  "EBITDA": 10310000000,
-  "Price/Sales": 6.291571,
-  "Price/Book": 26.14,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ABBV"
-}, {
-  "Symbol": "ACN",
-  "Name": "Accenture plc",
-  "Sector": "Information Technology",
-  "Price": 150.51,
-  "Price/Earnings": 25.47,
-  "Dividend Yield": 1.7144699,
-  "Earnings/Share": 5.44,
-  "52 Week Low": 162.6,
-  "52 Week High": 114.82,
-  "Market Cap": 98765855553,
-  "EBITDA": 5643228000,
-  "Price/Sales": 2.604117,
-  "Price/Book": 10.62,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ACN"
-}, {
-  "Symbol": "ATVI",
-  "Name": "Activision Blizzard",
-  "Sector": "Information Technology",
-  "Price": 65.83,
-  "Price/Earnings": 31.8,
-  "Dividend Yield": 0.43190324,
-  "Earnings/Share": 1.28,
-  "52 Week Low": 74.945,
-  "52 Week High": 38.93,
-  "Market Cap": 52518668144,
-  "EBITDA": 2704000000,
-  "Price/Sales": 10.59512,
-  "Price/Book": 5.16,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ATVI"
-}, {
-  "Symbol": "AYI",
-  "Name": "Acuity Brands Inc",
-  "Sector": "Industrials",
-  "Price": 145.41,
-  "Price/Earnings": 18.22,
-  "Dividend Yield": 0.35118526,
-  "Earnings/Share": 7.43,
-  "52 Week Low": 225.36,
-  "52 Week High": 142,
-  "Market Cap": 6242377704,
-  "EBITDA": 587800000,
-  "Price/Sales": 1.7953473,
-  "Price/Book": 3.55,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AYI"
-}, {
-  "Symbol": "ADBE",
-  "Name": "Adobe Systems Inc",
-  "Sector": "Information Technology",
-  "Price": 185.16,
-  "Price/Earnings": 52.31,
-  "Dividend Yield": 0,
-  "Earnings/Share": 3.39,
-  "52 Week Low": 204.45,
-  "52 Week High": 114.451,
-  "Market Cap": 94550214268,
-  "EBITDA": 2538040000,
-  "Price/Sales": 13.092818,
-  "Price/Book": 11.06,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ADBE"
-}, {
-  "Symbol": "AAP",
-  "Name": "Advance Auto Parts",
-  "Sector": "Consumer Discretionary",
-  "Price": 109.63,
-  "Price/Earnings": 19.54,
-  "Dividend Yield": 0.21832074,
-  "Earnings/Share": 6.19,
-  "52 Week Low": 169.55,
-  "52 Week High": 78.81,
-  "Market Cap": 8123611867,
-  "EBITDA": 853941000,
-  "Price/Sales": 1.1301061,
-  "Price/Book": 2.51,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AAP"
-}, {
-  "Symbol": "AMD",
-  "Name": "Advanced Micro Devices Inc",
-  "Sector": "Information Technology",
-  "Price": 11.22,
-  "Price/Earnings": 187,
-  "Dividend Yield": 0,
-  "Earnings/Share": 0.03,
-  "52 Week Low": 15.65,
-  "52 Week High": 9.7,
-  "Market Cap": 11191663795,
-  "EBITDA": 339000000,
-  "Price/Sales": 2.1091955,
-  "Price/Book": 21.47,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AMD"
-}, {
-  "Symbol": "AES",
-  "Name": "AES Corp",
-  "Sector": "Utilities",
-  "Price": 10.06,
-  "Price/Earnings": 9.96,
-  "Dividend Yield": 4.961832,
-  "Earnings/Share": -1.72,
-  "52 Week Low": 12.05,
-  "52 Week High": 10,
-  "Market Cap": 6920851212,
-  "EBITDA": 3001000000,
-  "Price/Sales": 0.65951383,
-  "Price/Book": 2.2,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AES"
-}, {
-  "Symbol": "AET",
-  "Name": "Aetna Inc",
-  "Sector": "Health Care",
-  "Price": 178,
-  "Price/Earnings": 18.11,
-  "Dividend Yield": 1.101989,
-  "Earnings/Share": 5.75,
-  "52 Week Low": 194.4,
-  "52 Week High": 119.51,
-  "Market Cap": 59197016353,
-  "EBITDA": 4139000000,
-  "Price/Sales": 0.9923546,
-  "Price/Book": 3.79,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AET"
-}, {
-  "Symbol": "AMG",
-  "Name": "Affiliated Managers Group Inc",
-  "Sector": "Financials",
-  "Price": 179.11,
-  "Price/Earnings": 12.24,
-  "Dividend Yield": 0.6387395,
-  "Earnings/Share": 12.07,
-  "52 Week Low": 216.995,
-  "52 Week High": 148.81,
-  "Market Cap": 10442174371,
-  "EBITDA": 1261400000,
-  "Price/Sales": 4.591235,
-  "Price/Book": 2.89,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AMG"
-}, {
-  "Symbol": "AFL",
-  "Name": "AFLAC Inc",
-  "Sector": "Financials",
-  "Price": 83.25,
-  "Price/Earnings": 12.24,
-  "Dividend Yield": 2.4299066,
-  "Earnings/Share": 11.01,
-  "52 Week Low": 91.73,
-  "52 Week High": 68.8,
-  "Market Cap": 33422948000,
-  "EBITDA": 0,
-  "Price/Sales": 1.5429344,
-  "Price/Book": 1.53,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AFL"
-}, {
-  "Symbol": "A",
-  "Name": "Agilent Technologies Inc",
-  "Sector": "Health Care",
-  "Price": 65.05,
-  "Price/Earnings": 27.45,
-  "Dividend Yield": 0.8756979,
-  "Earnings/Share": 2.1,
-  "52 Week Low": 75,
-  "52 Week High": 49.23,
-  "Market Cap": 21984606918,
-  "EBITDA": 1094000000,
-  "Price/Sales": 6.493563,
-  "Price/Book": 4.56,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=A"
-}, {
-  "Symbol": "APD",
-  "Name": "Air Products & Chemicals Inc",
-  "Sector": "Materials",
-  "Price": 152.8,
-  "Price/Earnings": 24.22,
-  "Dividend Yield": 2.7811136,
-  "Earnings/Share": 13.66,
-  "52 Week Low": 175.17,
-  "52 Week High": 133.6301,
-  "Market Cap": 34638387128,
-  "EBITDA": 2542500000,
-  "Price/Sales": 4.1163683,
-  "Price/Book": 3.35,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=APD"
-}, {
-  "Symbol": "AKAM",
-  "Name": "Akamai Technologies Inc",
-  "Sector": "Information Technology",
-  "Price": 62.49,
-  "Price/Earnings": 32.55,
-  "Dividend Yield": 0,
-  "Earnings/Share": 1.79,
-  "52 Week Low": 69.56,
-  "52 Week High": 44.65,
-  "Market Cap": 10906904066,
-  "EBITDA": 789517000,
-  "Price/Sales": 5.8546524,
-  "Price/Book": 3.25,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AKAM"
-}, {
-  "Symbol": "ALK",
-  "Name": "Alaska Air Group Inc",
-  "Sector": "Industrials",
-  "Price": 64.04,
-  "Price/Earnings": 9.66,
-  "Dividend Yield": 1.9928383,
-  "Earnings/Share": 8.28,
-  "52 Week Low": 101.43,
-  "52 Week High": 59.25,
-  "Market Cap": 7903173734,
-  "EBITDA": 1665000000,
-  "Price/Sales": 0.9801092,
-  "Price/Book": 2.21,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ALK"
-}, {
-  "Symbol": "ALB",
-  "Name": "Albemarle Corp",
-  "Sector": "Materials",
-  "Price": 105.18,
-  "Price/Earnings": 26.03,
-  "Dividend Yield": 1.2004126,
-  "Earnings/Share": 5.66,
-  "52 Week Low": 144.99,
-  "52 Week High": 90.35,
-  "Market Cap": 11782151266,
-  "EBITDA": 686030000,
-  "Price/Sales": 5.3666205,
-  "Price/Book": 2.98,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ALB"
-}, {
-  "Symbol": "ARE",
-  "Name": "Alexandria Real Estate Equities Inc",
-  "Sector": "Real Estate",
-  "Price": 114.58,
-  "Price/Earnings": 19.03,
-  "Dividend Yield": 3.0262272,
-  "Earnings/Share": 1.57,
-  "52 Week Low": 134.37,
-  "52 Week High": 106.89,
-  "Market Cap": 12043374429,
-  "EBITDA": 0,
-  "Price/Sales": 10.492155,
-  "Price/Book": 2.07,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ARE"
-}, {
-  "Symbol": "ALXN",
-  "Name": "Alexion Pharmaceuticals",
-  "Sector": "Health Care",
-  "Price": 108.47,
-  "Price/Earnings": 22.18,
-  "Dividend Yield": 0,
-  "Earnings/Share": 1.77,
-  "52 Week Low": 149.34,
-  "52 Week High": 96.18,
-  "Market Cap": 26172439795,
-  "EBITDA": 1072000000,
-  "Price/Sales": 9.720562,
-  "Price/Book": 2.82,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ALXN"
-}, {
-  "Symbol": "ALGN",
-  "Name": "Align Technology",
-  "Sector": "Health Care",
-  "Price": 220.71,
-  "Price/Earnings": 56.59,
-  "Dividend Yield": 0,
-  "Earnings/Share": 2.84,
-  "52 Week Low": 287.32,
-  "52 Week High": 92.61,
-  "Market Cap": 18788041378,
-  "EBITDA": 380326000,
-  "Price/Sales": 13.138819,
-  "Price/Book": 16.44,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ALGN"
-}, {
-  "Symbol": "ALLE",
-  "Name": "Allegion",
-  "Sector": "Industrials",
-  "Price": 77.32,
-  "Price/Earnings": 21.07,
-  "Dividend Yield": 0.8004002,
-  "Earnings/Share": 2.37,
-  "52 Week Low": 89.81,
-  "52 Week High": 66.72,
-  "Market Cap": 7599609494,
-  "EBITDA": 531800000,
-  "Price/Sales": 4.265232,
-  "Price/Book": 20.48,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ALLE"
-}, {
-  "Symbol": "AGN",
-  "Name": "Allergan, Plc",
-  "Sector": "Health Care",
-  "Price": 164.2,
-  "Price/Earnings": 10.65,
-  "Dividend Yield": 1.643289,
-  "Earnings/Share": 38.35,
-  "52 Week Low": 256.8,
-  "52 Week High": 160.07,
-  "Market Cap": 56668833898,
-  "EBITDA": -2888100000,
-  "Price/Sales": 4.820115,
-  "Price/Book": 0.83,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AGN"
-}, {
-  "Symbol": "ADS",
-  "Name": "Alliance Data Systems",
-  "Sector": "Information Technology",
-  "Price": 240.6,
-  "Price/Earnings": 13.02,
-  "Dividend Yield": 0.9240122,
-  "Earnings/Share": 14.13,
-  "52 Week Low": 278.33,
-  "52 Week High": 209,
-  "Market Cap": 13632608582,
-  "EBITDA": 2143200000,
-  "Price/Sales": 1.7282298,
-  "Price/Book": 8.28,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ADS"
-}, {
-  "Symbol": "LNT",
-  "Name": "Alliant Energy Corp",
-  "Sector": "Utilities",
-  "Price": 37.14,
-  "Price/Earnings": 19.86,
-  "Dividend Yield": 3.5733333,
-  "Earnings/Share": 1.65,
-  "52 Week Low": 45.55,
-  "52 Week High": 36.84,
-  "Market Cap": 8670163500,
-  "EBITDA": 1168400000,
-  "Price/Sales": 3.4331481,
-  "Price/Book": 2.13,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LNT"
-}, {
-  "Symbol": "ALL",
-  "Name": "Allstate Corp",
-  "Sector": "Financials",
-  "Price": 90.06,
-  "Price/Earnings": 13.26,
-  "Dividend Yield": 1.5278208,
-  "Earnings/Share": 4.68,
-  "52 Week Low": 105.36,
-  "52 Week High": 77.73,
-  "Market Cap": 34759468905,
-  "EBITDA": 0,
-  "Price/Sales": 1.2085556,
-  "Price/Book": 1.67,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ALL"
-}, {
-  "Symbol": "GOOGL",
-  "Name": "Alphabet Inc Class A",
-  "Sector": "Information Technology",
-  "Price": 1007.71,
-  "Price/Earnings": 31.48,
-  "Dividend Yield": 0,
-  "Earnings/Share": 22.27,
-  "52 Week Low": 1198,
-  "52 Week High": 824.3,
-  "Market Cap": 733823966137,
-  "EBITDA": 34217000000,
-  "Price/Sales": 6.801692,
-  "Price/Book": 4.7,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GOOGL"
-}, {
-  "Symbol": "GOOG",
-  "Name": "Alphabet Inc Class C",
-  "Sector": "Information Technology",
-  "Price": 1001.52,
-  "Price/Earnings": 40.29,
-  "Dividend Yield": 0,
-  "Earnings/Share": 22.27,
-  "52 Week Low": 1186.89,
-  "52 Week High": 803.1903,
-  "Market Cap": 728535558140,
-  "EBITDA": 32714000000,
-  "Price/Sales": 6.772653,
-  "Price/Book": 4.67,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GOOG"
-}, {
-  "Symbol": "MO",
-  "Name": "Altria Group Inc",
-  "Sector": "Consumer Staples",
-  "Price": 64.05,
-  "Price/Earnings": 18.89,
-  "Dividend Yield": 3.9526875,
-  "Earnings/Share": 5.31,
-  "52 Week Low": 77.79,
-  "52 Week High": 60.01,
-  "Market Cap": 126985101434,
-  "EBITDA": 10773000000,
-  "Price/Sales": 4.945682,
-  "Price/Book": 10.32,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MO"
-}, {
-  "Symbol": "AMZN",
-  "Name": "Amazon.com Inc",
-  "Sector": "Consumer Discretionary",
-  "Price": 1350.5,
-  "Price/Earnings": 296.16,
-  "Dividend Yield": 0,
-  "Earnings/Share": 6.16,
-  "52 Week Low": 1498,
-  "52 Week High": 812.5,
-  "Market Cap": 685873374731,
-  "EBITDA": 16132000000,
-  "Price/Sales": 3.927053,
-  "Price/Book": 24.28,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AMZN"
-}, {
-  "Symbol": "AEE",
-  "Name": "Ameren Corp",
-  "Sector": "Utilities",
-  "Price": 52.59,
-  "Price/Earnings": 20.38,
-  "Dividend Yield": 3.4404964,
-  "Earnings/Share": 2.68,
-  "52 Week Low": 64.89,
-  "52 Week High": 51.81,
-  "Market Cap": 12905744906,
-  "EBITDA": 2298000000,
-  "Price/Sales": 2.693119,
-  "Price/Book": 1.79,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AEE"
-}, {
-  "Symbol": "AAL",
-  "Name": "American Airlines Group",
-  "Sector": "Industrials",
-  "Price": 48.6,
-  "Price/Earnings": 9.92,
-  "Dividend Yield": 0.7782101,
-  "Earnings/Share": 3.91,
-  "52 Week Low": 59.08,
-  "52 Week High": 39.21,
-  "Market Cap": 24594852352,
-  "EBITDA": 5761000000,
-  "Price/Sales": 0.58022565,
-  "Price/Book": 6.03,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AAL"
-}, {
-  "Symbol": "AEP",
-  "Name": "American Electric Power",
-  "Sector": "Utilities",
-  "Price": 63.38,
-  "Price/Earnings": 17.32,
-  "Dividend Yield": 3.8479443,
-  "Earnings/Share": 1.24,
-  "52 Week Low": 78.07,
-  "52 Week High": 62.69,
-  "Market Cap": 31701916517,
-  "EBITDA": 4450800000,
-  "Price/Sales": 2.7489934,
-  "Price/Book": 1.81,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AEP"
-}, {
-  "Symbol": "AXP",
-  "Name": "American Express Co",
-  "Sector": "Financials",
-  "Price": 88.34,
-  "Price/Earnings": 15,
-  "Dividend Yield": 1.4955667,
-  "Earnings/Share": 2.9,
-  "52 Week Low": 102.385,
-  "52 Week High": 75.51,
-  "Market Cap": 80410990000,
-  "EBITDA": 0,
-  "Price/Sales": 2.273575,
-  "Price/Book": 3.75,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AXP"
-}, {
-  "Symbol": "AIG",
-  "Name": "American International Group, Inc.",
-  "Sector": "Financials",
-  "Price": 58.28,
-  "Price/Earnings": 23.22,
-  "Dividend Yield": 2.1167521,
-  "Earnings/Share": -0.76,
-  "52 Week Low": 67.3,
-  "52 Week High": 57.85,
-  "Market Cap": 54360073164,
-  "EBITDA": 0,
-  "Price/Sales": 1.4686536,
-  "Price/Book": 0.75,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AIG"
-}, {
-  "Symbol": "AMT",
-  "Name": "American Tower Corp A",
-  "Sector": "Real Estate",
-  "Price": 133.57,
-  "Price/Earnings": 20.68,
-  "Dividend Yield": 2,
-  "Earnings/Share": 1.97,
-  "52 Week Low": 155.28,
-  "52 Week High": 103.36,
-  "Market Cap": 59213892640,
-  "EBITDA": 3792383000,
-  "Price/Sales": 11.954137,
-  "Price/Book": 9.22,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AMT"
-}, {
-  "Symbol": "AWK",
-  "Name": "American Water Works Company Inc",
-  "Sector": "Utilities",
-  "Price": 76.06,
-  "Price/Earnings": 26.23,
-  "Dividend Yield": 2.129297,
-  "Earnings/Share": 2.63,
-  "52 Week Low": 92.37,
-  "52 Week High": 71.89,
-  "Market Cap": 13906146184,
-  "EBITDA": 1711000000,
-  "Price/Sales": 5.553833,
-  "Price/Book": 2.55,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AWK"
-}, {
-  "Symbol": "AMP",
-  "Name": "Ameriprise Financial",
-  "Sector": "Financials",
-  "Price": 152.5,
-  "Price/Earnings": 12.41,
-  "Dividend Yield": 2.0735743,
-  "Earnings/Share": 9.44,
-  "52 Week Low": 183.9,
-  "52 Week High": 118.84,
-  "Market Cap": 23472126000,
-  "EBITDA": 0,
-  "Price/Sales": 1.9493247,
-  "Price/Book": 3.73,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AMP"
-}, {
-  "Symbol": "ABC",
-  "Name": "AmerisourceBergen Corp",
-  "Sector": "Health Care",
-  "Price": 91.55,
-  "Price/Earnings": 15.54,
-  "Dividend Yield": 1.6132456,
-  "Earnings/Share": 1.64,
-  "52 Week Low": 106.27,
-  "52 Week High": 71.9,
-  "Market Cap": 20587704101,
-  "EBITDA": 991884000,
-  "Price/Sales": 0.17396984,
-  "Price/Book": 9.73,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ABC"
-}, {
-  "Symbol": "AME",
-  "Name": "AMETEK Inc",
-  "Sector": "Industrials",
-  "Price": 72.05,
-  "Price/Earnings": 27.61,
-  "Dividend Yield": 0.75512403,
-  "Earnings/Share": 2.94,
-  "52 Week Low": 78.51,
-  "52 Week High": 51.31,
-  "Market Cap": 17139651923,
-  "EBITDA": 1025763000,
-  "Price/Sales": 4.015368,
-  "Price/Book": 4.54,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AME"
-}, {
-  "Symbol": "AMGN",
-  "Name": "Amgen Inc",
-  "Sector": "Health Care",
-  "Price": 173.12,
-  "Price/Earnings": 13.76,
-  "Dividend Yield": 2.9751508,
-  "Earnings/Share": 2.57,
-  "52 Week Low": 201.23,
-  "52 Week High": 152.16,
-  "Market Cap": 128133340000,
-  "EBITDA": 11945000000,
-  "Price/Sales": 5.58192,
-  "Price/Book": 3.91,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AMGN"
-}, {
-  "Symbol": "APH",
-  "Name": "Amphenol Corp",
-  "Sector": "Information Technology",
-  "Price": 84.44,
-  "Price/Earnings": 25.9,
-  "Dividend Yield": 0.8608971,
-  "Earnings/Share": 2.05,
-  "52 Week Low": 93.62,
-  "52 Week High": 67.26,
-  "Market Cap": 26955335395,
-  "EBITDA": 1671700000,
-  "Price/Sales": 3.85675,
-  "Price/Book": 6.64,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=APH"
-}, {
-  "Symbol": "APC",
-  "Name": "Anadarko Petroleum Corp",
-  "Sector": "Energy",
-  "Price": 56.2,
-  "Price/Earnings": -21.29,
-  "Dividend Yield": 1.7029973,
-  "Earnings/Share": -5.9,
-  "52 Week Low": 70,
-  "52 Week High": 39.96,
-  "Market Cap": 32129091747,
-  "EBITDA": 3115000000,
-  "Price/Sales": 3.9682212,
-  "Price/Book": 2.88,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=APC"
-}, {
-  "Symbol": "ADI",
-  "Name": "Analog Devices, Inc.",
-  "Sector": "Information Technology",
-  "Price": 82.68,
-  "Price/Earnings": 17.67,
-  "Dividend Yield": 2.108963,
-  "Earnings/Share": 2.11,
-  "52 Week Low": 98.38,
-  "52 Week High": 74.65,
-  "Market Cap": 31811578855,
-  "EBITDA": 1663384000,
-  "Price/Sales": 8.00391,
-  "Price/Book": 3.13,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ADI"
-}, {
-  "Symbol": "ANDV",
-  "Name": "Andeavor",
-  "Sector": "Energy",
-  "Price": 96.9,
-  "Price/Earnings": 18.78,
-  "Dividend Yield": 2.3454583,
-  "Earnings/Share": 6.13,
-  "52 Week Low": 121.71,
-  "52 Week High": 75.11,
-  "Market Cap": 15696449735,
-  "EBITDA": 2548000000,
-  "Price/Sales": 0.6618165,
-  "Price/Book": 1.7,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ANDV"
-}, {
-  "Symbol": "ANSS",
-  "Name": "ANSYS",
-  "Sector": "Information Technology",
-  "Price": 148.84,
-  "Price/Earnings": 42.53,
-  "Dividend Yield": 0,
-  "Earnings/Share": 2.99,
-  "52 Week Low": 164.9,
-  "52 Week High": 94.52,
-  "Market Cap": 13155919129,
-  "EBITDA": 458515000,
-  "Price/Sales": 16.8134,
-  "Price/Book": 5.79,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ANSS"
-}, {
-  "Symbol": "ANTM",
-  "Name": "Anthem Inc.",
-  "Sector": "Health Care",
-  "Price": 230.57,
-  "Price/Earnings": 19.23,
-  "Dividend Yield": 1.2581781,
-  "Earnings/Share": 14.36,
-  "52 Week Low": 267.95,
-  "52 Week High": 156.81,
-  "Market Cap": 61221978627,
-  "EBITDA": 0,
-  "Price/Sales": 0.6696521,
-  "Price/Book": 2.28,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ANTM"
-}, {
-  "Symbol": "AON",
-  "Name": "Aon plc",
-  "Sector": "Financials",
-  "Price": 136.05,
-  "Price/Earnings": 20.8,
-  "Dividend Yield": 1.0245464,
-  "Earnings/Share": 4.66,
-  "52 Week Low": 152.78,
-  "52 Week High": 113.2201,
-  "Market Cap": 35123123422,
-  "EBITDA": 1858000000,
-  "Price/Sales": 3.4972682,
-  "Price/Book": 6.78,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AON"
-}, {
-  "Symbol": "APA",
-  "Name": "Apache Corporation",
-  "Sector": "Energy",
-  "Price": 37.73,
-  "Price/Earnings": -251.53,
-  "Dividend Yield": 2.528445,
-  "Earnings/Share": -3.72,
-  "52 Week Low": 57.9,
-  "52 Week High": 38.14,
-  "Market Cap": 15066280977,
-  "EBITDA": 3265000000,
-  "Price/Sales": 3.651366,
-  "Price/Book": 2.22,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=APA"
-}, {
-  "Symbol": "AIV",
-  "Name": "Apartment Investment & Management",
-  "Sector": "Real Estate",
-  "Price": 38.21,
-  "Price/Earnings": 15.6,
-  "Dividend Yield": 3.876562,
-  "Earnings/Share": 1.95,
-  "52 Week Low": 46.855,
-  "52 Week High": 38.85,
-  "Market Cap": 6156884142,
-  "EBITDA": 874871000,
-  "Price/Sales": 6.187621,
-  "Price/Book": 4.69,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AIV"
-}, {
-  "Symbol": "AAPL",
-  "Name": "Apple Inc.",
-  "Sector": "Information Technology",
-  "Price": 155.15,
-  "Price/Earnings": 16.86,
-  "Dividend Yield": 1.5795412,
-  "Earnings/Share": 9.2,
-  "52 Week Low": 180.1,
-  "52 Week High": 131.12,
-  "Market Cap": 809508034020,
-  "EBITDA": 79386000000,
-  "Price/Sales": 3.4586093,
-  "Price/Book": 5.66,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AAPL"
-}, {
-  "Symbol": "AMAT",
-  "Name": "Applied Materials Inc",
-  "Sector": "Information Technology",
-  "Price": 45.75,
-  "Price/Earnings": 14.08,
-  "Dividend Yield": 0.8215239,
-  "Earnings/Share": 3.17,
-  "52 Week Low": 60.89,
-  "52 Week High": 34.58,
-  "Market Cap": 51296481503,
-  "EBITDA": 4336000000,
-  "Price/Sales": 4.7020154,
-  "Price/Book": 5.44,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AMAT"
-}, {
-  "Symbol": "APTV",
-  "Name": "Aptiv Plc",
-  "Sector": "Consumer Discretionary",
-  "Price": 89.27,
-  "Price/Earnings": 69.74,
-  "Dividend Yield": 0.9392678,
-  "Earnings/Share": 5.05,
-  "52 Week Low": 96.91,
-  "52 Week High": 82.97,
-  "Market Cap": 24906530300,
-  "EBITDA": 2370000000,
-  "Price/Sales": 1.5025798,
-  "Price/Book": 7.56,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=APTV"
-}, {
-  "Symbol": "ADM",
-  "Name": "Archer-Daniels-Midland Co",
-  "Sector": "Consumer Staples",
-  "Price": 41.35,
-  "Price/Earnings": 17.45,
-  "Dividend Yield": 3.1761081,
-  "Earnings/Share": 2.17,
-  "52 Week Low": 47.44,
-  "52 Week High": 38.59,
-  "Market Cap": 23594770663,
-  "EBITDA": 2927000000,
-  "Price/Sales": 0.52478915,
-  "Price/Book": 1.29,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ADM"
-}, {
-  "Symbol": "ARNC",
-  "Name": "Arconic Inc",
-  "Sector": "Industrials",
-  "Price": 24.45,
-  "Price/Earnings": 20.21,
-  "Dividend Yield": 0.9561753,
-  "Earnings/Share": -0.21,
-  "52 Week Low": 31.17,
-  "52 Week High": 21.755,
-  "Market Cap": 12123300000,
-  "EBITDA": 1517000000,
-  "Price/Sales": 0.94214815,
-  "Price/Book": "",
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ARNC"
-}, {
-  "Symbol": "AJG",
-  "Name": "Arthur J. Gallagher & Co.",
-  "Sector": "Financials",
-  "Price": 64.4,
-  "Price/Earnings": 21.05,
-  "Dividend Yield": 2.4807138,
-  "Earnings/Share": 2.54,
-  "52 Week Low": 70.55,
-  "52 Week High": 53.63,
-  "Market Cap": 11968488290,
-  "EBITDA": 888000000,
-  "Price/Sales": 1.9400215,
-  "Price/Book": 2.92,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AJG"
-}, {
-  "Symbol": "AIZ",
-  "Name": "Assurant Inc",
-  "Sector": "Financials",
-  "Price": 85.16,
-  "Price/Earnings": 33.27,
-  "Dividend Yield": 2.5313594,
-  "Earnings/Share": 9.08,
-  "52 Week Low": 106.985,
-  "52 Week High": 85.91,
-  "Market Cap": 4653993594,
-  "EBITDA": 0,
-  "Price/Sales": 0.9821866,
-  "Price/Book": 1.12,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AIZ"
-}, {
-  "Symbol": "T",
-  "Name": "AT&T Inc",
-  "Sector": "Telecommunication Services",
-  "Price": 35.57,
-  "Price/Earnings": 12.14,
-  "Dividend Yield": 5.4156513,
-  "Earnings/Share": 4.76,
-  "52 Week Low": 42.7,
-  "52 Week High": 32.55,
-  "Market Cap": 226713270000,
-  "EBITDA": 49653000000,
-  "Price/Sales": 1.4083152,
-  "Price/Book": 1.8,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=T"
-}, {
-  "Symbol": "ADSK",
-  "Name": "Autodesk Inc",
-  "Sector": "Information Technology",
-  "Price": 104.81,
-  "Price/Earnings": -77.07,
-  "Dividend Yield": 0,
-  "Earnings/Share": -2.61,
-  "52 Week Low": 131.1,
-  "52 Week High": 81.75,
-  "Market Cap": 24348294504,
-  "EBITDA": -378100000,
-  "Price/Sales": 16.50682,
-  "Price/Book": 224.13,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ADSK"
-}, {
-  "Symbol": "ADP",
-  "Name": "Automatic Data Processing",
-  "Sector": "Information Technology",
-  "Price": 108.25,
-  "Price/Earnings": 29.34,
-  "Dividend Yield": 2.2190912,
-  "Earnings/Share": 3.85,
-  "52 Week Low": 125.24,
-  "52 Week High": 95.5,
-  "Market Cap": 50337702249,
-  "EBITDA": 2767400000,
-  "Price/Sales": 4.0483294,
-  "Price/Book": 12.86,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ADP"
-}, {
-  "Symbol": "AZO",
-  "Name": "AutoZone Inc",
-  "Sector": "Consumer Discretionary",
-  "Price": 718.57,
-  "Price/Earnings": 16.31,
-  "Dividend Yield": 0,
-  "Earnings/Share": 44.09,
-  "52 Week Low": 797.89,
-  "52 Week High": 491.13,
-  "Market Cap": 19922021415,
-  "EBITDA": 2347304000,
-  "Price/Sales": 1.8510429,
-  "Price/Book": 136.23,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AZO"
-}, {
-  "Symbol": "AVB",
-  "Name": "AvalonBay Communities, Inc.",
-  "Sector": "Real Estate",
-  "Price": 154.94,
-  "Price/Earnings": 17.97,
-  "Dividend Yield": 3.7149355,
-  "Earnings/Share": 6.36,
-  "52 Week Low": 199.52,
-  "52 Week High": 156.01,
-  "Market Cap": 21856547430,
-  "EBITDA": 1331579000,
-  "Price/Sales": 10.251216,
-  "Price/Book": 2.12,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AVB"
-}, {
-  "Symbol": "AVY",
-  "Name": "Avery Dennison Corp",
-  "Sector": "Materials",
-  "Price": 110.77,
-  "Price/Earnings": 22.11,
-  "Dividend Yield": 1.5682175,
-  "Earnings/Share": 3.11,
-  "52 Week Low": 123.67,
-  "52 Week High": 78.471,
-  "Market Cap": 10104814319,
-  "EBITDA": 831200000,
-  "Price/Sales": 1.5206499,
-  "Price/Book": 8.83,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AVY"
-}, {
-  "Symbol": "BHGE",
-  "Name": "Baker Hughes, a GE Company",
-  "Sector": "Energy",
-  "Price": 27.5,
-  "Price/Earnings": 305.56,
-  "Dividend Yield": 2.4991322,
-  "Earnings/Share": -0.31,
-  "52 Week Low": 57.73,
-  "52 Week High": 28.03,
-  "Market Cap": 32995712852,
-  "EBITDA": 285000000,
-  "Price/Sales": 1.9390045,
-  "Price/Book": 2.25,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BHGE"
-}, {
-  "Symbol": "BLL",
-  "Name": "Ball Corp",
-  "Sector": "Materials",
-  "Price": 38.44,
-  "Price/Earnings": 20.56,
-  "Dividend Yield": 1.0170354,
-  "Earnings/Share": 0.85,
-  "52 Week Low": 43.24,
-  "52 Week High": 35.6,
-  "Market Cap": 13767688518,
-  "EBITDA": 1317000000,
-  "Price/Sales": 1.5696399,
-  "Price/Book": 3.62,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BLL"
-}, {
-  "Symbol": "BAC",
-  "Name": "Bank of America Corp",
-  "Sector": "Financials",
-  "Price": 29.74,
-  "Price/Earnings": 16.34,
-  "Dividend Yield": 1.536,
-  "Earnings/Share": 1.55,
-  "52 Week Low": 32.67,
-  "52 Week High": 22.07,
-  "Market Cap": 321478200969,
-  "EBITDA": 0,
-  "Price/Sales": 3.2011874,
-  "Price/Book": 1.24,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BAC"
-}, {
-  "Symbol": "BAX",
-  "Name": "Baxter International Inc.",
-  "Sector": "Health Care",
-  "Price": 62.56,
-  "Price/Earnings": 25.12,
-  "Dividend Yield": 0.97635394,
-  "Earnings/Share": 1.29,
-  "52 Week Low": 72.58,
-  "52 Week High": 48.15,
-  "Market Cap": 35713732553,
-  "EBITDA": 1832000000,
-  "Price/Sales": 3.4394414,
-  "Price/Book": 3.77,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BAX"
-}, {
-  "Symbol": "BBT",
-  "Name": "BB&T Corporation",
-  "Sector": "Financials",
-  "Price": 51.07,
-  "Price/Earnings": 16.26,
-  "Dividend Yield": 2.4526198,
-  "Earnings/Share": 2.74,
-  "52 Week Low": 55.99,
-  "52 Week High": 41.17,
-  "Market Cap": 42087562920,
-  "EBITDA": 0,
-  "Price/Sales": 3.4552107,
-  "Price/Book": 1.55,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BBT"
-}, {
-  "Symbol": "BDX",
-  "Name": "Becton Dickinson",
-  "Sector": "Health Care",
-  "Price": 211.44,
-  "Price/Earnings": 22.28,
-  "Dividend Yield": 1.3518385,
-  "Earnings/Share": 4.65,
-  "52 Week Low": 248.3888,
-  "52 Week High": 175.66,
-  "Market Cap": 50910180308,
-  "EBITDA": 1537000000,
-  "Price/Sales": 5.6912947,
-  "Price/Book": 3.98,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BDX"
-}, {
-  "Symbol": "BRK.B",
-  "Name": "Berkshire Hathaway",
-  "Sector": "Financials",
-  "Price": 191.42,
-  "Price/Earnings": 30.43,
-  "Dividend Yield": 0,
-  "Earnings/Share": 9.76,
-  "52 Week Low": 217.62,
-  "52 Week High": 160.93,
-  "Market Cap": 261401203633,
-  "EBITDA": 0,
-  "Price/Sales": 1.4328232,
-  "Price/Book": 1.58,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BRK.B"
-}, {
-  "Symbol": "BBY",
-  "Name": "Best Buy Co. Inc.",
-  "Sector": "Consumer Discretionary",
-  "Price": 68.79,
-  "Price/Earnings": 19.22,
-  "Dividend Yield": 1.9085041,
-  "Earnings/Share": 3.81,
-  "52 Week Low": 78.59,
-  "52 Week High": 41.67,
-  "Market Cap": 20831186176,
-  "EBITDA": 2555000000,
-  "Price/Sales": 0.76715523,
-  "Price/Book": 4.79,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BBY"
-}, {
-  "Symbol": "BIIB",
-  "Name": "Biogen Inc.",
-  "Sector": "Health Care",
-  "Price": 311.79,
-  "Price/Earnings": 14.3,
-  "Dividend Yield": 0,
-  "Earnings/Share": 11.94,
-  "52 Week Low": 370.57,
-  "52 Week High": 244.28,
-  "Market Cap": 69157726427,
-  "EBITDA": 6511400000,
-  "Price/Sales": 5.737439,
-  "Price/Book": 5.51,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BIIB"
-}, {
-  "Symbol": "BLK",
-  "Name": "BlackRock",
-  "Sector": "Financials",
-  "Price": 509.38,
-  "Price/Earnings": 22.49,
-  "Dividend Yield": 2.1643558,
-  "Earnings/Share": 30.3,
-  "52 Week Low": 594.52,
-  "52 Week High": 368,
-  "Market Cap": 85907759858,
-  "EBITDA": 5684000000,
-  "Price/Sales": 6.9158196,
-  "Price/Book": 2.95,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BLK"
-}, {
-  "Symbol": "HRB",
-  "Name": "Block H&R",
-  "Sector": "Financials",
-  "Price": 25.19,
-  "Price/Earnings": 12.29,
-  "Dividend Yield": 3.7296038,
-  "Earnings/Share": 1.92,
-  "52 Week Low": 31.8,
-  "52 Week High": 19.85,
-  "Market Cap": 5381433872,
-  "EBITDA": 894754000,
-  "Price/Sales": 2.0188456,
-  "Price/Book": 205.41,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HRB"
-}, {
-  "Symbol": "BA",
-  "Name": "Boeing Company",
-  "Sector": "Industrials",
-  "Price": 329.66,
-  "Price/Earnings": 27.29,
-  "Dividend Yield": 1.9648397,
-  "Earnings/Share": 13.47,
-  "52 Week Low": 361.45,
-  "52 Week High": 163.69,
-  "Market Cap": 205617405233,
-  "EBITDA": 12476000000,
-  "Price/Sales": 2.1560605,
-  "Price/Book": 182.86,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BA"
-}, {
-  "Symbol": "BWA",
-  "Name": "BorgWarner",
-  "Sector": "Consumer Discretionary",
-  "Price": 51.94,
-  "Price/Earnings": 14.15,
-  "Dividend Yield": 1.2363636,
-  "Earnings/Share": 0.55,
-  "52 Week Low": 58.22,
-  "52 Week High": 37.54,
-  "Market Cap": 11596117445,
-  "EBITDA": 867900000,
-  "Price/Sales": 1.5831376,
-  "Price/Book": 2.89,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BWA"
-}, {
-  "Symbol": "BXP",
-  "Name": "Boston Properties",
-  "Sector": "Real Estate",
-  "Price": 112.09,
-  "Price/Earnings": 18.05,
-  "Dividend Yield": 2.7744062,
-  "Earnings/Share": 2.93,
-  "52 Week Low": 140.13,
-  "52 Week High": 111.87,
-  "Market Cap": 17799878487,
-  "EBITDA": 1546846000,
-  "Price/Sales": 6.839459,
-  "Price/Book": 3.15,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BXP"
-}, {
-  "Symbol": "BSX",
-  "Name": "Boston Scientific",
-  "Sector": "Health Care",
-  "Price": 25.2,
-  "Price/Earnings": 20,
-  "Dividend Yield": 0,
-  "Earnings/Share": 0.07,
-  "52 Week Low": 29.93,
-  "52 Week High": 23.29,
-  "Market Cap": 36142506007,
-  "EBITDA": 1726000000,
-  "Price/Sales": 4.055685,
-  "Price/Book": 4.78,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BSX"
-}, {
-  "Symbol": "BHF",
-  "Name": "Brighthouse Financial Inc",
-  "Sector": "Financials",
-  "Price": 55.44,
-  "Price/Earnings": 22.63,
-  "Dividend Yield": 0,
-  "Earnings/Share": -24.62,
-  "52 Week Low": 75,
-  "52 Week High": 52.751,
-  "Market Cap": 7066613254,
-  "EBITDA": 0,
-  "Price/Sales": 1.4188358,
-  "Price/Book": 0.51,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BHF"
-}, {
-  "Symbol": "BMY",
-  "Name": "Bristol-Myers Squibb",
-  "Sector": "Health Care",
-  "Price": 62.69,
-  "Price/Earnings": 20.83,
-  "Dividend Yield": 2.5546863,
-  "Earnings/Share": 2.65,
-  "52 Week Low": 66.1,
-  "52 Week High": 51.12,
-  "Market Cap": 102506501960,
-  "EBITDA": 5170000000,
-  "Price/Sales": 6.503231,
-  "Price/Book": 6.75,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BMY"
-}, {
-  "Symbol": "AVGO",
-  "Name": "Broadcom",
-  "Sector": "Information Technology",
-  "Price": 229.57,
-  "Price/Earnings": 15.94,
-  "Dividend Yield": 2.9488583,
-  "Earnings/Share": 4.01,
-  "52 Week Low": 285.68,
-  "52 Week High": 202.61,
-  "Market Cap": 92791974933,
-  "EBITDA": 7016000000,
-  "Price/Sales": 6.961893,
-  "Price/Book": 4.4,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AVGO"
-}, {
-  "Symbol": "BF.B",
-  "Name": "Brown-Forman Corp.",
-  "Sector": "Consumer Staples",
-  "Price": 63.33,
-  "Price/Earnings": 37.04,
-  "Dividend Yield": 1.1216964,
-  "Earnings/Share": 1.7,
-  "52 Week Low": 69.9028,
-  "52 Week High": 45.415,
-  "Market Cap": 5498033502,
-  "EBITDA": 1139000000,
-  "Price/Sales": 1.8411398,
-  "Price/Book": 12.36,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BF.B"
-}, {
-  "Symbol": "CHRW",
-  "Name": "C. H. Robinson Worldwide",
-  "Sector": "Industrials",
-  "Price": 90.47,
-  "Price/Earnings": 26,
-  "Dividend Yield": 1.987685,
-  "Earnings/Share": 3.57,
-  "52 Week Low": 100.18,
-  "52 Week High": 63.41,
-  "Market Cap": 12932483889,
-  "EBITDA": 868096000,
-  "Price/Sales": 0.85282737,
-  "Price/Book": 9.31,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CHRW"
-}, {
-  "Symbol": "CA",
-  "Name": "CA, Inc.",
-  "Sector": "Information Technology",
-  "Price": 32.66,
-  "Price/Earnings": 14.32,
-  "Dividend Yield": 3,
-  "Earnings/Share": 1.85,
-  "52 Week Low": 36.56,
-  "52 Week High": 30.45,
-  "Market Cap": 14175422936,
-  "EBITDA": 1613000000,
-  "Price/Sales": 3.3742425,
-  "Price/Book": 2.44,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CA"
-}, {
-  "Symbol": "COG",
-  "Name": "Cabot Oil & Gas",
-  "Sector": "Energy",
-  "Price": 23.01,
-  "Price/Earnings": 60.55,
-  "Dividend Yield": 1.0269576,
-  "Earnings/Share": -0.92,
-  "52 Week Low": 29.57,
-  "52 Week High": 21.4,
-  "Market Cap": 10808821635,
-  "EBITDA": 404951000,
-  "Price/Sales": 8.636729,
-  "Price/Book": 4.21,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=COG"
-}, {
-  "Symbol": "CDNS",
-  "Name": "Cadence Design Systems",
-  "Sector": "Information Technology",
-  "Price": 36.82,
-  "Price/Earnings": 34.09,
-  "Dividend Yield": 0,
-  "Earnings/Share": 0.74,
-  "52 Week Low": 46,
-  "52 Week High": 29.01,
-  "Market Cap": 10890625200,
-  "EBITDA": 455607000,
-  "Price/Sales": 5.751737,
-  "Price/Book": 10.98,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CDNS"
-}, {
-  "Symbol": "CPB",
-  "Name": "Campbell Soup",
-  "Sector": "Consumer Staples",
-  "Price": 44.83,
-  "Price/Earnings": 14.84,
-  "Dividend Yield": 3.125,
-  "Earnings/Share": 2.89,
-  "52 Week Low": 64.23,
-  "52 Week High": 43.5,
-  "Market Cap": 13467193376,
-  "EBITDA": 1683000000,
-  "Price/Sales": 2.3898203,
-  "Price/Book": 7.91,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CPB"
-}, {
-  "Symbol": "COF",
-  "Name": "Capital One Financial",
-  "Sector": "Financials",
-  "Price": 91.8,
-  "Price/Earnings": 11.85,
-  "Dividend Yield": 1.6306564,
-  "Earnings/Share": 3.45,
-  "52 Week Low": 106.5,
-  "52 Week High": 76.05,
-  "Market Cap": 47637260000,
-  "EBITDA": 0,
-  "Price/Sales": 1.5931405,
-  "Price/Book": 0.94,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=COF"
-}, {
-  "Symbol": "CAH",
-  "Name": "Cardinal Health Inc.",
-  "Sector": "Health Care",
-  "Price": 66.63,
-  "Price/Earnings": 12.29,
-  "Dividend Yield": 2.8394227,
-  "Earnings/Share": 4.04,
-  "52 Week Low": 84.88,
-  "52 Week High": 54.66,
-  "Market Cap": 20493281175,
-  "EBITDA": 1913000000,
-  "Price/Sales": 0.21131156,
-  "Price/Book": 3.03,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CAH"
-}, {
-  "Symbol": "KMX",
-  "Name": "Carmax Inc",
-  "Sector": "Consumer Discretionary",
-  "Price": 64.34,
-  "Price/Earnings": 19.44,
-  "Dividend Yield": 0,
-  "Earnings/Share": 3.97,
-  "52 Week Low": 77.64,
-  "52 Week High": 54.29,
-  "Market Cap": 11827453706,
-  "EBITDA": 1339628000,
-  "Price/Sales": 0.6913859,
-  "Price/Book": 3.55,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KMX"
-}, {
-  "Symbol": "CCL",
-  "Name": "Carnival Corp.",
-  "Sector": "Consumer Discretionary",
-  "Price": 66.76,
-  "Price/Earnings": 17.48,
-  "Dividend Yield": 2.6041667,
-  "Earnings/Share": 3.58,
-  "52 Week Low": 72.7,
-  "52 Week High": 54.75,
-  "Market Cap": 49180044050,
-  "EBITDA": 4711000000,
-  "Price/Sales": 2.8147783,
-  "Price/Book": 2,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CCL"
-}, {
-  "Symbol": "CAT",
-  "Name": "Caterpillar Inc.",
-  "Sector": "Industrials",
-  "Price": 145.99,
-  "Price/Earnings": 21.22,
-  "Dividend Yield": 2.0215108,
-  "Earnings/Share": 1.26,
-  "52 Week Low": 173.24,
-  "52 Week High": 90.34,
-  "Market Cap": 91822049046,
-  "EBITDA": 8136000000,
-  "Price/Sales": 2.0468428,
-  "Price/Book": 5.75,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CAT"
-}, {
-  "Symbol": "CBOE",
-  "Name": "CBOE Holdings",
-  "Sector": "Financials",
-  "Price": 111.15,
-  "Price/Earnings": 35.06,
-  "Dividend Yield": 0.9426963,
-  "Earnings/Share": 2.27,
-  "52 Week Low": 138.54,
-  "52 Week High": 76.75,
-  "Market Cap": 12998295607,
-  "EBITDA": 488406000,
-  "Price/Sales": 8.249042,
-  "Price/Book": 5.15,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CBOE"
-}, {
-  "Symbol": "CBG",
-  "Name": "CBRE Group",
-  "Sector": "Real Estate",
-  "Price": 41.92,
-  "Price/Earnings": 15.82,
-  "Dividend Yield": 0,
-  "Earnings/Share": 1.69,
-  "52 Week Low": 46.6,
-  "52 Week High": 30.43,
-  "Market Cap": 14440591731,
-  "EBITDA": 1652961000,
-  "Price/Sales": 1.4622321,
-  "Price/Book": 3.74,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CBG"
-}, {
-  "Symbol": "CBS",
-  "Name": "CBS Corp.",
-  "Sector": "Consumer Discretionary",
-  "Price": 51.8,
-  "Price/Earnings": 12.05,
-  "Dividend Yield": 1.3473054,
-  "Earnings/Share": 2.81,
-  "52 Week Low": 70.095,
-  "52 Week High": 52.75,
-  "Market Cap": 20431395736,
-  "EBITDA": 2841000000,
-  "Price/Sales": 2.1055017,
-  "Price/Book": 6.91,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CBS"
-}, {
-  "Symbol": "CELG",
-  "Name": "Celgene Corp.",
-  "Sector": "Health Care",
-  "Price": 91.02,
-  "Price/Earnings": 13.27,
-  "Dividend Yield": 0,
-  "Earnings/Share": 3.58,
-  "52 Week Low": 147.17,
-  "52 Week High": 92.85,
-  "Market Cap": 74921079154,
-  "EBITDA": 5233000000,
-  "Price/Sales": 5.830071,
-  "Price/Book": 7.49,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CELG"
-}, {
-  "Symbol": "CNC",
-  "Name": "Centene Corporation",
-  "Sector": "Health Care",
-  "Price": 100.36,
-  "Price/Earnings": 19.12,
-  "Dividend Yield": 0,
-  "Earnings/Share": 3.23,
-  "52 Week Low": 112.42,
-  "52 Week High": 65.03,
-  "Market Cap": 18012494506,
-  "EBITDA": 2063000000,
-  "Price/Sales": 0.5028663,
-  "Price/Book": 2.58,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CNC"
-}, {
-  "Symbol": "CNP",
-  "Name": "CenterPoint Energy",
-  "Sector": "Utilities",
-  "Price": 25.85,
-  "Price/Earnings": 19.73,
-  "Dividend Yield": 4.2109256,
-  "Earnings/Share": 1,
-  "52 Week Low": 30.45,
-  "52 Week High": 25.51,
-  "Market Cap": 11362043297,
-  "EBITDA": 2337000000,
-  "Price/Sales": 1.6262617,
-  "Price/Book": 3.21,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CNP"
-}, {
-  "Symbol": "CTL",
-  "Name": "CenturyLink Inc",
-  "Sector": "Telecommunication Services",
-  "Price": 16.2,
-  "Price/Earnings": 8.35,
-  "Dividend Yield": 12.661196,
-  "Earnings/Share": 1.16,
-  "52 Week Low": 27.61,
-  "52 Week High": 13.161,
-  "Market Cap": 18237196861,
-  "EBITDA": 5577000000,
-  "Price/Sales": 1.4795984,
-  "Price/Book": 1.39,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CTL"
-}, {
-  "Symbol": "CERN",
-  "Name": "Cerner",
-  "Sector": "Health Care",
-  "Price": 61.22,
-  "Price/Earnings": 27.09,
-  "Dividend Yield": 0,
-  "Earnings/Share": 1.84,
-  "52 Week Low": 73.86,
-  "52 Week High": 51.2617,
-  "Market Cap": 21101697598,
-  "EBITDA": 1523440000,
-  "Price/Sales": 5.5560412,
-  "Price/Book": 4.62,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CERN"
-}, {
-  "Symbol": "CF",
-  "Name": "CF Industries Holdings Inc",
-  "Sector": "Materials",
-  "Price": 37.46,
-  "Price/Earnings": -59.46,
-  "Dividend Yield": 3.0395136,
-  "Earnings/Share": -1.2,
-  "52 Week Low": 43.98,
-  "52 Week High": 25.04,
-  "Market Cap": 9209106695,
-  "EBITDA": 711000000,
-  "Price/Sales": 3.0044448,
-  "Price/Book": 2.81,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CF"
-}, {
-  "Symbol": "SCHW",
-  "Name": "Charles Schwab Corporation",
-  "Sector": "Financials",
-  "Price": 48.9,
-  "Price/Earnings": 29.82,
-  "Dividend Yield": 0.76878726,
-  "Earnings/Share": 1.61,
-  "52 Week Low": 56.25,
-  "52 Week High": 37.16,
-  "Market Cap": 69750188843,
-  "EBITDA": 0,
-  "Price/Sales": 7.949615,
-  "Price/Book": 4.51,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SCHW"
-}, {
-  "Symbol": "CHTR",
-  "Name": "Charter Communications",
-  "Sector": "Consumer Discretionary",
-  "Price": 348.65,
-  "Price/Earnings": 162.92,
-  "Dividend Yield": 0,
-  "Earnings/Share": 34.08,
-  "52 Week Low": 408.83,
-  "52 Week High": 308.3,
-  "Market Cap": 86708878113,
-  "EBITDA": 14694000000,
-  "Price/Sales": 2.1208634,
-  "Price/Book": 2.27,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CHTR"
-}, {
-  "Symbol": "CHK",
-  "Name": "Chesapeake Energy",
-  "Sector": "Energy",
-  "Price": 2.82,
-  "Price/Earnings": 4.7,
-  "Dividend Yield": 0,
-  "Earnings/Share": -6.44,
-  "52 Week Low": 6.59,
-  "52 Week High": 2.8,
-  "Market Cap": 2626102121,
-  "EBITDA": 1470000000,
-  "Price/Sales": 0.40765184,
-  "Price/Book": 1.84,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CHK"
-}, {
-  "Symbol": "CVX",
-  "Name": "Chevron Corp.",
-  "Sector": "Energy",
-  "Price": 112.3,
-  "Price/Earnings": 27.52,
-  "Dividend Yield": 3.885853,
-  "Earnings/Share": 4.85,
-  "52 Week Low": 133.88,
-  "52 Week High": 102.55,
-  "Market Cap": 218978820159,
-  "EBITDA": 28877000000,
-  "Price/Sales": 1.6489863,
-  "Price/Book": 1.71,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CVX"
-}, {
-  "Symbol": "CMG",
-  "Name": "Chipotle Mexican Grill",
-  "Sector": "Consumer Discretionary",
-  "Price": 266.01,
-  "Price/Earnings": 45.86,
-  "Dividend Yield": 0,
-  "Earnings/Share": 0.8,
-  "52 Week Low": 499,
-  "52 Week High": 263,
-  "Market Cap": 7685283970,
-  "EBITDA": 401293000,
-  "Price/Sales": 2.5523853,
-  "Price/Book": 6.11,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CMG"
-}, {
-  "Symbol": "CB",
-  "Name": "Chubb Limited",
-  "Sector": "Financials",
-  "Price": 140.39,
-  "Price/Earnings": 17.5,
-  "Dividend Yield": 1.9251627,
-  "Earnings/Share": 8.2,
-  "52 Week Low": 157.5,
-  "52 Week High": 130.17,
-  "Market Cap": 68424670566,
-  "EBITDA": 0,
-  "Price/Sales": 2.0985637,
-  "Price/Book": 1.35,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CB"
-}, {
-  "Symbol": "CHD",
-  "Name": "Church & Dwight",
-  "Sector": "Consumer Staples",
-  "Price": 47.38,
-  "Price/Earnings": 24.42,
-  "Dividend Yield": 1.8366054,
-  "Earnings/Share": 2.92,
-  "52 Week Low": 54.1799,
-  "52 Week High": 43.21,
-  "Market Cap": 11838963451,
-  "EBITDA": 868000000,
-  "Price/Sales": 3.1682448,
-  "Price/Book": 6.28,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CHD"
-}, {
-  "Symbol": "CI",
-  "Name": "CIGNA Corp.",
-  "Sector": "Health Care",
-  "Price": 189.27,
-  "Price/Earnings": 18.11,
-  "Dividend Yield": 0.020466639,
-  "Earnings/Share": 7.2,
-  "52 Week Low": 227.13,
-  "52 Week High": 141.93,
-  "Market Cap": 47680910480,
-  "EBITDA": 0,
-  "Price/Sales": 1.550762,
-  "Price/Book": 3.39,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CI"
-}, {
-  "Symbol": "XEC",
-  "Name": "Cimarex Energy",
-  "Sector": "Energy",
-  "Price": 100.19,
-  "Price/Earnings": 26.37,
-  "Dividend Yield": 0.30214334,
-  "Earnings/Share": -4.64,
-  "52 Week Low": 136.31,
-  "52 Week High": 89.49,
-  "Market Cap": 10089082025,
-  "EBITDA": 1061056000,
-  "Price/Sales": 7.556446,
-  "Price/Book": 4.28,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XEC"
-}, {
-  "Symbol": "CINF",
-  "Name": "Cincinnati Financial",
-  "Sector": "Financials",
-  "Price": 70.34,
-  "Price/Earnings": 27.48,
-  "Dividend Yield": 2.918904,
-  "Earnings/Share": 3.55,
-  "52 Week Low": 81.98,
-  "52 Week High": 68.24,
-  "Market Cap": 11916533018,
-  "EBITDA": 0,
-  "Price/Sales": 2.756679,
-  "Price/Book": 1.6,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CINF"
-}, {
-  "Symbol": "CTAS",
-  "Name": "Cintas Corporation",
-  "Sector": "Industrials",
-  "Price": 149.32,
-  "Price/Earnings": 32.75,
-  "Dividend Yield": 1.0344827,
-  "Earnings/Share": 4.38,
-  "52 Week Low": 169.96,
-  "52 Week High": 113.79,
-  "Market Cap": 16676145923,
-  "EBITDA": 1097295000,
-  "Price/Sales": 2.7614057,
-  "Price/Book": 6.53,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CTAS"
-}, {
-  "Symbol": "CSCO",
-  "Name": "Cisco Systems",
-  "Sector": "Information Technology",
-  "Price": 38.77,
-  "Price/Earnings": 17.87,
-  "Dividend Yield": 2.8755577,
-  "Earnings/Share": 1.91,
-  "52 Week Low": 42.98,
-  "52 Week High": 30.36,
-  "Market Cap": 199425716482,
-  "EBITDA": 15447000000,
-  "Price/Sales": 5.484418,
-  "Price/Book": 3.07,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CSCO"
-}, {
-  "Symbol": "C",
-  "Name": "Citigroup Inc.",
-  "Sector": "Financials",
-  "Price": 71.87,
-  "Price/Earnings": 13.48,
-  "Dividend Yield": 1.7068943,
-  "Earnings/Share": -3.1,
-  "52 Week Low": 80.7,
-  "52 Week High": 56.14,
-  "Market Cap": 192709302000,
-  "EBITDA": 0,
-  "Price/Sales": 2.1857586,
-  "Price/Book": 0.9,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=C"
-}, {
-  "Symbol": "CFG",
-  "Name": "Citizens Financial Group",
-  "Sector": "Financials",
-  "Price": 42.19,
-  "Price/Earnings": 16.04,
-  "Dividend Yield": 1.9625335,
-  "Earnings/Share": 3.27,
-  "52 Week Low": 48.23,
-  "52 Week High": 31.51,
-  "Market Cap": 22008050974,
-  "EBITDA": 0,
-  "Price/Sales": 3.3917346,
-  "Price/Book": 1.08,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CFG"
-}, {
-  "Symbol": "CTXS",
-  "Name": "Citrix Systems",
-  "Sector": "Information Technology",
-  "Price": 84.53,
-  "Price/Earnings": 20.37,
-  "Dividend Yield": 0,
-  "Earnings/Share": -0.24,
-  "52 Week Low": 95,
-  "52 Week High": 73.3346,
-  "Market Cap": 13199167493,
-  "EBITDA": 810268000,
-  "Price/Sales": 4.7538714,
-  "Price/Book": 6.73,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CTXS"
-}, {
-  "Symbol": "CME",
-  "Name": "CME Group Inc.",
-  "Sector": "Financials",
-  "Price": 153.04,
-  "Price/Earnings": 32.15,
-  "Dividend Yield": 3.6828613,
-  "Earnings/Share": 11.94,
-  "52 Week Low": 163,
-  "52 Week High": 114.8176,
-  "Market Cap": 54423298745,
-  "EBITDA": 2851800000,
-  "Price/Sales": 14.881806,
-  "Price/Book": 2.51,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CME"
-}, {
-  "Symbol": "CMS",
-  "Name": "CMS Energy",
-  "Sector": "Utilities",
-  "Price": 41.77,
-  "Price/Earnings": 21.42,
-  "Dividend Yield": 3.3918407,
-  "Earnings/Share": 1.99,
-  "52 Week Low": 50.85,
-  "52 Week High": 41.07,
-  "Market Cap": 11873960824,
-  "EBITDA": 2099000000,
-  "Price/Sales": 2.4711676,
-  "Price/Book": 2.65,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CMS"
-}, {
-  "Symbol": "KO",
-  "Name": "Coca-Cola Company (The)",
-  "Sector": "Consumer Staples",
-  "Price": 43.1,
-  "Price/Earnings": 22.8,
-  "Dividend Yield": 3.3213644,
-  "Earnings/Share": 1.49,
-  "52 Week Low": 48.615,
-  "52 Week High": 40.22,
-  "Market Cap": 189855335601,
-  "EBITDA": 8589000000,
-  "Price/Sales": 6.822138,
-  "Price/Book": 8.65,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KO"
-}, {
-  "Symbol": "CTSH",
-  "Name": "Cognizant Technology Solutions",
-  "Sector": "Information Technology",
-  "Price": 75.16,
-  "Price/Earnings": 22.44,
-  "Dividend Yield": 1.0454783,
-  "Earnings/Share": 2.54,
-  "52 Week Low": 79.28,
-  "52 Week High": 54.76,
-  "Market Cap": 45119684067,
-  "EBITDA": 2946000000,
-  "Price/Sales": 3.9678397,
-  "Price/Book": 3.94,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CTSH"
-}, {
-  "Symbol": "CL",
-  "Name": "Colgate-Palmolive",
-  "Sector": "Consumer Staples",
-  "Price": 68.95,
-  "Price/Earnings": 24.02,
-  "Dividend Yield": 2.2801766,
-  "Earnings/Share": 2.28,
-  "52 Week Low": 77.91,
-  "52 Week High": 66.26,
-  "Market Cap": 61616643498,
-  "EBITDA": 4064000000,
-  "Price/Sales": 4.000737,
-  "Price/Book": 236.42,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CL"
-}, {
-  "Symbol": "CMCSA",
-  "Name": "Comcast Corp.",
-  "Sector": "Consumer Discretionary",
-  "Price": 38.19,
-  "Price/Earnings": 18.54,
-  "Dividend Yield": 1.8929017,
-  "Earnings/Share": 4.74,
-  "52 Week Low": 44,
-  "52 Week High": 34.78,
-  "Market Cap": 186476996883,
-  "EBITDA": 28675000000,
-  "Price/Sales": 2.1797748,
-  "Price/Book": 2.65,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CMCSA"
-}, {
-  "Symbol": "CMA",
-  "Name": "Comerica Inc.",
-  "Sector": "Financials",
-  "Price": 89.18,
-  "Price/Earnings": 18.89,
-  "Dividend Yield": 1.2823253,
-  "Earnings/Share": 4.13,
-  "52 Week Low": 98.18,
-  "52 Week High": 64.04,
-  "Market Cap": 16274969256,
-  "EBITDA": 0,
-  "Price/Sales": 4.905472,
-  "Price/Book": 1.96,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CMA"
-}, {
-  "Symbol": "CAG",
-  "Name": "Conagra Brands",
-  "Sector": "Consumer Staples",
-  "Price": 35.49,
-  "Price/Earnings": 18.2,
-  "Dividend Yield": 2.3683476,
-  "Earnings/Share": 1.46,
-  "52 Week Low": 41.68,
-  "52 Week High": 32.16,
-  "Market Cap": 14379717835,
-  "EBITDA": 1281200000,
-  "Price/Sales": 1.8294994,
-  "Price/Book": 3.86,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CAG"
-}, {
-  "Symbol": "CXO",
-  "Name": "Concho Resources",
-  "Sector": "Energy",
-  "Price": 140.09,
-  "Price/Earnings": 84.39,
-  "Dividend Yield": 0,
-  "Earnings/Share": -11.04,
-  "52 Week Low": 162.91,
-  "52 Week High": 106.73,
-  "Market Cap": 22021882339,
-  "EBITDA": 2151190000,
-  "Price/Sales": 12.271951,
-  "Price/Book": 2.61,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CXO"
-}, {
-  "Symbol": "COP",
-  "Name": "ConocoPhillips",
-  "Sector": "Energy",
-  "Price": 53.24,
-  "Price/Earnings": 72.93,
-  "Dividend Yield": 2.049254,
-  "Earnings/Share": -0.65,
-  "52 Week Low": 61.315,
-  "52 Week High": 42.265,
-  "Market Cap": 65482462410,
-  "EBITDA": 5328000000,
-  "Price/Sales": 2.0764177,
-  "Price/Book": 2.16,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=COP"
-}, {
-  "Symbol": "ED",
-  "Name": "Consolidated Edison",
-  "Sector": "Utilities",
-  "Price": 74.73,
-  "Price/Earnings": 18.64,
-  "Dividend Yield": 3.8001595,
-  "Earnings/Share": 4.1,
-  "52 Week Low": 89.7,
-  "52 Week High": 72.63,
-  "Market Cap": 23335777662,
-  "EBITDA": 4288000000,
-  "Price/Sales": 2.960244,
-  "Price/Book": 1.58,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ED"
-}, {
-  "Symbol": "STZ",
-  "Name": "Constellation Brands",
-  "Sector": "Consumer Staples",
-  "Price": 208.73,
-  "Price/Earnings": 30.92,
-  "Dividend Yield": 0.9712818,
-  "Earnings/Share": 8.71,
-  "52 Week Low": 229.5,
-  "52 Week High": 152.01,
-  "Market Cap": 41697453163,
-  "EBITDA": 3033300000,
-  "Price/Sales": 5.145596,
-  "Price/Book": 5.14,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=STZ"
-}, {
-  "Symbol": "GLW",
-  "Name": "Corning Inc.",
-  "Sector": "Information Technology",
-  "Price": 28.45,
-  "Price/Earnings": 16.45,
-  "Dividend Yield": 2.0791416,
-  "Earnings/Share": -0.78,
-  "52 Week Low": 35.1,
-  "52 Week High": 26.31,
-  "Market Cap": 25759280346,
-  "EBITDA": 2970000000,
-  "Price/Sales": 2.544682,
-  "Price/Book": 1.71,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GLW"
-}, {
-  "Symbol": "COST",
-  "Name": "Costco Wholesale Corp.",
-  "Sector": "Consumer Staples",
-  "Price": 178.61,
-  "Price/Earnings": 30.69,
-  "Dividend Yield": 1.0917627,
-  "Earnings/Share": 6.09,
-  "52 Week Low": 199.88,
-  "52 Week High": 150,
-  "Market Cap": 80439804508,
-  "EBITDA": 5679000000,
-  "Price/Sales": 0.61203885,
-  "Price/Book": 7.24,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=COST"
-}, {
-  "Symbol": "COTY",
-  "Name": "Coty, Inc",
-  "Sector": "Consumer Staples",
-  "Price": 19.96,
-  "Price/Earnings": 24.64,
-  "Dividend Yield": 2.860412,
-  "Earnings/Share": -0.63,
-  "52 Week Low": 21.175,
-  "52 Week High": 14.24,
-  "Market Cap": 13101112504,
-  "EBITDA": 211400000,
-  "Price/Sales": 2.0061796,
-  "Price/Book": 1.37,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=COTY"
-}, {
-  "Symbol": "CCI",
-  "Name": "Crown Castle International Corp.",
-  "Sector": "Real Estate",
-  "Price": 103.81,
-  "Price/Earnings": 21.45,
-  "Dividend Yield": 3.862069,
-  "Earnings/Share": 1.02,
-  "52 Week Low": 114.97,
-  "52 Week High": 86.93,
-  "Market Cap": 44183023189,
-  "EBITDA": 2292600000,
-  "Price/Sales": 10.125291,
-  "Price/Book": 3.54,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CCI"
-}, {
-  "Symbol": "CSRA",
-  "Name": "CSRA Inc.",
-  "Sector": "Information Technology",
-  "Price": 30.85,
-  "Price/Earnings": 15.12,
-  "Dividend Yield": 1.275917,
-  "Earnings/Share": 1.83,
-  "52 Week Low": 33.79,
-  "52 Week High": 27.38,
-  "Market Cap": 5134501276,
-  "EBITDA": 543000000,
-  "Price/Sales": 1.3324839,
-  "Price/Book": 11.37,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CSRA"
-}, {
-  "Symbol": "CSX",
-  "Name": "CSX Corp.",
-  "Sector": "Industrials",
-  "Price": 50.47,
-  "Price/Earnings": 21.94,
-  "Dividend Yield": 1.5102888,
-  "Earnings/Share": 6.07,
-  "52 Week Low": 60.04,
-  "52 Week High": 45.41,
-  "Market Cap": 47340511707,
-  "EBITDA": 5003000000,
-  "Price/Sales": 4.216355,
-  "Price/Book": 4.27,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CSX"
-}, {
-  "Symbol": "CMI",
-  "Name": "Cummins Inc.",
-  "Sector": "Industrials",
-  "Price": 165.73,
-  "Price/Earnings": 16.83,
-  "Dividend Yield": 2.5008683,
-  "Earnings/Share": 8.23,
-  "52 Week Low": 194.18,
-  "52 Week High": 143.8301,
-  "Market Cap": 28669230787,
-  "EBITDA": 2924000000,
-  "Price/Sales": 1.9406168,
-  "Price/Book": 3.89,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CMI"
-}, {
-  "Symbol": "CVS",
-  "Name": "CVS Health",
-  "Sector": "Consumer Staples",
-  "Price": 70.55,
-  "Price/Earnings": 12.36,
-  "Dividend Yield": 2.6899798,
-  "Earnings/Share": 4.91,
-  "52 Week Low": 84,
-  "52 Week High": 66.45,
-  "Market Cap": 75323141722,
-  "EBITDA": 11704000000,
-  "Price/Sales": 0.549852,
-  "Price/Book": 2.13,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CVS"
-}, {
-  "Symbol": "DHI",
-  "Name": "D. R. Horton",
-  "Sector": "Consumer Discretionary",
-  "Price": 44.55,
-  "Price/Earnings": 16.32,
-  "Dividend Yield": 1.0801469,
-  "Earnings/Share": 2.73,
-  "52 Week Low": 53.32,
-  "52 Week High": 29.3716,
-  "Market Cap": 17390873686,
-  "EBITDA": 1691000000,
-  "Price/Sales": 1.1931022,
-  "Price/Book": 2.17,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DHI"
-}, {
-  "Symbol": "DHR",
-  "Name": "Danaher Corp.",
-  "Sector": "Health Care",
-  "Price": 92.16,
-  "Price/Earnings": 22.87,
-  "Dividend Yield": 0.5879265,
-  "Earnings/Share": 3.53,
-  "52 Week Low": 104.82,
-  "52 Week High": 78.97,
-  "Market Cap": 66351150000,
-  "EBITDA": 4339800000,
-  "Price/Sales": 3.688278,
-  "Price/Book": 2.65,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DHR"
-}, {
-  "Symbol": "DRI",
-  "Name": "Darden Restaurants",
-  "Sector": "Consumer Discretionary",
-  "Price": 91.33,
-  "Price/Earnings": 22.72,
-  "Dividend Yield": 2.6503997,
-  "Earnings/Share": 3.81,
-  "52 Week Low": 100.11,
-  "52 Week High": 71.7,
-  "Market Cap": 11745595320,
-  "EBITDA": 997600000,
-  "Price/Sales": 1.5278828,
-  "Price/Book": 5.89,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DRI"
-}, {
-  "Symbol": "DVA",
-  "Name": "DaVita Inc.",
-  "Sector": "Health Care",
-  "Price": 71.91,
-  "Price/Earnings": 20.55,
-  "Dividend Yield": 0,
-  "Earnings/Share": 4.3,
-  "52 Week Low": 80.71,
-  "52 Week High": 52.51,
-  "Market Cap": 13685178000,
-  "EBITDA": 2252294000,
-  "Price/Sales": 1.1451397,
-  "Price/Book": 2.79,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DVA"
-}, {
-  "Symbol": "DE",
-  "Name": "Deere & Co.",
-  "Sector": "Industrials",
-  "Price": 153.66,
-  "Price/Earnings": 23.14,
-  "Dividend Yield": 1.4866204,
-  "Earnings/Share": 6.64,
-  "52 Week Low": 171.96,
-  "52 Week High": 106.72,
-  "Market Cap": 52186628646,
-  "EBITDA": 4053300000,
-  "Price/Sales": 2.3746448,
-  "Price/Book": 5.31,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DE"
-}, {
-  "Symbol": "DAL",
-  "Name": "Delta Air Lines Inc.",
-  "Sector": "Industrials",
-  "Price": 51.23,
-  "Price/Earnings": 10.37,
-  "Dividend Yield": 2.2655525,
-  "Earnings/Share": 4.94,
-  "52 Week Low": 60.79,
-  "52 Week High": 43.81,
-  "Market Cap": 38393603535,
-  "EBITDA": 8348000000,
-  "Price/Sales": 0.91792434,
-  "Price/Book": 2.67,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DAL"
-}, {
-  "Symbol": "XRAY",
-  "Name": "Dentsply Sirona",
-  "Sector": "Health Care",
-  "Price": 56.85,
-  "Price/Earnings": 22.65,
-  "Dividend Yield": 0.60034305,
-  "Earnings/Share": 1.99,
-  "52 Week Low": 68.98,
-  "52 Week High": 52.535,
-  "Market Cap": 13390513478,
-  "EBITDA": -411100000,
-  "Price/Sales": 4.626262,
-  "Price/Book": 1.8,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XRAY"
-}, {
-  "Symbol": "DVN",
-  "Name": "Devon Energy Corp.",
-  "Sector": "Energy",
-  "Price": 34.94,
-  "Price/Earnings": 23.93,
-  "Dividend Yield": 0.6528836,
-  "Earnings/Share": -6.89,
-  "52 Week Low": 47.25,
-  "52 Week High": 28.7947,
-  "Market Cap": 19317380000,
-  "EBITDA": 3723000000,
-  "Price/Sales": 2.0660408,
-  "Price/Book": 2.85,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DVN"
-}, {
-  "Symbol": "DLR",
-  "Name": "Digital Realty Trust Inc",
-  "Sector": "Real Estate",
-  "Price": 98.96,
-  "Price/Earnings": 16.55,
-  "Dividend Yield": 3.5710857,
-  "Earnings/Share": 2.19,
-  "52 Week Low": 127.23,
-  "52 Week High": 101.101,
-  "Market Cap": 21400952517,
-  "EBITDA": 1260662000,
-  "Price/Sales": 12.434961,
-  "Price/Book": 2.32,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DLR"
-}, {
-  "Symbol": "DFS",
-  "Name": "Discover Financial Services",
-  "Sector": "Financials",
-  "Price": 72.4,
-  "Price/Earnings": 12.13,
-  "Dividend Yield": 1.8269607,
-  "Earnings/Share": 5.41,
-  "52 Week Low": 81.93,
-  "52 Week High": 57.5,
-  "Market Cap": 27433540000,
-  "EBITDA": 0,
-  "Price/Sales": 2.3610325,
-  "Price/Book": 2.52,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DFS"
-}, {
-  "Symbol": "DISCA",
-  "Name": "Discovery Communications-A",
-  "Sector": "Consumer Discretionary",
-  "Price": 22.87,
-  "Price/Earnings": 11,
-  "Dividend Yield": 0,
-  "Earnings/Share": 1.96,
-  "52 Week Low": 30.25,
-  "52 Week High": 15.99,
-  "Market Cap": 8763756733,
-  "EBITDA": 2100000000,
-  "Price/Sales": 1.804088,
-  "Price/Book": 1.5,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DISCA"
-}, {
-  "Symbol": "DISCK",
-  "Name": "Discovery Communications-C",
-  "Sector": "Consumer Discretionary",
-  "Price": 21.58,
-  "Price/Earnings": 10.37,
-  "Dividend Yield": 0,
-  "Earnings/Share": 1.96,
-  "52 Week Low": 29.18,
-  "52 Week High": 14.99,
-  "Market Cap": 8320262123,
-  "EBITDA": 2100000000,
-  "Price/Sales": 1.7147918,
-  "Price/Book": 1.43,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DISCK"
-}, {
-  "Symbol": "DISH",
-  "Name": "Dish Network",
-  "Sector": "Consumer Discretionary",
-  "Price": 43.77,
-  "Price/Earnings": 16.09,
-  "Dividend Yield": 0,
-  "Earnings/Share": 3.06,
-  "52 Week Low": 66.5,
-  "52 Week High": 42.48,
-  "Market Cap": 21032719056,
-  "EBITDA": 2754331000,
-  "Price/Sales": 1.8521843,
-  "Price/Book": 3.76,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DISH"
-}, {
-  "Symbol": "DG",
-  "Name": "Dollar General",
-  "Sector": "Consumer Discretionary",
-  "Price": 95.1,
-  "Price/Earnings": 21.18,
-  "Dividend Yield": 1.0625255,
-  "Earnings/Share": 4.43,
-  "52 Week Low": 105.82,
-  "52 Week High": 65.97,
-  "Market Cap": 26580644874,
-  "EBITDA": 2457604000,
-  "Price/Sales": 1.5283886,
-  "Price/Book": 4.53,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DG"
-}, {
-  "Symbol": "DLTR",
-  "Name": "Dollar Tree",
-  "Sector": "Consumer Discretionary",
-  "Price": 101.58,
-  "Price/Earnings": 26.66,
-  "Dividend Yield": 0,
-  "Earnings/Share": 3.77,
-  "52 Week Low": 116.65,
-  "52 Week High": 65.63,
-  "Market Cap": 25151198417,
-  "EBITDA": 2430300000,
-  "Price/Sales": 1.6097589,
-  "Price/Book": 4.08,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DLTR"
-}, {
-  "Symbol": "D",
-  "Name": "Dominion Energy",
-  "Sector": "Utilities",
-  "Price": 73.31,
-  "Price/Earnings": 20.42,
-  "Dividend Yield": 4.5281997,
-  "Earnings/Share": 4.91,
-  "52 Week Low": 85.3,
-  "52 Week High": 71.59,
-  "Market Cap": 47543571860,
-  "EBITDA": 6428000000,
-  "Price/Sales": 3.7954214,
-  "Price/Book": 2.96,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=D"
-}, {
-  "Symbol": "DOV",
-  "Name": "Dover Corp.",
-  "Sector": "Industrials",
-  "Price": 96.2,
-  "Price/Earnings": 23.87,
-  "Dividend Yield": 1.8815053,
-  "Earnings/Share": 5.15,
-  "52 Week Low": 109.06,
-  "52 Week High": 75.51,
-  "Market Cap": 15566645713,
-  "EBITDA": 1513291000,
-  "Price/Sales": 1.986176,
-  "Price/Book": 3.59,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DOV"
-}, {
-  "Symbol": "DWDP",
-  "Name": "DowDuPont",
-  "Sector": "Materials",
-  "Price": 68.21,
-  "Price/Earnings": 49.43,
-  "Dividend Yield": 2.1529746,
-  "Earnings/Share": 1.59,
-  "52 Week Low": 77.08,
-  "52 Week High": 64.01,
-  "Market Cap": 165203312427,
-  "EBITDA": 5250000000,
-  "Price/Sales": 2.6922395,
-  "Price/Book": 1.54,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DWDP"
-}, {
-  "Symbol": "DPS",
-  "Name": "Dr Pepper Snapple Group",
-  "Sector": "Consumer Staples",
-  "Price": 116.93,
-  "Price/Earnings": 26.57,
-  "Dividend Yield": 1.9661016,
-  "Earnings/Share": 4.54,
-  "52 Week Low": 126.65,
-  "52 Week High": 83.23,
-  "Market Cap": 21209783858,
-  "EBITDA": 1507000000,
-  "Price/Sales": 4.2149186,
-  "Price/Book": 9.99,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DPS"
-}, {
-  "Symbol": "DTE",
-  "Name": "DTE Energy Co.",
-  "Sector": "Utilities",
-  "Price": 98.49,
-  "Price/Earnings": 19.12,
-  "Dividend Yield": 3.5559585,
-  "Earnings/Share": 4.82,
-  "52 Week Low": 116.74,
-  "52 Week High": 96.56,
-  "Market Cap": 17808073691,
-  "EBITDA": 2790000000,
-  "Price/Sales": 1.9091922,
-  "Price/Book": 1.95,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DTE"
-}, {
-  "Symbol": "DUK",
-  "Name": "Duke Energy",
-  "Sector": "Utilities",
-  "Price": 74.32,
-  "Price/Earnings": 16.7,
-  "Dividend Yield": 4.7849464,
-  "Earnings/Share": 3.12,
-  "52 Week Low": 91.8,
-  "52 Week High": 72.93,
-  "Market Cap": 52078185682,
-  "EBITDA": 9895000000,
-  "Price/Sales": 2.9348857,
-  "Price/Book": 1.27,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DUK"
-}, {
-  "Symbol": "DRE",
-  "Name": "Duke Realty Corp",
-  "Sector": "Real Estate",
-  "Price": 24.52,
-  "Price/Earnings": 19.77,
-  "Dividend Yield": 3.1533308,
-  "Earnings/Share": 0.88,
-  "52 Week Low": 30.14,
-  "52 Week High": 24.73,
-  "Market Cap": 9035293365,
-  "EBITDA": 529483000,
-  "Price/Sales": 16.077257,
-  "Price/Book": 1.94,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DRE"
-}, {
-  "Symbol": "DXC",
-  "Name": "DXC Technology",
-  "Sector": "Information Technology",
-  "Price": 91.92,
-  "Price/Earnings": 79.93,
-  "Dividend Yield": 0.7493755,
-  "Earnings/Share": -0.89,
-  "52 Week Low": 102.95,
-  "52 Week High": 67.76,
-  "Market Cap": 27408621020,
-  "EBITDA": 1628000000,
-  "Price/Sales": 1.9598055,
-  "Price/Book": 2.26,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DXC"
-}, {
-  "Symbol": "ETFC",
-  "Name": "E*Trade",
-  "Sector": "Financials",
-  "Price": 48.48,
-  "Price/Earnings": 22.14,
-  "Dividend Yield": 0,
-  "Earnings/Share": 2.15,
-  "52 Week Low": 56,
-  "52 Week High": 32.25,
-  "Market Cap": 13754977266,
-  "EBITDA": 0,
-  "Price/Sales": 5.689136,
-  "Price/Book": 2.15,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ETFC"
-}, {
-  "Symbol": "EMN",
-  "Name": "Eastman Chemical",
-  "Sector": "Materials",
-  "Price": 93.57,
-  "Price/Earnings": 12.28,
-  "Dividend Yield": 2.2630835,
-  "Earnings/Share": 10.12,
-  "52 Week Low": 104.08,
-  "52 Week High": 76.02,
-  "Market Cap": 14226830813,
-  "EBITDA": 2152000000,
-  "Price/Sales": 1.4904785,
-  "Price/Book": 2.78,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EMN"
-}, {
-  "Symbol": "ETN",
-  "Name": "Eaton Corporation",
-  "Sector": "Industrials",
-  "Price": 79.41,
-  "Price/Earnings": 17.08,
-  "Dividend Yield": 2.9404557,
-  "Earnings/Share": 6.68,
-  "52 Week Low": 89.85,
-  "52 Week High": 69.45,
-  "Market Cap": 35961772000,
-  "EBITDA": 4253000000,
-  "Price/Sales": 1.8161736,
-  "Price/Book": 2.17,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ETN"
-}, {
-  "Symbol": "EBAY",
-  "Name": "eBay Inc.",
-  "Sector": "Information Technology",
-  "Price": 41.02,
-  "Price/Earnings": 24.86,
-  "Dividend Yield": 0,
-  "Earnings/Share": -1.07,
-  "52 Week Low": 46.99,
-  "52 Week High": 31.89,
-  "Market Cap": 44216696399,
-  "EBITDA": 2941000000,
-  "Price/Sales": 4.6720185,
-  "Price/Book": 3.8,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EBAY"
-}, {
-  "Symbol": "ECL",
-  "Name": "Ecolab Inc.",
-  "Sector": "Materials",
-  "Price": 127.76,
-  "Price/Earnings": 28.08,
-  "Dividend Yield": 1.2319711,
-  "Earnings/Share": 4.14,
-  "52 Week Low": 140.5,
-  "52 Week High": 119.61,
-  "Market Cap": 38460272282,
-  "EBITDA": 2848600000,
-  "Price/Sales": 3.7360687,
-  "Price/Book": 5.28,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ECL"
-}, {
-  "Symbol": "EIX",
-  "Name": "Edison Int'l",
-  "Sector": "Utilities",
-  "Price": 58.07,
-  "Price/Earnings": 13.23,
-  "Dividend Yield": 4.0542803,
-  "Earnings/Share": 3.96,
-  "52 Week Low": 83.38,
-  "52 Week High": 58.76,
-  "Market Cap": 19447670886,
-  "EBITDA": 4284000000,
-  "Price/Sales": 2.161095,
-  "Price/Book": 1.59,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EIX"
-}, {
-  "Symbol": "EW",
-  "Name": "Edwards Lifesciences",
-  "Sector": "Health Care",
-  "Price": 123.78,
-  "Price/Earnings": 32.57,
-  "Dividend Yield": 0,
-  "Earnings/Share": 2.88,
-  "52 Week Low": 138.48,
-  "52 Week High": 89.2,
-  "Market Cap": 27447099863,
-  "EBITDA": 1156700000,
-  "Price/Sales": 7.8283277,
-  "Price/Book": 8.48,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EW"
-}, {
-  "Symbol": "EA",
-  "Name": "Electronic Arts",
-  "Sector": "Information Technology",
-  "Price": 116.54,
-  "Price/Earnings": 34.48,
-  "Dividend Yield": 0,
-  "Earnings/Share": 3.07,
-  "52 Week Low": 131.01,
-  "52 Week High": 81.27,
-  "Market Cap": 37890226992,
-  "EBITDA": 1560000000,
-  "Price/Sales": 7.4415817,
-  "Price/Book": 8.54,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EA"
-}, {
-  "Symbol": "EMR",
-  "Name": "Emerson Electric Company",
-  "Sector": "Industrials",
-  "Price": 66.4,
-  "Price/Earnings": 25.74,
-  "Dividend Yield": 2.813225,
-  "Earnings/Share": 2.35,
-  "52 Week Low": 74.45,
-  "52 Week High": 56.77,
-  "Market Cap": 44040298425,
-  "EBITDA": 2542000000,
-  "Price/Sales": 3.6707752,
-  "Price/Book": 5.01,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EMR"
-}, {
-  "Symbol": "ETR",
-  "Name": "Entergy Corp.",
-  "Sector": "Utilities",
-  "Price": 72.02,
-  "Price/Earnings": 10.65,
-  "Dividend Yield": 4.892126,
-  "Earnings/Share": -3.26,
-  "52 Week Low": 87.95,
-  "52 Week High": 69.63,
-  "Market Cap": 13116894887,
-  "EBITDA": 880700000,
-  "Price/Sales": 1.5543115,
-  "Price/Book": 1.54,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ETR"
-}, {
-  "Symbol": "EVHC",
-  "Name": "Envision Healthcare",
-  "Sector": "Health Care",
-  "Price": 35.34,
-  "Price/Earnings": 10.91,
-  "Dividend Yield": 0,
-  "Earnings/Share": -0.48,
-  "52 Week Low": 73,
-  "52 Week High": 23.77,
-  "Market Cap": 4212729247,
-  "EBITDA": 827200000,
-  "Price/Sales": 1.227099,
-  "Price/Book": 0.64,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EVHC"
-}, {
-  "Symbol": "EOG",
-  "Name": "EOG Resources",
-  "Sector": "Energy",
-  "Price": 101.04,
-  "Price/Earnings": 246.44,
-  "Dividend Yield": 0.63339007,
-  "Earnings/Share": -1.98,
-  "52 Week Low": 119,
-  "52 Week High": 81.99,
-  "Market Cap": 61164030149,
-  "EBITDA": 3692749000,
-  "Price/Sales": 8.02302,
-  "Price/Book": 4.55,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EOG"
-}, {
-  "Symbol": "EQT",
-  "Name": "EQT Corporation",
-  "Sector": "Energy",
-  "Price": 46.25,
-  "Price/Earnings": 53.16,
-  "Dividend Yield": 0.2518363,
-  "Earnings/Share": -2.69,
-  "52 Week Low": 67.84,
-  "52 Week High": 47.13,
-  "Market Cap": 12638828950,
-  "EBITDA": 1518305000,
-  "Price/Sales": 6.4987307,
-  "Price/Book": 2.15,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EQT"
-}, {
-  "Symbol": "EFX",
-  "Name": "Equifax Inc.",
-  "Sector": "Industrials",
-  "Price": 114,
-  "Price/Earnings": 19.03,
-  "Dividend Yield": 1.3265306,
-  "Earnings/Share": 4.04,
-  "52 Week Low": 147.02,
-  "52 Week High": 90.72,
-  "Market Cap": 14121334618,
-  "EBITDA": 1141200000,
-  "Price/Sales": 5.6338058,
-  "Price/Book": 4.59,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EFX"
-}, {
-  "Symbol": "EQIX",
-  "Name": "Equinix",
-  "Sector": "Real Estate",
-  "Price": 409.98,
-  "Price/Earnings": 23.06,
-  "Dividend Yield": 1.8775817,
-  "Earnings/Share": 1.77,
-  "52 Week Low": 495.345,
-  "52 Week High": 361.9,
-  "Market Cap": 33333813618,
-  "EBITDA": 1687152000,
-  "Price/Sales": 10.639136,
-  "Price/Book": 5.14,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EQIX"
-}, {
-  "Symbol": "EQR",
-  "Name": "Equity Residential",
-  "Sector": "Real Estate",
-  "Price": 55.26,
-  "Price/Earnings": 17.6,
-  "Dividend Yield": 3.5437918,
-  "Earnings/Share": 1.63,
-  "52 Week Low": 70.455,
-  "52 Week High": 56.07,
-  "Market Cap": 20925508143,
-  "EBITDA": 1710686000,
-  "Price/Sales": 8.593619,
-  "Price/Book": 2.09,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EQR"
-}, {
-  "Symbol": "ESS",
-  "Name": "Essex Property Trust, Inc.",
-  "Sector": "Real Estate",
-  "Price": 218.28,
-  "Price/Earnings": 18.66,
-  "Dividend Yield": 3.2138102,
-  "Earnings/Share": 6.27,
-  "52 Week Low": 270.04,
-  "52 Week High": 214.03,
-  "Market Cap": 14383525286,
-  "EBITDA": 1237886000,
-  "Price/Sales": 14.1830845,
-  "Price/Book": 2.3,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ESS"
-}, {
-  "Symbol": "EL",
-  "Name": "Estee Lauder Cos.",
-  "Sector": "Consumer Staples",
-  "Price": 131.46,
-  "Price/Earnings": 37.78,
-  "Dividend Yield": 1.1283498,
-  "Earnings/Share": 3.35,
-  "52 Week Low": 138.74,
-  "52 Week High": 81.69,
-  "Market Cap": 49543264457,
-  "EBITDA": 2478000000,
-  "Price/Sales": 3.9522583,
-  "Price/Book": 10.82,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EL"
-}, {
-  "Symbol": "RE",
-  "Name": "Everest Re Group Ltd.",
-  "Sector": "Financials",
-  "Price": 241.06,
-  "Price/Earnings": 27.24,
-  "Dividend Yield": 2.1078234,
-  "Earnings/Share": 23.71,
-  "52 Week Low": 277.17,
-  "52 Week High": 208.81,
-  "Market Cap": 10131892523,
-  "EBITDA": 0,
-  "Price/Sales": 2.0991988,
-  "Price/Book": 1.16,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RE"
-}, {
-  "Symbol": "ES",
-  "Name": "Eversource Energy",
-  "Sector": "Utilities",
-  "Price": 56.11,
-  "Price/Earnings": 18.22,
-  "Dividend Yield": 3.3397784,
-  "Earnings/Share": 2.96,
-  "52 Week Low": 66.15,
-  "52 Week High": 55.2,
-  "Market Cap": 18027633617,
-  "EBITDA": 2738713000,
-  "Price/Sales": 3.1134193,
-  "Price/Book": 1.68,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ES"
-}, {
-  "Symbol": "EXC",
-  "Name": "Exelon Corp.",
-  "Sector": "Utilities",
-  "Price": 35.98,
-  "Price/Earnings": 14.51,
-  "Dividend Yield": 3.8174274,
-  "Earnings/Share": 1.23,
-  "52 Week Low": 42.67,
-  "52 Week High": 33.3,
-  "Market Cap": 34734816899,
-  "EBITDA": 8548000000,
-  "Price/Sales": 1.3933871,
-  "Price/Book": 1.26,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EXC"
-}, {
-  "Symbol": "EXPE",
-  "Name": "Expedia Inc.",
-  "Sector": "Consumer Discretionary",
-  "Price": 123.03,
-  "Price/Earnings": 30.99,
-  "Dividend Yield": 0.92785895,
-  "Earnings/Share": 1.81,
-  "52 Week Low": 161,
-  "52 Week High": 115.55,
-  "Market Cap": 19722178609,
-  "EBITDA": 1481458000,
-  "Price/Sales": 2.5074897,
-  "Price/Book": 4.14,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EXPE"
-}, {
-  "Symbol": "EXPD",
-  "Name": "Expeditors International",
-  "Sector": "Industrials",
-  "Price": 60.36,
-  "Price/Earnings": 25.26,
-  "Dividend Yield": 1.3520038,
-  "Earnings/Share": 2.36,
-  "52 Week Low": 67.54,
-  "52 Week High": 51.96,
-  "Market Cap": 11040678071,
-  "EBITDA": 721643000,
-  "Price/Sales": 2.190319,
-  "Price/Book": 5.55,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EXPD"
-}, {
-  "Symbol": "ESRX",
-  "Name": "Express Scripts",
-  "Sector": "Health Care",
-  "Price": 73.35,
-  "Price/Earnings": 10.72,
-  "Dividend Yield": 0,
-  "Earnings/Share": 5.39,
-  "52 Week Low": 83.485,
-  "52 Week High": 55.8,
-  "Market Cap": 42449656350,
-  "EBITDA": 7309300000,
-  "Price/Sales": 0.57588416,
-  "Price/Book": 2.65,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ESRX"
-}, {
-  "Symbol": "EXR",
-  "Name": "Extra Space Storage",
-  "Sector": "Real Estate",
-  "Price": 77.56,
-  "Price/Earnings": 18.12,
-  "Dividend Yield": 3.879632,
-  "Earnings/Share": 2.92,
-  "52 Week Low": 88.56,
-  "52 Week High": 71.34,
-  "Market Cap": 10133547517,
-  "EBITDA": 717468000,
-  "Price/Sales": 12.204818,
-  "Price/Book": 4.54,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EXR"
-}, {
-  "Symbol": "XOM",
-  "Name": "Exxon Mobil Corp.",
-  "Sector": "Energy",
-  "Price": 76.07,
-  "Price/Earnings": 21.37,
-  "Dividend Yield": 4.0031195,
-  "Earnings/Share": 1.88,
-  "52 Week Low": 89.3,
-  "52 Week High": 76.05,
-  "Market Cap": 326148660000,
-  "EBITDA": 39052000000,
-  "Price/Sales": 1.7701944,
-  "Price/Book": 1.85,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XOM"
-}, {
-  "Symbol": "FFIV",
-  "Name": "F5 Networks",
-  "Sector": "Information Technology",
-  "Price": 137.25,
-  "Price/Earnings": 21.21,
-  "Dividend Yield": 0,
-  "Earnings/Share": 6.51,
-  "52 Week Low": 149.5,
-  "52 Week High": 114.63,
-  "Market Cap": 8744185796,
-  "EBITDA": 629940000,
-  "Price/Sales": 4.1203604,
-  "Price/Book": 6.86,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FFIV"
-}, {
-  "Symbol": "FB",
-  "Name": "Facebook, Inc.",
-  "Sector": "Information Technology",
-  "Price": 171.58,
-  "Price/Earnings": 27.9,
-  "Dividend Yield": 0,
-  "Earnings/Share": 5.39,
-  "52 Week Low": 195.32,
-  "52 Week High": 132.44,
-  "Market Cap": 523423036576,
-  "EBITDA": 23624000000,
-  "Price/Sales": 13.241967,
-  "Price/Book": 7.08,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FB"
-}, {
-  "Symbol": "FAST",
-  "Name": "Fastenal Co",
-  "Sector": "Industrials",
-  "Price": 52.15,
-  "Price/Earnings": 27.02,
-  "Dividend Yield": 2.7798648,
-  "Earnings/Share": 2.01,
-  "52 Week Low": 57.815,
-  "52 Week High": 39.79,
-  "Market Cap": 15311373377,
-  "EBITDA": 1009600000,
-  "Price/Sales": 3.472977,
-  "Price/Book": 7.39,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FAST"
-}, {
-  "Symbol": "FRT",
-  "Name": "Federal Realty Investment Trust",
-  "Sector": "Real Estate",
-  "Price": 108.11,
-  "Price/Earnings": 18.35,
-  "Dividend Yield": 3.5925992,
-  "Earnings/Share": 3.5,
-  "52 Week Low": 143.79,
-  "52 Week High": 109.74,
-  "Market Cap": 8077368506,
-  "EBITDA": 540767000,
-  "Price/Sales": 12.898601,
-  "Price/Book": 3.98,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FRT"
-}, {
-  "Symbol": "FDX",
-  "Name": "FedEx Corporation",
-  "Sector": "Industrials",
-  "Price": 239.27,
-  "Price/Earnings": 19.45,
-  "Dividend Yield": 0.7963368,
-  "Earnings/Share": 11.07,
-  "52 Week Low": 274.66,
-  "52 Week High": 182.89,
-  "Market Cap": 67280478816,
-  "EBITDA": 8062000000,
-  "Price/Sales": 1.0751684,
-  "Price/Book": 3.9,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FDX"
-}, {
-  "Symbol": "FIS",
-  "Name": "Fidelity National Information Services",
-  "Sector": "Information Technology",
-  "Price": 92.74,
-  "Price/Earnings": 22.08,
-  "Dividend Yield": 1.322724,
-  "Earnings/Share": 1.72,
-  "52 Week Low": 103.65,
-  "52 Week High": 77.63,
-  "Market Cap": 32308459680,
-  "EBITDA": 2782000000,
-  "Price/Sales": 4.7038417,
-  "Price/Book": 3.25,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FIS"
-}, {
-  "Symbol": "FITB",
-  "Name": "Fifth Third Bancorp",
-  "Sector": "Financials",
-  "Price": 31.1,
-  "Price/Earnings": 16.9,
-  "Dividend Yield": 1.9789734,
-  "Earnings/Share": 2.85,
-  "52 Week Low": 33.91,
-  "52 Week High": 23.2,
-  "Market Cap": 22437653700,
-  "EBITDA": 0,
-  "Price/Sales": 2.8802848,
-  "Price/Book": 1.46,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FITB"
-}, {
-  "Symbol": "FE",
-  "Name": "FirstEnergy Corp",
-  "Sector": "Utilities",
-  "Price": 30.64,
-  "Price/Earnings": 11.18,
-  "Dividend Yield": 4.673807,
-  "Earnings/Share": -14.49,
-  "52 Week Low": 35.22,
-  "52 Week High": 27.93,
-  "Market Cap": 13706075072,
-  "EBITDA": -5067000000,
-  "Price/Sales": 1.2994481,
-  "Price/Book": 2.19,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FE"
-}, {
-  "Symbol": "FISV",
-  "Name": "Fiserv Inc",
-  "Sector": "Information Technology",
-  "Price": 133.05,
-  "Price/Earnings": 27.32,
-  "Dividend Yield": 0,
-  "Earnings/Share": 4.14,
-  "52 Week Low": 144.2,
-  "52 Week High": 106.2,
-  "Market Cap": 26918949723,
-  "EBITDA": 1911000000,
-  "Price/Sales": 6.518713,
-  "Price/Book": 11.54,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FISV"
-}, {
-  "Symbol": "FLIR",
-  "Name": "FLIR Systems",
-  "Sector": "Information Technology",
-  "Price": 46.46,
-  "Price/Earnings": 25.53,
-  "Dividend Yield": 1.2396694,
-  "Earnings/Share": 1.21,
-  "52 Week Low": 52.88,
-  "52 Week High": 33.75,
-  "Market Cap": 6706992926,
-  "EBITDA": 375267000,
-  "Price/Sales": 5.137961,
-  "Price/Book": 3.52,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FLIR"
-}, {
-  "Symbol": "FLS",
-  "Name": "Flowserve Corporation",
-  "Sector": "Industrials",
-  "Price": 40.82,
-  "Price/Earnings": 26.17,
-  "Dividend Yield": 1.8291216,
-  "Earnings/Share": 1.12,
-  "52 Week Low": 51.92,
-  "52 Week High": 37.51,
-  "Market Cap": 5427884956,
-  "EBITDA": 463066000,
-  "Price/Sales": 2.0803037,
-  "Price/Book": 3.15,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FLS"
-}, {
-  "Symbol": "FLR",
-  "Name": "Fluor Corp.",
-  "Sector": "Industrials",
-  "Price": 55.31,
-  "Price/Earnings": 19.9,
-  "Dividend Yield": 1.4726508,
-  "Earnings/Share": 1.99,
-  "52 Week Low": 62.09,
-  "52 Week High": 37.0351,
-  "Market Cap": 7978485059,
-  "EBITDA": 709756000,
-  "Price/Sales": 0.5516402,
-  "Price/Book": 2.4,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FLR"
-}, {
-  "Symbol": "FMC",
-  "Name": "FMC Corporation",
-  "Sector": "Materials",
-  "Price": 80.87,
-  "Price/Earnings": 32.48,
-  "Dividend Yield": 0.785995,
-  "Earnings/Share": 1.56,
-  "52 Week Low": 98.7,
-  "52 Week High": 56.53,
-  "Market Cap": 11273961835,
-  "EBITDA": 557800000,
-  "Price/Sales": 6.0089035,
-  "Price/Book": 5.26,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FMC"
-}, {
-  "Symbol": "FL",
-  "Name": "Foot Locker Inc",
-  "Sector": "Consumer Discretionary",
-  "Price": 45.88,
-  "Price/Earnings": 9.5,
-  "Dividend Yield": 2.5827951,
-  "Earnings/Share": 4.91,
-  "52 Week Low": 77.86,
-  "52 Week High": 28.42,
-  "Market Cap": 5819080328,
-  "EBITDA": 957000000,
-  "Price/Sales": 1.0362948,
-  "Price/Book": "",
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FL"
-}, {
-  "Symbol": "F",
-  "Name": "Ford Motor",
-  "Sector": "Consumer Discretionary",
-  "Price": 10.43,
-  "Price/Earnings": 5.89,
-  "Dividend Yield": 6.7843866,
-  "Earnings/Share": 1.9,
-  "52 Week Low": 13.48,
-  "52 Week High": 10.19,
-  "Market Cap": 42414328338,
-  "EBITDA": 9281000000,
-  "Price/Sales": 0.27054095,
-  "Price/Book": 1.26,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=F"
-}, {
-  "Symbol": "FTV",
-  "Name": "Fortive Corp",
-  "Sector": "Industrials",
-  "Price": 69.14,
-  "Price/Earnings": 25.05,
-  "Dividend Yield": 0.39057052,
-  "Earnings/Share": 2.46,
-  "52 Week Low": 76.68,
-  "52 Week High": 54.8844,
-  "Market Cap": 24916503061,
-  "EBITDA": 1508300000,
-  "Price/Sales": 5.1682673,
-  "Price/Book": 7.17,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FTV"
-}, {
-  "Symbol": "FBHS",
-  "Name": "Fortune Brands Home & Security",
-  "Sector": "Industrials",
-  "Price": 62.44,
-  "Price/Earnings": 20.27,
-  "Dividend Yield": 1.2618296,
-  "Earnings/Share": 3.04,
-  "52 Week Low": 73.62,
-  "52 Week High": 55.25,
-  "Market Cap": 9624169008,
-  "EBITDA": 814500000,
-  "Price/Sales": 1.8434572,
-  "Price/Book": 3.76,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FBHS"
-}, {
-  "Symbol": "BEN",
-  "Name": "Franklin Resources",
-  "Sector": "Financials",
-  "Price": 38,
-  "Price/Earnings": 12.67,
-  "Dividend Yield": 2.332657,
-  "Earnings/Share": 3,
-  "52 Week Low": 47.65,
-  "52 Week High": 37.01,
-  "Market Cap": 21759187973,
-  "EBITDA": 2711300000,
-  "Price/Sales": 3.399101,
-  "Price/Book": 1.83,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BEN"
-}, {
-  "Symbol": "FCX",
-  "Name": "Freeport-McMoRan Inc.",
-  "Sector": "Materials",
-  "Price": 17.16,
-  "Price/Earnings": 14.67,
-  "Dividend Yield": 1.1198208,
-  "Earnings/Share": 1.24,
-  "52 Week Low": 20.25,
-  "52 Week High": 11.05,
-  "Market Cap": 25853969330,
-  "EBITDA": 5347000000,
-  "Price/Sales": 1.6538345,
-  "Price/Book": 3.66,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FCX"
-}, {
-  "Symbol": "GPS",
-  "Name": "Gap Inc.",
-  "Sector": "Consumer Discretionary",
-  "Price": 31.17,
-  "Price/Earnings": 15.35,
-  "Dividend Yield": 2.8203557,
-  "Earnings/Share": 1.69,
-  "52 Week Low": 35.68,
-  "52 Week High": 21.02,
-  "Market Cap": 12684517721,
-  "EBITDA": 1959000000,
-  "Price/Sales": 1.1289738,
-  "Price/Book": 3.93,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GPS"
-}, {
-  "Symbol": "GRMN",
-  "Name": "Garmin Ltd.",
-  "Sector": "Consumer Discretionary",
-  "Price": 61.13,
-  "Price/Earnings": 21.23,
-  "Dividend Yield": 3.2339885,
-  "Earnings/Share": 2.69,
-  "52 Week Low": 64.96,
-  "52 Week High": 48.5,
-  "Market Cap": 11840331607,
-  "EBITDA": 736798000,
-  "Price/Sales": 5.319881,
-  "Price/Book": 3.14,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GRMN"
-}, {
-  "Symbol": "IT",
-  "Name": "Gartner Inc",
-  "Sector": "Information Technology",
-  "Price": 114.26,
-  "Price/Earnings": 36.86,
-  "Dividend Yield": 0,
-  "Earnings/Share": 2.31,
-  "52 Week Low": 142.16,
-  "52 Week High": 97.96,
-  "Market Cap": 10828314389,
-  "EBITDA": 234935000,
-  "Price/Sales": 4.894499,
-  "Price/Book": 13.47,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IT"
-}, {
-  "Symbol": "GD",
-  "Name": "General Dynamics",
-  "Sector": "Industrials",
-  "Price": 206.05,
-  "Price/Earnings": 20.71,
-  "Dividend Yield": 1.5631542,
-  "Earnings/Share": 9.55,
-  "52 Week Low": 229.54,
-  "52 Week High": 181.94,
-  "Market Cap": 64180390701,
-  "EBITDA": 4618000000,
-  "Price/Sales": 2.0481362,
-  "Price/Book": 5.45,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GD"
-}, {
-  "Symbol": "GE",
-  "Name": "General Electric",
-  "Sector": "Industrials",
-  "Price": 14.45,
-  "Price/Earnings": 13.76,
-  "Dividend Yield": 3.147541,
-  "Earnings/Share": -0.72,
-  "52 Week Low": 30.59,
-  "52 Week High": 14.71,
-  "Market Cap": 132249296250,
-  "EBITDA": -206000000,
-  "Price/Sales": 1.0887611,
-  "Price/Book": 1.7,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GE"
-}, {
-  "Symbol": "GGP",
-  "Name": "General Growth Properties Inc.",
-  "Sector": "Real Estate",
-  "Price": 21.62,
-  "Price/Earnings": 13.86,
-  "Dividend Yield": 4.005462,
-  "Earnings/Share": 1.34,
-  "52 Week Low": 25.72,
-  "52 Week High": 18.83,
-  "Market Cap": 21018887283,
-  "EBITDA": 1740540000,
-  "Price/Sales": 17.003777,
-  "Price/Book": 2.57,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GGP"
-}, {
-  "Symbol": "GIS",
-  "Name": "General Mills",
-  "Sector": "Consumer Staples",
-  "Price": 53.99,
-  "Price/Earnings": 17.53,
-  "Dividend Yield": 3.5864594,
-  "Earnings/Share": 2.77,
-  "52 Week Low": 63.73,
-  "52 Week High": 49.65,
-  "Market Cap": 31098243069,
-  "EBITDA": 3107600000,
-  "Price/Sales": 2.0389178,
-  "Price/Book": 7.26,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GIS"
-}, {
-  "Symbol": "GM",
-  "Name": "General Motors",
-  "Sector": "Consumer Discretionary",
-  "Price": 40.75,
-  "Price/Earnings": 6.58,
-  "Dividend Yield": 3.5857513,
-  "Earnings/Share": 6,
-  "52 Week Low": 46.76,
-  "52 Week High": 31.92,
-  "Market Cap": 61536606173,
-  "EBITDA": 23541000000,
-  "Price/Sales": 0.5633218,
-  "Price/Book": 1.33,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GM"
-}, {
-  "Symbol": "GPC",
-  "Name": "Genuine Parts",
-  "Sector": "Consumer Discretionary",
-  "Price": 96.31,
-  "Price/Earnings": 21.17,
-  "Dividend Yield": 2.7198548,
-  "Earnings/Share": 4.6,
-  "52 Week Low": 107.75,
-  "52 Week High": 79.86,
-  "Market Cap": 14554321748,
-  "EBITDA": 1201517000,
-  "Price/Sales": 1.212236,
-  "Price/Book": 4.33,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GPC"
-}, {
-  "Symbol": "GILD",
-  "Name": "Gilead Sciences",
-  "Sector": "Health Care",
-  "Price": 78.22,
-  "Price/Earnings": 8.16,
-  "Dividend Yield": 2.754954,
-  "Earnings/Share": 9.95,
-  "52 Week Low": 89.54,
-  "52 Week High": 63.759,
-  "Market Cap": 108106822109,
-  "EBITDA": 17590000000,
-  "Price/Sales": 5.2087464,
-  "Price/Book": 4.12,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GILD"
-}, {
-  "Symbol": "GPN",
-  "Name": "Global Payments Inc.",
-  "Sector": "Information Technology",
-  "Price": 100.59,
-  "Price/Earnings": 27.86,
-  "Dividend Yield": 0.037622273,
-  "Earnings/Share": 1.58,
-  "52 Week Low": 113.26,
-  "52 Week High": 76.47,
-  "Market Cap": 16920023264,
-  "EBITDA": 960345000,
-  "Price/Sales": 5.775833,
-  "Price/Book": 4.73,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GPN"
-}, {
-  "Symbol": "GS",
-  "Name": "Goldman Sachs Group",
-  "Sector": "Financials",
-  "Price": 246.35,
-  "Price/Earnings": 12.44,
-  "Dividend Yield": 1.1668612,
-  "Earnings/Share": 8.61,
-  "52 Week Low": 273.79,
-  "52 Week High": 209.62,
-  "Market Cap": 96978500251,
-  "EBITDA": 0,
-  "Price/Sales": 2.309415,
-  "Price/Book": 1.25,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GS"
-}, {
-  "Symbol": "GT",
-  "Name": "Goodyear Tire & Rubber",
-  "Sector": "Consumer Discretionary",
-  "Price": 30.75,
-  "Price/Earnings": 9.92,
-  "Dividend Yield": 1.6731402,
-  "Earnings/Share": 4.74,
-  "52 Week Low": 37.2,
-  "52 Week High": 28.81,
-  "Market Cap": 8244568238,
-  "EBITDA": 2044000000,
-  "Price/Sales": 0.72725976,
-  "Price/Book": 1.65,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GT"
-}, {
-  "Symbol": "GWW",
-  "Name": "Grainger (W.W.) Inc.",
-  "Sector": "Industrials",
-  "Price": 258.6,
-  "Price/Earnings": 22.57,
-  "Dividend Yield": 1.9700643,
-  "Earnings/Share": 10.02,
-  "52 Week Low": 298.145,
-  "52 Week High": 155,
-  "Market Cap": 14639308205,
-  "EBITDA": 1279846000,
-  "Price/Sales": 1.3995146,
-  "Price/Book": 8.1,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GWW"
-}, {
-  "Symbol": "HAL",
-  "Name": "Halliburton Co.",
-  "Sector": "Energy",
-  "Price": 47.41,
-  "Price/Earnings": 38.86,
-  "Dividend Yield": 1.4489837,
-  "Earnings/Share": -0.53,
-  "52 Week Low": 57.86,
-  "52 Week High": 38.181,
-  "Market Cap": 43356557470,
-  "EBITDA": 2910000000,
-  "Price/Sales": 2.1424224,
-  "Price/Book": 4.74,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HAL"
-}, {
-  "Symbol": "HBI",
-  "Name": "Hanesbrands Inc",
-  "Sector": "Consumer Discretionary",
-  "Price": 19.57,
-  "Price/Earnings": 10.04,
-  "Dividend Yield": 2.7322404,
-  "Earnings/Share": 1.41,
-  "52 Week Low": 25.73,
-  "52 Week High": 18.9,
-  "Market Cap": 8006268615,
-  "EBITDA": 926153000,
-  "Price/Sales": 1.6339768,
-  "Price/Book": 6.17,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HBI"
-}, {
-  "Symbol": "HOG",
-  "Name": "Harley-Davidson",
-  "Sector": "Consumer Discretionary",
-  "Price": 47.54,
-  "Price/Earnings": 13.7,
-  "Dividend Yield": 3.0218647,
-  "Earnings/Share": 2.98,
-  "52 Week Low": 63.4,
-  "52 Week High": 44.52,
-  "Market Cap": 8158949890,
-  "EBITDA": 1058817000,
-  "Price/Sales": 1.66195,
-  "Price/Book": 4.31,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HOG"
-}, {
-  "Symbol": "HRS",
-  "Name": "Harris Corporation",
-  "Sector": "Information Technology",
-  "Price": 149.84,
-  "Price/Earnings": 26.38,
-  "Dividend Yield": 1.4922442,
-  "Earnings/Share": 4.43,
-  "52 Week Low": 160.67,
-  "52 Week High": 104.16,
-  "Market Cap": 18140726600,
-  "EBITDA": 1368000000,
-  "Price/Sales": 2.9516637,
-  "Price/Book": 5.88,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HRS"
-}, {
-  "Symbol": "HIG",
-  "Name": "Hartford Financial Svc.Gp.",
-  "Sector": "Financials",
-  "Price": 53.34,
-  "Price/Earnings": 14.34,
-  "Dividend Yield": 1.7901897,
-  "Earnings/Share": 2.27,
-  "52 Week Low": 59.2,
-  "52 Week High": 46.35,
-  "Market Cap": 19926305632,
-  "EBITDA": 0,
-  "Price/Sales": 1.3939538,
-  "Price/Book": 1.15,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HIG"
-}, {
-  "Symbol": "HAS",
-  "Name": "Hasbro Inc.",
-  "Sector": "Consumer Discretionary",
-  "Price": 96.48,
-  "Price/Earnings": 20.57,
-  "Dividend Yield": 2.2304833,
-  "Earnings/Share": 4.34,
-  "52 Week Low": 116.2,
-  "52 Week High": 87.92,
-  "Market Cap": 12732072001,
-  "EBITDA": 1028425000,
-  "Price/Sales": 3.2375681,
-  "Price/Book": 5.82,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HAS"
-}, {
-  "Symbol": "HCA",
-  "Name": "HCA Holdings",
-  "Sector": "Health Care",
-  "Price": 95.97,
-  "Price/Earnings": 14.07,
-  "Dividend Yield": 1.4227642,
-  "Earnings/Share": 5.94,
-  "52 Week Low": 106.84,
-  "52 Week High": 71.18,
-  "Market Cap": 34449052800,
-  "EBITDA": 8202000000,
-  "Price/Sales": 0.7251921,
-  "Price/Book": "",
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HCA"
-}, {
-  "Symbol": "HCP",
-  "Name": "HCP Inc.",
-  "Sector": "Real Estate",
-  "Price": 22.64,
-  "Price/Earnings": 10.99,
-  "Dividend Yield": 6.330197,
-  "Earnings/Share": 1.33,
-  "52 Week Low": 33.67,
-  "52 Week High": 22.8,
-  "Market Cap": 10967755538,
-  "EBITDA": 1412684000,
-  "Price/Sales": 8.127109,
-  "Price/Book": 1.97,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HCP"
-}, {
-  "Symbol": "HP",
-  "Name": "Helmerich & Payne",
-  "Sector": "Energy",
-  "Price": 64.87,
-  "Price/Earnings": -54.51,
-  "Dividend Yield": 4.1499925,
-  "Earnings/Share": -1.2,
-  "52 Week Low": 75.02,
-  "52 Week High": 42.16,
-  "Market Cap": 7345243806,
-  "EBITDA": 483673000,
-  "Price/Sales": 3.7385862,
-  "Price/Book": 1.62,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HP"
-}, {
-  "Symbol": "HSIC",
-  "Name": "Henry Schein",
-  "Sector": "Health Care",
-  "Price": 70.85,
-  "Price/Earnings": 19.85,
-  "Dividend Yield": 0,
-  "Earnings/Share": 3.1,
-  "52 Week Low": 93.495,
-  "52 Week High": 65.28,
-  "Market Cap": 11452961984,
-  "EBITDA": 1033985000,
-  "Price/Sales": 1.262194,
-  "Price/Book": 3.74,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HSIC"
-}, {
-  "Symbol": "HES",
-  "Name": "Hess Corporation",
-  "Sector": "Energy",
-  "Price": 43,
-  "Price/Earnings": -9.33,
-  "Dividend Yield": 2.2670596,
-  "Earnings/Share": -19.94,
-  "52 Week Low": 55.48,
-  "52 Week High": 37.25,
-  "Market Cap": 14016129999,
-  "EBITDA": -819000000,
-  "Price/Sales": 3.780475,
-  "Price/Book": 1.08,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HES"
-}, {
-  "Symbol": "HPE",
-  "Name": "Hewlett Packard Enterprise",
-  "Sector": "Information Technology",
-  "Price": 15.04,
-  "Price/Earnings": 11.57,
-  "Dividend Yield": 1.9280206,
-  "Earnings/Share": 0.21,
-  "52 Week Low": 24.88,
-  "52 Week High": 12.815,
-  "Market Cap": 24800859640,
-  "EBITDA": 3683000000,
-  "Price/Sales": 1.4609766,
-  "Price/Book": 1.06,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HPE"
-}, {
-  "Symbol": "HLT",
-  "Name": "Hilton Worldwide Holdings Inc",
-  "Sector": "Consumer Discretionary",
-  "Price": 78.66,
-  "Price/Earnings": 36.42,
-  "Dividend Yield": 0.7315289,
-  "Earnings/Share": 1.05,
-  "52 Week Low": 88.11,
-  "52 Week High": 55.79,
-  "Market Cap": 26242415796,
-  "EBITDA": 2815000000,
-  "Price/Sales": 3.7628453,
-  "Price/Book": 17.67,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HLT"
-}, {
-  "Symbol": "HOLX",
-  "Name": "Hologic",
-  "Sector": "Health Care",
-  "Price": 38.8,
-  "Price/Earnings": 19.21,
-  "Dividend Yield": 0,
-  "Earnings/Share": 2.64,
-  "52 Week Low": 46.8,
-  "52 Week High": 35.76,
-  "Market Cap": 11181493750,
-  "EBITDA": 1561000000,
-  "Price/Sales": 4.80335,
-  "Price/Book": 4,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HOLX"
-}, {
-  "Symbol": "HD",
-  "Name": "Home Depot",
-  "Sector": "Consumer Discretionary",
-  "Price": 181.22,
-  "Price/Earnings": 28.1,
-  "Dividend Yield": 1.8610487,
-  "Earnings/Share": 6.46,
-  "52 Week Low": 207.605,
-  "52 Week High": 136.82,
-  "Market Cap": 223378633329,
-  "EBITDA": 16513000000,
-  "Price/Sales": 2.8964398,
-  "Price/Book": 84.08,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HD"
-}, {
-  "Symbol": "HON",
-  "Name": "Honeywell Int'l Inc.",
-  "Sector": "Industrials",
-  "Price": 146.02,
-  "Price/Earnings": 20.68,
-  "Dividend Yield": 1.9710299,
-  "Earnings/Share": 2.08,
-  "52 Week Low": 165.13,
-  "52 Week High": 119.31,
-  "Market Cap": 114422168609,
-  "EBITDA": 8333000000,
-  "Price/Sales": 2.8267899,
-  "Price/Book": 5.71,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HON"
-}, {
-  "Symbol": "HRL",
-  "Name": "Hormel Foods Corp.",
-  "Sector": "Consumer Staples",
-  "Price": 32.21,
-  "Price/Earnings": 20.39,
-  "Dividend Yield": 2.2907758,
-  "Earnings/Share": 1.57,
-  "52 Week Low": 38,
-  "52 Week High": 29.75,
-  "Market Cap": 17338613096,
-  "EBITDA": 1422305000,
-  "Price/Sales": 2.5174792,
-  "Price/Book": 3.49,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HRL"
-}, {
-  "Symbol": "HST",
-  "Name": "Host Hotels & Resorts",
-  "Sector": "Real Estate",
-  "Price": 18.75,
-  "Price/Earnings": 11.23,
-  "Dividend Yield": 4.1131105,
-  "Earnings/Share": 1.02,
-  "52 Week Low": 21.53,
-  "52 Week High": 17.26,
-  "Market Cap": 14394715334,
-  "EBITDA": 1547000000,
-  "Price/Sales": 3.5549128,
-  "Price/Book": 2.02,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HST"
-}, {
-  "Symbol": "HPQ",
-  "Name": "HP Inc.",
-  "Sector": "Information Technology",
-  "Price": 19.92,
-  "Price/Earnings": 12.07,
-  "Dividend Yield": 2.6270628,
-  "Earnings/Share": 1.49,
-  "52 Week Low": 24.1,
-  "52 Week High": 15.39,
-  "Market Cap": 34895294088,
-  "EBITDA": 3700000000,
-  "Price/Sales": 0.8954903,
-  "Price/Book": 0.66,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HPQ"
-}, {
-  "Symbol": "HUM",
-  "Name": "Humana Inc.",
-  "Sector": "Health Care",
-  "Price": 262.37,
-  "Price/Earnings": 22.39,
-  "Dividend Yield": 0.6040015,
-  "Earnings/Share": 4.06,
-  "52 Week Low": 293.35,
-  "52 Week High": 189.01,
-  "Market Cap": 36973617235,
-  "EBITDA": 0,
-  "Price/Sales": 0.9256895,
-  "Price/Book": 3.33,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HUM"
-}, {
-  "Symbol": "HBAN",
-  "Name": "Huntington Bancshares",
-  "Sector": "Financials",
-  "Price": 15.1,
-  "Price/Earnings": 15.41,
-  "Dividend Yield": 2.8132992,
-  "Earnings/Share": 1,
-  "52 Week Low": 16.53,
-  "52 Week High": 12.14,
-  "Market Cap": 16766497291,
-  "EBITDA": 0,
-  "Price/Sales": 3.5112102,
-  "Price/Book": 1.72,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HBAN"
-}, {
-  "Symbol": "HII",
-  "Name": "Huntington Ingalls Industries",
-  "Sector": "Industrials",
-  "Price": 225.37,
-  "Price/Earnings": 18.75,
-  "Dividend Yield": 1.2264713,
-  "Earnings/Share": 12.15,
-  "52 Week Low": 253.44,
-  "52 Week High": 183.42,
-  "Market Cap": 10628247899,
-  "EBITDA": 1107000000,
-  "Price/Sales": 1.8924941,
-  "Price/Book": 6.04,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HII"
-}, {
-  "Symbol": "IDXX",
-  "Name": "IDEXX Laboratories",
-  "Sector": "Health Care",
-  "Price": 169.28,
-  "Price/Earnings": 53.57,
-  "Dividend Yield": 0,
-  "Earnings/Share": 2.94,
-  "52 Week Low": 198.73,
-  "52 Week High": 140.63,
-  "Market Cap": 15422885020,
-  "EBITDA": 478307000,
-  "Price/Sales": 7.97525,
-  "Price/Book": 196.21,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IDXX"
-}, {
-  "Symbol": "INFO",
-  "Name": "IHS Markit Ltd.",
-  "Sector": "Industrials",
-  "Price": 43.73,
-  "Price/Earnings": 26.19,
-  "Dividend Yield": 0,
-  "Earnings/Share": 1,
-  "52 Week Low": 49.19,
-  "52 Week High": 37.82,
-  "Market Cap": 17969275816,
-  "EBITDA": 1018900000,
-  "Price/Sales": 5.0604,
-  "Price/Book": 2.24,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=INFO"
-}, {
-  "Symbol": "ITW",
-  "Name": "Illinois Tool Works",
-  "Sector": "Industrials",
-  "Price": 156.15,
-  "Price/Earnings": 23.62,
-  "Dividend Yield": 1.9089574,
-  "Earnings/Share": 4.86,
-  "52 Week Low": 179.07,
-  "52 Week High": 126.52,
-  "Market Cap": 55994378108,
-  "EBITDA": 3924000000,
-  "Price/Sales": 3.9286149,
-  "Price/Book": 10.99,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ITW"
-}, {
-  "Symbol": "ILMN",
-  "Name": "Illumina Inc",
-  "Sector": "Health Care",
-  "Price": 209.54,
-  "Price/Earnings": 52.25,
-  "Dividend Yield": 0,
-  "Earnings/Share": 4.92,
-  "52 Week Low": 248.97,
-  "52 Week High": 158.0203,
-  "Market Cap": 32295200000,
-  "EBITDA": 1192000000,
-  "Price/Sales": 11.713953,
-  "Price/Book": 10.89,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ILMN"
-}, {
-  "Symbol": "INCY",
-  "Name": "Incyte",
-  "Sector": "Health Care",
-  "Price": 83.92,
-  "Price/Earnings": -119.89,
-  "Dividend Yield": 0,
-  "Earnings/Share": 0.54,
-  "52 Week Low": 153.15,
-  "52 Week High": 84.21,
-  "Market Cap": 18220961259,
-  "EBITDA": -81686000,
-  "Price/Sales": 17.02699,
-  "Price/Book": 10.25,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=INCY"
-}, {
-  "Symbol": "IR",
-  "Name": "Ingersoll-Rand PLC",
-  "Sector": "Industrials",
-  "Price": 87.6,
-  "Price/Earnings": 19.38,
-  "Dividend Yield": 1.9739007,
-  "Earnings/Share": 5.07,
-  "52 Week Low": 97.67,
-  "52 Week High": 77.26,
-  "Market Cap": 22785450609,
-  "EBITDA": 1987100000,
-  "Price/Sales": 1.6147361,
-  "Price/Book": 3.34,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IR"
-}, {
-  "Symbol": "INTC",
-  "Name": "Intel Corp.",
-  "Sector": "Information Technology",
-  "Price": 42.75,
-  "Price/Earnings": 12.32,
-  "Dividend Yield": 2.6548672,
-  "Earnings/Share": 1.98,
-  "52 Week Low": 50.85,
-  "52 Week High": 33.23,
-  "Market Cap": 211536000000,
-  "EBITDA": 26247000000,
-  "Price/Sales": 3.348876,
-  "Price/Book": 3.34,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=INTC"
-}, {
-  "Symbol": "ICE",
-  "Name": "Intercontinental Exchange",
-  "Sector": "Financials",
-  "Price": 67,
-  "Price/Earnings": 22.95,
-  "Dividend Yield": 5.4298644,
-  "Earnings/Share": 2.37,
-  "52 Week Low": 76.1378,
-  "52 Week High": 56.8,
-  "Market Cap": 41373051167,
-  "EBITDA": 3103000000,
-  "Price/Sales": 9.619987,
-  "Price/Book": 2.62,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ICE"
-}, {
-  "Symbol": "IBM",
-  "Name": "International Business Machines",
-  "Sector": "Information Technology",
-  "Price": 147.59,
-  "Price/Earnings": 10.67,
-  "Dividend Yield": 3.8999026,
-  "Earnings/Share": 6.11,
-  "52 Week Low": 182.79,
-  "52 Week High": 139.13,
-  "Market Cap": 142433003505,
-  "EBITDA": 16557000000,
-  "Price/Sales": 1.817167,
-  "Price/Book": 7.7,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IBM"
-}, {
-  "Symbol": "IP",
-  "Name": "International Paper",
-  "Sector": "Materials",
-  "Price": 56.05,
-  "Price/Earnings": 15.57,
-  "Dividend Yield": 3.206751,
-  "Earnings/Share": 5.14,
-  "52 Week Low": 66.94,
-  "52 Week High": 49.6,
-  "Market Cap": 24465996443,
-  "EBITDA": 3004000000,
-  "Price/Sales": 1.0738261,
-  "Price/Book": 4.99,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IP"
-}, {
-  "Symbol": "IPG",
-  "Name": "Interpublic Group",
-  "Sector": "Consumer Discretionary",
-  "Price": 21.34,
-  "Price/Earnings": 15.46,
-  "Dividend Yield": 3.3802817,
-  "Earnings/Share": 1.49,
-  "52 Week Low": 25.71,
-  "52 Week High": 18.3,
-  "Market Cap": 8277363031,
-  "EBITDA": 1074900000,
-  "Price/Sales": 1.4712903,
-  "Price/Book": 4.01,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IPG"
-}, {
-  "Symbol": "IFF",
-  "Name": "Intl Flavors & Fragrances",
-  "Sector": "Materials",
-  "Price": 138,
-  "Price/Earnings": 24.17,
-  "Dividend Yield": 1.9341276,
-  "Earnings/Share": 5.05,
-  "52 Week Low": 157.4,
-  "52 Week High": 116.3,
-  "Market Cap": 11270040447,
-  "EBITDA": 699963000,
-  "Price/Sales": 4.4208813,
-  "Price/Book": 6.34,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IFF"
-}, {
-  "Symbol": "INTU",
-  "Name": "Intuit Inc.",
-  "Sector": "Information Technology",
-  "Price": 152.75,
-  "Price/Earnings": 40.52,
-  "Dividend Yield": 0.96720195,
-  "Earnings/Share": 3.72,
-  "52 Week Low": 170.59,
-  "52 Week High": 111.9,
-  "Market Cap": 41233771565,
-  "EBITDA": 1654000000,
-  "Price/Sales": 9.633731,
-  "Price/Book": 33.5,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=INTU"
-}, {
-  "Symbol": "ISRG",
-  "Name": "Intuitive Surgical Inc.",
-  "Sector": "Health Care",
-  "Price": 381.87,
-  "Price/Earnings": 48.58,
-  "Dividend Yield": 0,
-  "Earnings/Share": 5.67,
-  "52 Week Low": 452,
-  "52 Week High": 233.10643,
-  "Market Cap": 44866621303,
-  "EBITDA": 1153700000,
-  "Price/Sales": 14.655261,
-  "Price/Book": 9.48,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ISRG"
-}, {
-  "Symbol": "IVZ",
-  "Name": "Invesco Ltd.",
-  "Sector": "Financials",
-  "Price": 31.92,
-  "Price/Earnings": 11.87,
-  "Dividend Yield": 3.466826,
-  "Earnings/Share": 2.74,
-  "52 Week Low": 38.43,
-  "52 Week High": 29.36,
-  "Market Cap": 13620847614,
-  "EBITDA": 1606200000,
-  "Price/Sales": 2.6513786,
-  "Price/Book": 1.62,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IVZ"
-}, {
-  "Symbol": "IQV",
-  "Name": "IQVIA Holdings Inc.",
-  "Sector": "Health Care",
-  "Price": 95.23,
-  "Price/Earnings": 21.74,
-  "Dividend Yield": 0,
-  "Earnings/Share": 0.76,
-  "52 Week Low": 110.67,
-  "52 Week High": 75.94,
-  "Market Cap": 20426488713,
-  "EBITDA": 1542000000,
-  "Price/Sales": 2.8477087,
-  "Price/Book": 2.77,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IQV"
-}, {
-  "Symbol": "IRM",
-  "Name": "Iron Mountain Incorporated",
-  "Sector": "Real Estate",
-  "Price": 32.07,
-  "Price/Earnings": 15.42,
-  "Dividend Yield": 7.08258,
-  "Earnings/Share": 0.46,
-  "52 Week Low": 41.53,
-  "52 Week High": 32.05,
-  "Market Cap": 9410249279,
-  "EBITDA": 1116140000,
-  "Price/Sales": 3.2898626,
-  "Price/Book": 4.97,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IRM"
-}, {
-  "Symbol": "JBHT",
-  "Name": "J. B. Hunt Transport Services",
-  "Sector": "Industrials",
-  "Price": 114.81,
-  "Price/Earnings": 30.62,
-  "Dividend Yield": 0.8139042,
-  "Earnings/Share": 6.19,
-  "52 Week Low": 126.49,
-  "52 Week High": 83.35,
-  "Market Cap": 12945366350,
-  "EBITDA": 1007309000,
-  "Price/Sales": 1.7697402,
-  "Price/Book": 8.55,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=JBHT"
-}, {
-  "Symbol": "JEC",
-  "Name": "Jacobs Engineering Group",
-  "Sector": "Industrials",
-  "Price": 62.82,
-  "Price/Earnings": 19.45,
-  "Dividend Yield": 0.9089532,
-  "Earnings/Share": 2.43,
-  "52 Week Low": 72.18,
-  "52 Week High": 49.31,
-  "Market Cap": 9326484316,
-  "EBITDA": 409832000,
-  "Price/Sales": 1.2129636,
-  "Price/Book": 2.01,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=JEC"
-}, {
-  "Symbol": "SJM",
-  "Name": "JM Smucker",
-  "Sector": "Consumer Staples",
-  "Price": 118.37,
-  "Price/Earnings": 15.35,
-  "Dividend Yield": 2.6036885,
-  "Earnings/Share": 5.1,
-  "52 Week Low": 143.68,
-  "52 Week High": 99.565,
-  "Market Cap": 13612394896,
-  "EBITDA": 1411300000,
-  "Price/Sales": 2.496677,
-  "Price/Book": 1.88,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SJM"
-}, {
-  "Symbol": "JNJ",
-  "Name": "Johnson & Johnson",
-  "Sector": "Health Care",
-  "Price": 126.36,
-  "Price/Earnings": 17.31,
-  "Dividend Yield": 2.5566885,
-  "Earnings/Share": 0.39,
-  "52 Week Low": 148.32,
-  "52 Week High": 113.15,
-  "Market Cap": 353062464971,
-  "EBITDA": 22430000000,
-  "Price/Sales": 4.6326222,
-  "Price/Book": 4.74,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=JNJ"
-}, {
-  "Symbol": "JCI",
-  "Name": "Johnson Controls International",
-  "Sector": "Industrials",
-  "Price": 36.55,
-  "Price/Earnings": 14,
-  "Dividend Yield": 2.7659574,
-  "Earnings/Share": 1.71,
-  "52 Week Low": 44.37,
-  "52 Week High": 34.51,
-  "Market Cap": 34822224800,
-  "EBITDA": 4295000000,
-  "Price/Sales": 1.1415336,
-  "Price/Book": 1.69,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=JCI"
-}, {
-  "Symbol": "JPM",
-  "Name": "JPMorgan Chase & Co.",
-  "Sector": "Financials",
-  "Price": 107.88,
-  "Price/Earnings": 15.43,
-  "Dividend Yield": 1.9845841,
-  "Earnings/Share": 6.3,
-  "52 Week Low": 117.3529,
-  "52 Week High": 81.635,
-  "Market Cap": 386613611000,
-  "EBITDA": 0,
-  "Price/Sales": 3.3714993,
-  "Price/Book": 1.6,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=JPM"
-}, {
-  "Symbol": "JNPR",
-  "Name": "Juniper Networks",
-  "Sector": "Information Technology",
-  "Price": 24.66,
-  "Price/Earnings": 14.09,
-  "Dividend Yield": 1.5754234,
-  "Earnings/Share": 0.78,
-  "52 Week Low": 30.96,
-  "52 Week High": 23.87,
-  "Market Cap": 9267350000,
-  "EBITDA": 1115500000,
-  "Price/Sales": 1.8543326,
-  "Price/Book": 1.78,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=JNPR"
-}, {
-  "Symbol": "KSU",
-  "Name": "Kansas City Southern",
-  "Sector": "Industrials",
-  "Price": 103.53,
-  "Price/Earnings": 19.8,
-  "Dividend Yield": 1.3445379,
-  "Earnings/Share": 9.16,
-  "52 Week Low": 114.85,
-  "52 Week High": 81.54,
-  "Market Cap": 11037040988,
-  "EBITDA": 1295400000,
-  "Price/Sales": 4.281897,
-  "Price/Book": 2.39,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KSU"
-}, {
-  "Symbol": "K",
-  "Name": "Kellogg Co.",
-  "Sector": "Consumer Staples",
-  "Price": 65.98,
-  "Price/Earnings": 16.5,
-  "Dividend Yield": 3.363962,
-  "Earnings/Share": 1.95,
-  "52 Week Low": 76.69,
-  "52 Week High": 58.76,
-  "Market Cap": 22182794875,
-  "EBITDA": 1827000000,
-  "Price/Sales": 2.3173764,
-  "Price/Book": 11.5,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=K"
-}, {
-  "Symbol": "KEY",
-  "Name": "KeyCorp",
-  "Sector": "Financials",
-  "Price": 20.08,
-  "Price/Earnings": 14.66,
-  "Dividend Yield": 1.9876952,
-  "Earnings/Share": 1.12,
-  "52 Week Low": 22.22,
-  "52 Week High": 16.28,
-  "Market Cap": 22589744920,
-  "EBITDA": 0,
-  "Price/Sales": 3.270451,
-  "Price/Book": 1.55,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KEY"
-}, {
-  "Symbol": "KMB",
-  "Name": "Kimberly-Clark",
-  "Sector": "Consumer Staples",
-  "Price": 111.69,
-  "Price/Earnings": 17.93,
-  "Dividend Yield": 3.5599859,
-  "Earnings/Share": 6.41,
-  "52 Week Low": 136.21,
-  "52 Week High": 109.67,
-  "Market Cap": 39449596000,
-  "EBITDA": 4033000000,
-  "Price/Sales": 2.1947837,
-  "Price/Book": 151.66,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KMB"
-}, {
-  "Symbol": "KIM",
-  "Name": "Kimco Realty",
-  "Sector": "Real Estate",
-  "Price": 14.01,
-  "Price/Earnings": 9.28,
-  "Dividend Yield": 7.7134986,
-  "Earnings/Share": 0.8,
-  "52 Week Low": 25.15,
-  "52 Week High": 14.33,
-  "Market Cap": 6180487499,
-  "EBITDA": 701190000,
-  "Price/Sales": 7.0508943,
-  "Price/Book": 1.2,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KIM"
-}, {
-  "Symbol": "KMI",
-  "Name": "Kinder Morgan",
-  "Sector": "Energy",
-  "Price": 16.8,
-  "Price/Earnings": 25.07,
-  "Dividend Yield": 2.891845,
-  "Earnings/Share": 0.01,
-  "52 Week Low": 22.75,
-  "52 Week High": 16.56,
-  "Market Cap": 38612712234,
-  "EBITDA": 5981000000,
-  "Price/Sales": 2.823936,
-  "Price/Book": 1.07,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KMI"
-}, {
-  "Symbol": "KLAC",
-  "Name": "KLA-Tencor Corp.",
-  "Sector": "Information Technology",
-  "Price": 98.54,
-  "Price/Earnings": 16.59,
-  "Dividend Yield": 2.2988505,
-  "Earnings/Share": 5.88,
-  "52 Week Low": 121.65,
-  "52 Week High": 86.33,
-  "Market Cap": 16078622033,
-  "EBITDA": 1506642000,
-  "Price/Sales": 4.3395863,
-  "Price/Book": 12.93,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KLAC"
-}, {
-  "Symbol": "KSS",
-  "Name": "Kohl's Corp.",
-  "Sector": "Consumer Discretionary",
-  "Price": 60.34,
-  "Price/Earnings": 16.01,
-  "Dividend Yield": 3.4965036,
-  "Earnings/Share": 3.12,
-  "52 Week Low": 69.14,
-  "52 Week High": 35.16,
-  "Market Cap": 10570861198,
-  "EBITDA": 2286000000,
-  "Price/Sales": 0.8557757,
-  "Price/Book": 2.04,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KSS"
-}, {
-  "Symbol": "KHC",
-  "Name": "Kraft Heinz Co",
-  "Sector": "Consumer Staples",
-  "Price": 71.58,
-  "Price/Earnings": 20.11,
-  "Dividend Yield": 3.3990483,
-  "Earnings/Share": 2.81,
-  "52 Week Low": 97.77,
-  "52 Week High": 72.05,
-  "Market Cap": 89618309338,
-  "EBITDA": 7832000000,
-  "Price/Sales": 4.6780853,
-  "Price/Book": 1.54,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KHC"
-}, {
-  "Symbol": "KR",
-  "Name": "Kroger Co.",
-  "Sector": "Consumer Staples",
-  "Price": 27.57,
-  "Price/Earnings": 13.07,
-  "Dividend Yield": 1.7301039,
-  "Earnings/Share": 2.05,
-  "52 Week Low": 34.75,
-  "52 Week High": 19.69,
-  "Market Cap": 25471355847,
-  "EBITDA": 5342000000,
-  "Price/Sales": 0.27961263,
-  "Price/Book": 4.02,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KR"
-}, {
-  "Symbol": "LB",
-  "Name": "L Brands Inc.",
-  "Sector": "Consumer Discretionary",
-  "Price": 47.77,
-  "Price/Earnings": 12.77,
-  "Dividend Yield": 4.886988,
-  "Earnings/Share": 3.98,
-  "52 Week Low": 63.1,
-  "52 Week High": 35,
-  "Market Cap": 13862042842,
-  "EBITDA": 2329000000,
-  "Price/Sales": 1.7060977,
-  "Price/Book": 1403.38,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LB"
-}, {
-  "Symbol": "LLL",
-  "Name": "L-3 Communications Holdings",
-  "Sector": "Industrials",
-  "Price": 198.79,
-  "Price/Earnings": 23.14,
-  "Dividend Yield": 1.4444605,
-  "Earnings/Share": 8.51,
-  "52 Week Low": 218.705,
-  "52 Week High": 159.43,
-  "Market Cap": 16229343134,
-  "EBITDA": 1137000000,
-  "Price/Sales": 1.4884604,
-  "Price/Book": 3.12,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LLL"
-}, {
-  "Symbol": "LH",
-  "Name": "Laboratory Corp. of America Holding",
-  "Sector": "Health Care",
-  "Price": 165.46,
-  "Price/Earnings": 17.79,
-  "Dividend Yield": 0,
-  "Earnings/Share": 7.02,
-  "52 Week Low": 181.715,
-  "52 Week High": 130.292,
-  "Market Cap": 17271388000,
-  "EBITDA": 1861200000,
-  "Price/Sales": 2.2459624,
-  "Price/Book": 2.71,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LH"
-}, {
-  "Symbol": "LRCX",
-  "Name": "Lam Research",
-  "Sector": "Information Technology",
-  "Price": 162.23,
-  "Price/Earnings": 16.29,
-  "Dividend Yield": 1.1652974,
-  "Earnings/Share": 9.22,
-  "52 Week Low": 219.7,
-  "52 Week High": 113.1982,
-  "Market Cap": 27967534829,
-  "EBITDA": 2967218000,
-  "Price/Sales": 3.0405293,
-  "Price/Book": 4.52,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LRCX"
-}, {
-  "Symbol": "LEG",
-  "Name": "Leggett & Platt",
-  "Sector": "Consumer Discretionary",
-  "Price": 43.99,
-  "Price/Earnings": 17.88,
-  "Dividend Yield": 3.1454785,
-  "Earnings/Share": 2.76,
-  "52 Week Low": 54.97,
-  "52 Week High": 42,
-  "Market Cap": 6034600480,
-  "EBITDA": 447000000,
-  "Price/Sales": 2.0302901,
-  "Price/Book": 4.89,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LEG"
-}, {
-  "Symbol": "LEN",
-  "Name": "Lennar Corp.",
-  "Sector": "Consumer Discretionary",
-  "Price": 59.11,
-  "Price/Earnings": 15.35,
-  "Dividend Yield": 0.26268265,
-  "Earnings/Share": 3.38,
-  "52 Week Low": 72.17,
-  "52 Week High": 43.647053,
-  "Market Cap": 14615967194,
-  "EBITDA": 1405319000,
-  "Price/Sales": 1.1468264,
-  "Price/Book": 1.76,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LEN"
-}, {
-  "Symbol": "LUK",
-  "Name": "Leucadia National Corp.",
-  "Sector": "Financials",
-  "Price": 23.86,
-  "Price/Earnings": 15.39,
-  "Dividend Yield": 1.5993602,
-  "Earnings/Share": 0.33,
-  "52 Week Low": 28.3,
-  "52 Week High": 22.23,
-  "Market Cap": 8910389431,
-  "EBITDA": 2201336000,
-  "Price/Sales": 1.0410156,
-  "Price/Book": 0.84,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LUK"
-}, {
-  "Symbol": "LLY",
-  "Name": "Lilly (Eli) & Co.",
-  "Sector": "Health Care",
-  "Price": 74.21,
-  "Price/Earnings": 17.34,
-  "Dividend Yield": 2.9327424,
-  "Earnings/Share": -0.2,
-  "52 Week Low": 89.09,
-  "52 Week High": 75.71,
-  "Market Cap": 84475986228,
-  "EBITDA": 3459800000,
-  "Price/Sales": 3.754678,
-  "Price/Book": 5.73,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LLY"
-}, {
-  "Symbol": "LNC",
-  "Name": "Lincoln National",
-  "Sector": "Financials",
-  "Price": 73.86,
-  "Price/Earnings": 9.49,
-  "Dividend Yield": 1.6813145,
-  "Earnings/Share": 9.24,
-  "52 Week Low": 86.68,
-  "52 Week High": 61.45,
-  "Market Cap": 17123031000,
-  "EBITDA": 0,
-  "Price/Sales": 1.201944,
-  "Price/Book": 1.04,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LNC"
-}, {
-  "Symbol": "LKQ",
-  "Name": "LKQ Corporation",
-  "Sector": "Consumer Discretionary",
-  "Price": 38.86,
-  "Price/Earnings": 21.35,
-  "Dividend Yield": 0,
-  "Earnings/Share": 1.5,
-  "52 Week Low": 43.8599,
-  "52 Week High": 27.85,
-  "Market Cap": 12469931896,
-  "EBITDA": 1065614000,
-  "Price/Sales": 1.723609,
-  "Price/Book": 3.02,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LKQ"
-}, {
-  "Symbol": "LMT",
-  "Name": "Lockheed Martin Corp.",
-  "Sector": "Industrials",
-  "Price": 334.3,
-  "Price/Earnings": 24.28,
-  "Dividend Yield": 2.315954,
-  "Earnings/Share": 6.83,
-  "52 Week Low": 361.79,
-  "52 Week High": 256.4,
-  "Market Cap": 98102120000,
-  "EBITDA": 7115000000,
-  "Price/Sales": 1.8781451,
-  "Price/Book": 45.55,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LMT"
-}, {
-  "Symbol": "L",
-  "Name": "Loews Corp.",
-  "Sector": "Financials",
-  "Price": 46.05,
-  "Price/Earnings": 15.99,
-  "Dividend Yield": 4.5131636,
-  "Earnings/Share": 1.93,
-  "52 Week Low": 53.59,
-  "52 Week High": 45.01,
-  "Market Cap": 16111166935,
-  "EBITDA": 0,
-  "Price/Sales": 1.5809761,
-  "Price/Book": 0.85,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=L"
-}, {
-  "Symbol": "LOW",
-  "Name": "Lowe's Cos.",
-  "Sector": "Consumer Discretionary",
-  "Price": 95.01,
-  "Price/Earnings": 23.87,
-  "Dividend Yield": 1.6413131,
-  "Earnings/Share": 3.46,
-  "52 Week Low": 108.98,
-  "52 Week High": 70.76,
-  "Market Cap": 82909678852,
-  "EBITDA": 7858000000,
-  "Price/Sales": 1.5653384,
-  "Price/Book": 14.1,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LOW"
-}, {
-  "Symbol": "LYB",
-  "Name": "LyondellBasell",
-  "Sector": "Materials",
-  "Price": 105.79,
-  "Price/Earnings": 10.35,
-  "Dividend Yield": 3.264714,
-  "Earnings/Share": 12.25,
-  "52 Week Low": 121.95,
-  "52 Week High": 78.01,
-  "Market Cap": 43556650000,
-  "EBITDA": 6851000000,
-  "Price/Sales": 1.3037612,
-  "Price/Book": 5.86,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LYB"
-}, {
-  "Symbol": "MTB",
-  "Name": "M&T Bank Corp.",
-  "Sector": "Financials",
-  "Price": 178.35,
-  "Price/Earnings": 18.91,
-  "Dividend Yield": 1.6218846,
-  "Earnings/Share": 8.69,
-  "52 Week Low": 193.85,
-  "52 Week High": 141.12,
-  "Market Cap": 27840827434,
-  "EBITDA": 0,
-  "Price/Sales": 4.6277885,
-  "Price/Book": 1.79,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MTB"
-}, {
-  "Symbol": "MAC",
-  "Name": "Macerich",
-  "Sector": "Real Estate",
-  "Price": 58.36,
-  "Price/Earnings": 14.81,
-  "Dividend Yield": 4.9177604,
-  "Earnings/Share": 3.43,
-  "52 Week Low": 69.73,
-  "52 Week High": 52.12,
-  "Market Cap": 8473119166,
-  "EBITDA": 503183000,
-  "Price/Sales": 11.394877,
-  "Price/Book": 2.24,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MAC"
-}, {
-  "Symbol": "M",
-  "Name": "Macy's Inc.",
-  "Sector": "Consumer Discretionary",
-  "Price": 24,
-  "Price/Earnings": 7.67,
-  "Dividend Yield": 6.098546,
-  "Earnings/Share": 1.98,
-  "52 Week Low": 33.73,
-  "52 Week High": 17.405,
-  "Market Cap": 7541063495,
-  "EBITDA": 2446000000,
-  "Price/Sales": 0.45503208,
-  "Price/Book": 1.69,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=M"
-}, {
-  "Symbol": "MRO",
-  "Name": "Marathon Oil Corp.",
-  "Sector": "Energy",
-  "Price": 15.68,
-  "Price/Earnings": -32,
-  "Dividend Yield": 1.2247398,
-  "Earnings/Share": -2.65,
-  "52 Week Low": 19.52,
-  "52 Week High": 10.55,
-  "Market Cap": 13875005314,
-  "EBITDA": 2266000000,
-  "Price/Sales": 4.6578755,
-  "Price/Book": "",
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MRO"
-}, {
-  "Symbol": "MPC",
-  "Name": "Marathon Petroleum",
-  "Sector": "Energy",
-  "Price": 62.79,
-  "Price/Earnings": 16.06,
-  "Dividend Yield": 2.8268552,
-  "Earnings/Share": 6.85,
-  "52 Week Low": 73.53,
-  "52 Week High": 47.39,
-  "Market Cap": 31633740000,
-  "EBITDA": 5978000000,
-  "Price/Sales": 0.42713487,
-  "Price/Book": 2.43,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MPC"
-}, {
-  "Symbol": "MAR",
-  "Name": "Marriott Int'l.",
-  "Sector": "Consumer Discretionary",
-  "Price": 133.88,
-  "Price/Earnings": 32.73,
-  "Dividend Yield": 0.9452879,
-  "Earnings/Share": 2.67,
-  "52 Week Low": 149.21,
-  "52 Week High": 85.3725,
-  "Market Cap": 50910130358,
-  "EBITDA": 2620000000,
-  "Price/Sales": 2.9997249,
-  "Price/Book": 11.02,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MAR"
-}, {
-  "Symbol": "MMC",
-  "Name": "Marsh & McLennan",
-  "Sector": "Financials",
-  "Price": 79.31,
-  "Price/Earnings": 20.23,
-  "Dividend Yield": 1.8257059,
-  "Earnings/Share": 2.87,
-  "52 Week Low": 86.54,
-  "52 Week High": 69.33,
-  "Market Cap": 41819440000,
-  "EBITDA": 3236000000,
-  "Price/Sales": 2.9848945,
-  "Price/Book": 5.85,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MMC"
-}, {
-  "Symbol": "MLM",
-  "Name": "Martin Marietta Materials",
-  "Sector": "Materials",
-  "Price": 208.42,
-  "Price/Earnings": 30.38,
-  "Dividend Yield": 0.8042038,
-  "Earnings/Share": 6.63,
-  "52 Week Low": 244.32,
-  "52 Week High": 191.09,
-  "Market Cap": 13756812736,
-  "EBITDA": 975223000,
-  "Price/Sales": 4.416998,
-  "Price/Book": 3.03,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MLM"
-}, {
-  "Symbol": "MAS",
-  "Name": "Masco Corp.",
-  "Sector": "Industrials",
-  "Price": 40.7,
-  "Price/Earnings": 22.12,
-  "Dividend Yield": 0.98383695,
-  "Earnings/Share": 1.47,
-  "52 Week Low": 46.445,
-  "52 Week High": 31.29,
-  "Market Cap": 13428792315,
-  "EBITDA": 1179000000,
-  "Price/Sales": 2.308266,
-  "Price/Book": 11.93,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MAS"
-}, {
-  "Symbol": "MA",
-  "Name": "Mastercard Inc.",
-  "Sector": "Information Technology",
-  "Price": 160.62,
-  "Price/Earnings": 34.99,
-  "Dividend Yield": 0.5926628,
-  "Earnings/Share": 3.65,
-  "52 Week Low": 177.11,
-  "52 Week High": 105.8,
-  "Market Cap": 187102014193,
-  "EBITDA": 7113000000,
-  "Price/Sales": 15.020556,
-  "Price/Book": 26.93,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MA"
-}, {
-  "Symbol": "MAT",
-  "Name": "Mattel Inc.",
-  "Sector": "Consumer Discretionary",
-  "Price": 16,
-  "Price/Earnings": -14.68,
-  "Dividend Yield": 0,
-  "Earnings/Share": -3.06,
-  "52 Week Low": 26.3,
-  "52 Week High": 12.71,
-  "Market Cap": 5843402350,
-  "EBITDA": -203599000,
-  "Price/Sales": 1.1863722,
-  "Price/Book": 3.87,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MAT"
-}, {
-  "Symbol": "MKC",
-  "Name": "McCormick & Co.",
-  "Sector": "Consumer Staples",
-  "Price": 101.36,
-  "Price/Earnings": 23.91,
-  "Dividend Yield": 2.0261056,
-  "Earnings/Share": 3.73,
-  "52 Week Low": 109.67,
-  "52 Week High": 90.25,
-  "Market Cap": 13459353253,
-  "EBITDA": 815700000,
-  "Price/Sales": 2.7788277,
-  "Price/Book": 5.2,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MKC"
-}, {
-  "Symbol": "MCD",
-  "Name": "McDonald's Corp.",
-  "Sector": "Consumer Discretionary",
-  "Price": 158.97,
-  "Price/Earnings": 23.83,
-  "Dividend Yield": 2.437994,
-  "Earnings/Share": 6.36,
-  "52 Week Low": 178.7,
-  "52 Week High": 124.36,
-  "Market Cap": 132101623787,
-  "EBITDA": 10515400000,
-  "Price/Sales": 5.770237,
-  "Price/Book": 146.07,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MCD"
-}, {
-  "Symbol": "MCK",
-  "Name": "McKesson Corp.",
-  "Sector": "Health Care",
-  "Price": 150.23,
-  "Price/Earnings": 11.68,
-  "Dividend Yield": 0.8898776,
-  "Earnings/Share": 22.74,
-  "52 Week Low": 178.86,
-  "52 Week High": 133.82,
-  "Market Cap": 31534840262,
-  "EBITDA": 7232000000,
-  "Price/Sales": 0.15318617,
-  "Price/Book": 2.68,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MCK"
-}, {
-  "Symbol": "MDT",
-  "Name": "Medtronic plc",
-  "Sector": "Health Care",
-  "Price": 78.38,
-  "Price/Earnings": 17.04,
-  "Dividend Yield": 2.2618315,
-  "Earnings/Share": 2.89,
-  "52 Week Low": 89.72,
-  "52 Week High": 75.44,
-  "Market Cap": 110107062300,
-  "EBITDA": 9204000000,
-  "Price/Sales": 4.944542,
-  "Price/Book": 2.14,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MDT"
-}, {
-  "Symbol": "MRK",
-  "Name": "Merck & Co.",
-  "Sector": "Health Care",
-  "Price": 54.73,
-  "Price/Earnings": 13.75,
-  "Dividend Yield": 3.435934,
-  "Earnings/Share": 1.4,
-  "52 Week Low": 66.8,
-  "52 Week High": 53.63,
-  "Market Cap": 152241530340,
-  "EBITDA": 8715000000,
-  "Price/Sales": 5.0893345,
-  "Price/Book": 4.02,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MRK"
-}, {
-  "Symbol": "MET",
-  "Name": "MetLife Inc.",
-  "Sector": "Financials",
-  "Price": 44.28,
-  "Price/Earnings": 8.52,
-  "Dividend Yield": 3.4587116,
-  "Earnings/Share": 0.63,
-  "52 Week Low": 56.58,
-  "52 Week High": 44.58,
-  "Market Cap": 48679364276,
-  "EBITDA": 0,
-  "Price/Sales": 1.0496864,
-  "Price/Book": 0.85,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MET"
-}, {
-  "Symbol": "MTD",
-  "Name": "Mettler Toledo",
-  "Sector": "Health Care",
-  "Price": 601,
-  "Price/Earnings": 35.56,
-  "Dividend Yield": 0,
-  "Earnings/Share": 14.24,
-  "52 Week Low": 697.26,
-  "52 Week High": 459.34,
-  "Market Cap": 16420774443,
-  "EBITDA": 666706000,
-  "Price/Sales": 8.372307,
-  "Price/Book": 31.69,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MTD"
-}, {
-  "Symbol": "MGM",
-  "Name": "MGM Resorts International",
-  "Sector": "Consumer Discretionary",
-  "Price": 33.5,
-  "Price/Earnings": 29.65,
-  "Dividend Yield": 1.2687428,
-  "Earnings/Share": 1.92,
-  "52 Week Low": 38.41,
-  "52 Week High": 25.15,
-  "Market Cap": 19633674337,
-  "EBITDA": 2680385000,
-  "Price/Sales": 2.2276719,
-  "Price/Book": 3.09,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MGM"
-}, {
-  "Symbol": "KORS",
-  "Name": "Michael Kors Holdings",
-  "Sector": "Consumer Discretionary",
-  "Price": 60.03,
-  "Price/Earnings": 14.29,
-  "Dividend Yield": 0,
-  "Earnings/Share": 3.31,
-  "52 Week Low": 69.95,
-  "52 Week High": 32.38,
-  "Market Cap": 10053919023,
-  "EBITDA": 456600000,
-  "Price/Sales": 3.1455927,
-  "Price/Book": 5.4,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KORS"
-}, {
-  "Symbol": "MCHP",
-  "Name": "Microchip Technology",
-  "Sector": "Information Technology",
-  "Price": 79.9,
-  "Price/Earnings": 21.77,
-  "Dividend Yield": 1.7512966,
-  "Earnings/Share": 0.66,
-  "52 Week Low": 99.17,
-  "52 Week High": 69.76,
-  "Market Cap": 19393095636,
-  "EBITDA": 997492000,
-  "Price/Sales": 7.4475183,
-  "Price/Book": 5.9,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MCHP"
-}, {
-  "Symbol": "MU",
-  "Name": "Micron Technology",
-  "Sector": "Information Technology",
-  "Price": 40,
-  "Price/Earnings": 9.01,
-  "Dividend Yield": 0,
-  "Earnings/Share": 4.36,
-  "52 Week Low": 49.89,
-  "52 Week High": 22.64,
-  "Market Cap": 48576791974,
-  "EBITDA": 12541000000,
-  "Price/Sales": 2.1912806,
-  "Price/Book": 2.02,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MU"
-}, {
-  "Symbol": "MSFT",
-  "Name": "Microsoft Corp.",
-  "Sector": "Information Technology",
-  "Price": 85.01,
-  "Price/Earnings": 25.76,
-  "Dividend Yield": 1.8747908,
-  "Earnings/Share": 2.97,
-  "52 Week Low": 96.07,
-  "52 Week High": 63.22,
-  "Market Cap": 689978437468,
-  "EBITDA": 41079000000,
-  "Price/Sales": 7.1130967,
-  "Price/Book": 9.49,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MSFT"
-}, {
-  "Symbol": "MAA",
-  "Name": "Mid-America Apartments",
-  "Sector": "Real Estate",
-  "Price": 85.39,
-  "Price/Earnings": 14.38,
-  "Dividend Yield": 4.19652,
-  "Earnings/Share": 2.86,
-  "52 Week Low": 110.95,
-  "52 Week High": 86.95,
-  "Market Cap": 9992628990,
-  "EBITDA": 871483000,
-  "Price/Sales": 6.6291075,
-  "Price/Book": 1.6,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MAA"
-}, {
-  "Symbol": "MHK",
-  "Name": "Mohawk Industries",
-  "Sector": "Consumer Discretionary",
-  "Price": 256.57,
-  "Price/Earnings": 19.08,
-  "Dividend Yield": 0,
-  "Earnings/Share": 12.48,
-  "52 Week Low": 286.85,
-  "52 Week High": 209.9,
-  "Market Cap": 19897356456,
-  "EBITDA": 1750393000,
-  "Price/Sales": 2.7977824,
-  "Price/Book": 2.88,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MHK"
-}, {
-  "Symbol": "TAP",
-  "Name": "Molson Coors Brewing Company",
-  "Sector": "Consumer Staples",
-  "Price": 74.51,
-  "Price/Earnings": 17.66,
-  "Dividend Yield": 2.1533613,
-  "Earnings/Share": 9.27,
-  "52 Week Low": 102.14,
-  "52 Week High": 75.79,
-  "Market Cap": 12396862128,
-  "EBITDA": 4708400000,
-  "Price/Sales": 1.2371694,
-  "Price/Book": 1.34,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TAP"
-}, {
-  "Symbol": "MDLZ",
-  "Name": "Mondelez International",
-  "Sector": "Consumer Staples",
-  "Price": 42.68,
-  "Price/Earnings": 19.85,
-  "Dividend Yield": 1.9977299,
-  "Earnings/Share": 1.91,
-  "52 Week Low": 47.23,
-  "52 Week High": 39.19,
-  "Market Cap": 65827817742,
-  "EBITDA": 4355000000,
-  "Price/Sales": 2.5708609,
-  "Price/Book": 2.52,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MDLZ"
-}, {
-  "Symbol": "MON",
-  "Name": "Monsanto Co.",
-  "Sector": "Materials",
-  "Price": 119.08,
-  "Price/Earnings": 21.53,
-  "Dividend Yield": 1.7938709,
-  "Earnings/Share": 5.09,
-  "52 Week Low": 123.15,
-  "52 Week High": 106.97,
-  "Market Cap": 53076824328,
-  "EBITDA": 4217000000,
-  "Price/Sales": 3.589782,
-  "Price/Book": 7.96,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MON"
-}, {
-  "Symbol": "MNST",
-  "Name": "Monster Beverage",
-  "Sector": "Consumer Staples",
-  "Price": 61.99,
-  "Price/Earnings": 42.17,
-  "Dividend Yield": 0,
-  "Earnings/Share": 1.19,
-  "52 Week Low": 70.215,
-  "52 Week High": 41.02,
-  "Market Cap": 36403831015,
-  "EBITDA": 1229478000,
-  "Price/Sales": 14.152587,
-  "Price/Book": 9.56,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MNST"
-}, {
-  "Symbol": "MCO",
-  "Name": "Moody's Corp",
-  "Sector": "Financials",
-  "Price": 152.14,
-  "Price/Earnings": 26.55,
-  "Dividend Yield": 1.114065,
-  "Earnings/Share": 1.35,
-  "52 Week Low": 167.23,
-  "52 Week High": 106.48,
-  "Market Cap": 30189978000,
-  "EBITDA": 1238000000,
-  "Price/Sales": 9.932974,
-  "Price/Book": 73.84,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MCO"
-}, {
-  "Symbol": "MS",
-  "Name": "Morgan Stanley",
-  "Sector": "Financials",
-  "Price": 51.79,
-  "Price/Earnings": 14.23,
-  "Dividend Yield": 1.8331805,
-  "Earnings/Share": 3.09,
-  "52 Week Low": 58.05,
-  "52 Week High": 40.06,
-  "Market Cap": 97535400000,
-  "EBITDA": 0,
-  "Price/Sales": 2.2258842,
-  "Price/Book": 1.33,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MS"
-}, {
-  "Symbol": "MSI",
-  "Name": "Motorola Solutions Inc.",
-  "Sector": "Information Technology",
-  "Price": 98.74,
-  "Price/Earnings": 19.03,
-  "Dividend Yield": 2.0266979,
-  "Earnings/Share": -1.08,
-  "52 Week Low": 107.78,
-  "52 Week High": 77.23,
-  "Market Cap": 16626039679,
-  "EBITDA": 1629000000,
-  "Price/Sales": 2.6092634,
-  "Price/Book": 6.81,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MSI"
-}, {
-  "Symbol": "MYL",
-  "Name": "Mylan N.V.",
-  "Sector": "Health Care",
-  "Price": 39.25,
-  "Price/Earnings": 8.35,
-  "Dividend Yield": 0,
-  "Earnings/Share": 0.93,
-  "52 Week Low": 47.82,
-  "52 Week High": 29.39,
-  "Market Cap": 21698849265,
-  "EBITDA": 3113300000,
-  "Price/Sales": 2.5358944,
-  "Price/Book": 1.63,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MYL"
-}, {
-  "Symbol": "NDAQ",
-  "Name": "Nasdaq, Inc.",
-  "Sector": "Financials",
-  "Price": 75.21,
-  "Price/Earnings": 17.78,
-  "Dividend Yield": 1.9671283,
-  "Earnings/Share": 4.32,
-  "52 Week Low": 83.29,
-  "52 Week High": 65.98,
-  "Market Cap": 12844304115,
-  "EBITDA": 1212000000,
-  "Price/Sales": 3.2591083,
-  "Price/Book": 2.25,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NDAQ"
-}, {
-  "Symbol": "NOV",
-  "Name": "National Oilwell Varco Inc.",
-  "Sector": "Energy",
-  "Price": 32.64,
-  "Price/Earnings": -77.71,
-  "Dividend Yield": 0.5873715,
-  "Earnings/Share": -6.4,
-  "52 Week Low": 41.895,
-  "52 Week High": 29.9,
-  "Market Cap": 12940096785,
-  "EBITDA": 353000000,
-  "Price/Sales": 2.5209634,
-  "Price/Book": 0.91,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NOV"
-}, {
-  "Symbol": "NAVI",
-  "Name": "Navient",
-  "Sector": "Financials",
-  "Price": 13.38,
-  "Price/Earnings": 7.56,
-  "Dividend Yield": 4.5584044,
-  "Earnings/Share": 1.01,
-  "52 Week Low": 16.97,
-  "52 Week High": 11.481,
-  "Market Cap": 3692691330,
-  "EBITDA": 0,
-  "Price/Sales": 0.6986579,
-  "Price/Book": 1.02,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NAVI"
-}, {
-  "Symbol": "NTAP",
-  "Name": "NetApp",
-  "Sector": "Information Technology",
-  "Price": 55.85,
-  "Price/Earnings": 26.1,
-  "Dividend Yield": 1.3881658,
-  "Earnings/Share": 1.81,
-  "52 Week Low": 64.0599,
-  "52 Week High": 37.43,
-  "Market Cap": 15375210915,
-  "EBITDA": 1075000000,
-  "Price/Sales": 3.6687026,
-  "Price/Book": 5.46,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NTAP"
-}, {
-  "Symbol": "NFLX",
-  "Name": "Netflix Inc.",
-  "Sector": "Information Technology",
-  "Price": 250.1,
-  "Price/Earnings": 200.08,
-  "Dividend Yield": 0,
-  "Earnings/Share": 1.25,
-  "52 Week Low": 286.81,
-  "52 Week High": 138.26,
-  "Market Cap": 114805404842,
-  "EBITDA": 809028000,
-  "Price/Sales": 9.861594,
-  "Price/Book": 30.8,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NFLX"
-}, {
-  "Symbol": "NWL",
-  "Name": "Newell Brands",
-  "Sector": "Consumer Discretionary",
-  "Price": 27.91,
-  "Price/Earnings": 9.72,
-  "Dividend Yield": 3.1228786,
-  "Earnings/Share": 1.17,
-  "52 Week Low": 55.08,
-  "52 Week High": 23.85,
-  "Market Cap": 14438346000,
-  "EBITDA": 2021400000,
-  "Price/Sales": 1.2810479,
-  "Price/Book": 1.01,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NWL"
-}, {
-  "Symbol": "NFX",
-  "Name": "Newfield Exploration Co",
-  "Sector": "Energy",
-  "Price": 26.38,
-  "Price/Earnings": 13.12,
-  "Dividend Yield": 0,
-  "Earnings/Share": -6.5,
-  "52 Week Low": 43.74,
-  "52 Week High": 24.41,
-  "Market Cap": 5695123080,
-  "EBITDA": 896000000,
-  "Price/Sales": 4.703259,
-  "Price/Book": 4.51,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NFX"
-}, {
-  "Symbol": "NEM",
-  "Name": "Newmont Mining Corporation",
-  "Sector": "Materials",
-  "Price": 36.61,
-  "Price/Earnings": 26.34,
-  "Dividend Yield": 0.8101539,
-  "Earnings/Share": -1.18,
-  "52 Week Low": 42.04,
-  "52 Week High": 31.42,
-  "Market Cap": 19749449484,
-  "EBITDA": 1509000000,
-  "Price/Sales": 3.7076392,
-  "Price/Book": 1.81,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NEM"
-}, {
-  "Symbol": "NWSA",
-  "Name": "News Corp. Class A",
-  "Sector": "Consumer Discretionary",
-  "Price": 15.65,
-  "Price/Earnings": 43.47,
-  "Dividend Yield": 1.24533,
-  "Earnings/Share": -1.28,
-  "52 Week Low": 17.29,
-  "52 Week High": 12,
-  "Market Cap": 9356906461,
-  "EBITDA": 679000000,
-  "Price/Sales": 1.5518167,
-  "Price/Book": 0.85,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NWSA"
-}, {
-  "Symbol": "NWS",
-  "Name": "News Corp. Class B",
-  "Sector": "Consumer Discretionary",
-  "Price": 15.85,
-  "Price/Earnings": 44.03,
-  "Dividend Yield": 1.2269939,
-  "Earnings/Share": -1.28,
-  "52 Week Low": 17.7,
-  "52 Week High": 12.35,
-  "Market Cap": 9496735699,
-  "EBITDA": 679000000,
-  "Price/Sales": 1.5718216,
-  "Price/Book": 0.86,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NWS"
-}, {
-  "Symbol": "NEE",
-  "Name": "NextEra Energy",
-  "Sector": "Utilities",
-  "Price": 145.29,
-  "Price/Earnings": 21.65,
-  "Dividend Yield": 2.6537917,
-  "Earnings/Share": 11.39,
-  "52 Week Low": 159.64,
-  "52 Week High": 124.18,
-  "Market Cap": 69661177770,
-  "EBITDA": 9018000000,
-  "Price/Sales": 4.091698,
-  "Price/Book": 2.75,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NEE"
-}, {
-  "Symbol": "NLSN",
-  "Name": "Nielsen Holdings",
-  "Sector": "Industrials",
-  "Price": 33.9,
-  "Price/Earnings": 18.73,
-  "Dividend Yield": 3.6208732,
-  "Earnings/Share": 1.39,
-  "52 Week Low": 45.73,
-  "52 Week High": 34.22,
-  "Market Cap": 13377670080,
-  "EBITDA": 1836000000,
-  "Price/Sales": 2.7288198,
-  "Price/Book": 3.02,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NLSN"
-}, {
-  "Symbol": "NKE",
-  "Name": "Nike",
-  "Sector": "Consumer Discretionary",
-  "Price": 62.49,
-  "Price/Earnings": 24.9,
-  "Dividend Yield": 1.2189548,
-  "Earnings/Share": 2.51,
-  "52 Week Low": 68.83,
-  "52 Week High": 50.35,
-  "Market Cap": 106776113744,
-  "EBITDA": 5162000000,
-  "Price/Sales": 3.0549932,
-  "Price/Book": 8.91,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NKE"
-}, {
-  "Symbol": "NI",
-  "Name": "NiSource Inc.",
-  "Sector": "Utilities",
-  "Price": 22.51,
-  "Price/Earnings": 19.57,
-  "Dividend Yield": 3.3780859,
-  "Earnings/Share": 1.02,
-  "52 Week Low": 27.76,
-  "52 Week High": 21.93,
-  "Market Cap": 7776566371,
-  "EBITDA": 1448600000,
-  "Price/Sales": 2.2361343,
-  "Price/Book": 1.82,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NI"
-}, {
-  "Symbol": "NBL",
-  "Name": "Noble Energy Inc",
-  "Sector": "Energy",
-  "Price": 25.43,
-  "Price/Earnings": 105.96,
-  "Dividend Yield": 1.4771049,
-  "Earnings/Share": -2.32,
-  "52 Week Low": 39.6,
-  "52 Week High": 22.985,
-  "Market Cap": 13177325251,
-  "EBITDA": -518000000,
-  "Price/Sales": 4.6976447,
-  "Price/Book": 1.44,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NBL"
-}, {
-  "Symbol": "JWN",
-  "Name": "Nordstrom",
-  "Sector": "Consumer Discretionary",
-  "Price": 47.23,
-  "Price/Earnings": 15.04,
-  "Dividend Yield": 3.0020285,
-  "Earnings/Share": 2.02,
-  "52 Week Low": 53,
-  "52 Week High": 37.7924,
-  "Market Cap": 8212509855,
-  "EBITDA": 1448000000,
-  "Price/Sales": 0.74603415,
-  "Price/Book": 9.1,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=JWN"
-}, {
-  "Symbol": "NSC",
-  "Name": "Norfolk Southern Corp.",
-  "Sector": "Industrials",
-  "Price": 136.89,
-  "Price/Earnings": 20.65,
-  "Dividend Yield": 2.018503,
-  "Earnings/Share": 18.73,
-  "52 Week Low": 157.1499,
-  "52 Week High": 109.27,
-  "Market Cap": 40543547441,
-  "EBITDA": 4737000000,
-  "Price/Sales": 3.8525908,
-  "Price/Book": 3.09,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NSC"
-}, {
-  "Symbol": "NTRS",
-  "Name": "Northern Trust Corp.",
-  "Sector": "Financials",
-  "Price": 96.2,
-  "Price/Earnings": 19.96,
-  "Dividend Yield": 1.6678249,
-  "Earnings/Share": 4.92,
-  "52 Week Low": 108.91,
-  "52 Week High": 83.17,
-  "Market Cap": 22908130223,
-  "EBITDA": 0,
-  "Price/Sales": 4.031728,
-  "Price/Book": 2.44,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NTRS"
-}, {
-  "Symbol": "NOC",
-  "Name": "Northrop Grumman Corp.",
-  "Sector": "Industrials",
-  "Price": 324.01,
-  "Price/Earnings": 24.4,
-  "Dividend Yield": 1.3030859,
-  "Earnings/Share": 11.47,
-  "52 Week Low": 349.18,
-  "52 Week High": 231.98,
-  "Market Cap": 58782413951,
-  "EBITDA": 3884000000,
-  "Price/Sales": 2.209576,
-  "Price/Book": 7.96,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NOC"
-}, {
-  "Symbol": "NCLH",
-  "Name": "Norwegian Cruise Line",
-  "Sector": "Consumer Discretionary",
-  "Price": 56.01,
-  "Price/Earnings": 15.35,
-  "Dividend Yield": 0,
-  "Earnings/Share": 2.78,
-  "52 Week Low": 61.48,
-  "52 Week High": 46.96,
-  "Market Cap": 13191507318,
-  "EBITDA": 1529401000,
-  "Price/Sales": 3.2066104,
-  "Price/Book": 2.35,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NCLH"
-}, {
-  "Symbol": "NRG",
-  "Name": "NRG Energy",
-  "Sector": "Utilities",
-  "Price": 24,
-  "Price/Earnings": 17.78,
-  "Dividend Yield": 1.4195584,
-  "Earnings/Share": -2.23,
-  "52 Week Low": 29.78,
-  "52 Week High": 14.52,
-  "Market Cap": 8030036023,
-  "EBITDA": 1774000000,
-  "Price/Sales": 0.9933021,
-  "Price/Book": 6.73,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NRG"
-}, {
-  "Symbol": "NUE",
-  "Name": "Nucor Corp.",
-  "Sector": "Materials",
-  "Price": 60.38,
-  "Price/Earnings": 17.01,
-  "Dividend Yield": 2.415766,
-  "Earnings/Share": 4.1,
-  "52 Week Low": 70.48,
-  "52 Week High": 51.67,
-  "Market Cap": 20003317128,
-  "EBITDA": 2648729000,
-  "Price/Sales": 0.99837583,
-  "Price/Book": 2.34,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NUE"
-}, {
-  "Symbol": "NVDA",
-  "Name": "Nvidia Corporation",
-  "Sector": "Information Technology",
-  "Price": 217.52,
-  "Price/Earnings": 82.08,
-  "Dividend Yield": 0.26223776,
-  "Earnings/Share": 2.57,
-  "52 Week Low": 249.27,
-  "52 Week High": 95.17,
-  "Market Cap": 138652800000,
-  "EBITDA": 3098000000,
-  "Price/Sales": 20.094294,
-  "Price/Book": 20.39,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NVDA"
-}, {
-  "Symbol": "ORLY",
-  "Name": "O'Reilly Automotive",
-  "Sector": "Consumer Discretionary",
-  "Price": 252.22,
-  "Price/Earnings": 21.91,
-  "Dividend Yield": 0,
-  "Earnings/Share": 10.73,
-  "52 Week Low": 279.23,
-  "52 Week High": 169.43,
-  "Market Cap": 21433781860,
-  "EBITDA": 1965187000,
-  "Price/Sales": 3.1934319,
-  "Price/Book": 34.12,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ORLY"
-}, {
-  "Symbol": "OXY",
-  "Name": "Occidental Petroleum",
-  "Sector": "Energy",
-  "Price": 68.47,
-  "Price/Earnings": 195.63,
-  "Dividend Yield": 4.4081864,
-  "Earnings/Share": -0.75,
-  "52 Week Low": 78.09,
-  "52 Week High": 57.2,
-  "Market Cap": 53467692395,
-  "EBITDA": 5205000000,
-  "Price/Sales": 6.044895,
-  "Price/Book": "",
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=OXY"
-}, {
-  "Symbol": "OMC",
-  "Name": "Omnicom Group",
-  "Sector": "Consumer Discretionary",
-  "Price": 75.91,
-  "Price/Earnings": 15.27,
-  "Dividend Yield": 3.1838684,
-  "Earnings/Share": 4.79,
-  "52 Week Low": 86.71,
-  "52 Week High": 65.32,
-  "Market Cap": 17377551986,
-  "EBITDA": 2366000000,
-  "Price/Sales": 1.5327156,
-  "Price/Book": 6.66,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=OMC"
-}, {
-  "Symbol": "OKE",
-  "Name": "ONEOK",
-  "Sector": "Energy",
-  "Price": 54.4,
-  "Price/Earnings": 34,
-  "Dividend Yield": 5.4436197,
-  "Earnings/Share": 1.66,
-  "52 Week Low": 61.36,
-  "52 Week High": 47.14,
-  "Market Cap": 21988472489,
-  "EBITDA": 1851783000,
-  "Price/Sales": 2.6159565,
-  "Price/Book": 4.03,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=OKE"
-}, {
-  "Symbol": "ORCL",
-  "Name": "Oracle Corp.",
-  "Sector": "Information Technology",
-  "Price": 46.84,
-  "Price/Earnings": 18.81,
-  "Dividend Yield": 1.5551463,
-  "Earnings/Share": 2.2,
-  "52 Week Low": 53.14,
-  "52 Week High": 40.01,
-  "Market Cap": 202302349740,
-  "EBITDA": 16545000000,
-  "Price/Sales": 5.2561646,
-  "Price/Book": 3.56,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ORCL"
-}, {
-  "Symbol": "PCAR",
-  "Name": "PACCAR Inc.",
-  "Sector": "Industrials",
-  "Price": 66.98,
-  "Price/Earnings": 15.72,
-  "Dividend Yield": 1.455816,
-  "Earnings/Share": 4.75,
-  "52 Week Low": 79.69,
-  "52 Week High": 61.93,
-  "Market Cap": 24152102921,
-  "EBITDA": 3619200000,
-  "Price/Sales": 1.28693,
-  "Price/Book": 3.07,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PCAR"
-}, {
-  "Symbol": "PKG",
-  "Name": "Packaging Corporation of America",
-  "Sector": "Materials",
-  "Price": 111.95,
-  "Price/Earnings": 18.57,
-  "Dividend Yield": 2.1514556,
-  "Earnings/Share": 7.07,
-  "52 Week Low": 131.1316,
-  "52 Week High": 88.47,
-  "Market Cap": 11051273948,
-  "EBITDA": 1214900000,
-  "Price/Sales": 1.741522,
-  "Price/Book": 5.54,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PKG"
-}, {
-  "Symbol": "PH",
-  "Name": "Parker-Hannifin",
-  "Sector": "Industrials",
-  "Price": 174.51,
-  "Price/Earnings": 21.6,
-  "Dividend Yield": 1.4401833,
-  "Earnings/Share": 7.24,
-  "52 Week Low": 212.8,
-  "52 Week High": 145.38,
-  "Market Cap": 24421668509,
-  "EBITDA": 2092089000,
-  "Price/Sales": 1.8652664,
-  "Price/Book": 4.39,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PH"
-}, {
-  "Symbol": "PDCO",
-  "Name": "Patterson Companies",
-  "Sector": "Health Care",
-  "Price": 32.88,
-  "Price/Earnings": 14.05,
-  "Dividend Yield": 3.0723782,
-  "Earnings/Share": 1.79,
-  "52 Week Low": 48.295,
-  "52 Week High": 32.07,
-  "Market Cap": 3209792400,
-  "EBITDA": 359644000,
-  "Price/Sales": 0.7872792,
-  "Price/Book": 2.34,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PDCO"
-}, {
-  "Symbol": "PAYX",
-  "Name": "Paychex Inc.",
-  "Sector": "Information Technology",
-  "Price": 61.86,
-  "Price/Earnings": 27.49,
-  "Dividend Yield": 3.0892801,
-  "Earnings/Share": 2.26,
-  "52 Week Low": 73.1,
-  "52 Week High": 54.2,
-  "Market Cap": 23253666810,
-  "EBITDA": 1414900000,
-  "Price/Sales": 7.248487,
-  "Price/Book": 11.77,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PAYX"
-}, {
-  "Symbol": "PYPL",
-  "Name": "PayPal",
-  "Sector": "Information Technology",
-  "Price": 72.32,
-  "Price/Earnings": 49.53,
-  "Dividend Yield": 0,
-  "Earnings/Share": 1.47,
-  "52 Week Low": 86.32,
-  "52 Week High": 39.92,
-  "Market Cap": 90708000000,
-  "EBITDA": 2932000000,
-  "Price/Sales": 6.935696,
-  "Price/Book": 5.81,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PYPL"
-}, {
-  "Symbol": "PNR",
-  "Name": "Pentair Ltd.",
-  "Sector": "Industrials",
-  "Price": 66.67,
-  "Price/Earnings": 18.89,
-  "Dividend Yield": 2.03933,
-  "Earnings/Share": 3.63,
-  "52 Week Low": 74.84,
-  "52 Week High": 57.63,
-  "Market Cap": 12466660892,
-  "EBITDA": 863700000,
-  "Price/Sales": 2.5191512,
-  "Price/Book": 2.48,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PNR"
-}, {
-  "Symbol": "PBCT",
-  "Name": "People's United Financial",
-  "Sector": "Financials",
-  "Price": 18.56,
-  "Price/Earnings": 18.02,
-  "Dividend Yield": 3.59375,
-  "Earnings/Share": 0.97,
-  "52 Week Low": 20.14,
-  "52 Week High": 15.965,
-  "Market Cap": 6527616000,
-  "EBITDA": 0,
-  "Price/Sales": 3.9272704,
-  "Price/Book": 1.17,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PBCT"
-}, {
-  "Symbol": "PEP",
-  "Name": "PepsiCo Inc.",
-  "Sector": "Consumer Staples",
-  "Price": 110.15,
-  "Price/Earnings": 21.51,
-  "Dividend Yield": 2.8370044,
-  "Earnings/Share": 4.36,
-  "52 Week Low": 122.51,
-  "52 Week High": 104.77,
-  "Market Cap": 161413271020,
-  "EBITDA": 12843000000,
-  "Price/Sales": 3.6705062,
-  "Price/Book": "",
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PEP"
-}, {
-  "Symbol": "PKI",
-  "Name": "PerkinElmer",
-  "Sector": "Health Care",
-  "Price": 72.06,
-  "Price/Earnings": 24.68,
-  "Dividend Yield": 0.3695394,
-  "Earnings/Share": 2.64,
-  "52 Week Low": 84.49,
-  "52 Week High": 52.63,
-  "Market Cap": 8351767268,
-  "EBITDA": 445658000,
-  "Price/Sales": 3.7116463,
-  "Price/Book": 3.25,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PKI"
-}, {
-  "Symbol": "PRGO",
-  "Name": "Perrigo",
-  "Sector": "Health Care",
-  "Price": 84.44,
-  "Price/Earnings": "",
-  "Dividend Yield": 0.73126143,
-  "Earnings/Share": -28.01,
-  "52 Week Low": 95.93,
-  "52 Week High": 63.68,
-  "Market Cap": 12326379902,
-  "EBITDA": 0,
-  "Price/Sales": 3.3850067,
-  "Price/Book": 2.03,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PRGO"
-}, {
-  "Symbol": "PFE",
-  "Name": "Pfizer Inc.",
-  "Sector": "Health Care",
-  "Price": 33.63,
-  "Price/Earnings": 12.69,
-  "Dividend Yield": 3.8879359,
-  "Earnings/Share": 3.51,
-  "52 Week Low": 39.43,
-  "52 Week High": 31.67,
-  "Market Cap": 208505541949,
-  "EBITDA": 20569000000,
-  "Price/Sales": 4.0020885,
-  "Price/Book": 3.4,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PFE"
-}, {
-  "Symbol": "PCG",
-  "Name": "PG&E Corp.",
-  "Sector": "Utilities",
-  "Price": 38.24,
-  "Price/Earnings": 8.75,
-  "Dividend Yield": 0,
-  "Earnings/Share": 2.78,
-  "52 Week Low": 71.57,
-  "52 Week High": 38.45,
-  "Market Cap": 20309412381,
-  "EBITDA": 6471000000,
-  "Price/Sales": 1.5730644,
-  "Price/Book": 1.09,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PCG"
-}, {
-  "Symbol": "PM",
-  "Name": "Philip Morris International",
-  "Sector": "Consumer Staples",
-  "Price": 100.39,
-  "Price/Earnings": 22.36,
-  "Dividend Yield": 4.328479,
-  "Earnings/Share": 4.48,
-  "52 Week Low": 123.55,
-  "52 Week High": 96.66,
-  "Market Cap": 153580671803,
-  "EBITDA": 11802000000,
-  "Price/Sales": 2.7574685,
-  "Price/Book": 1318.7,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PM"
-}, {
-  "Symbol": "PSX",
-  "Name": "Phillips 66",
-  "Sector": "Energy",
-  "Price": 92.44,
-  "Price/Earnings": 21.11,
-  "Dividend Yield": 2.928564,
-  "Earnings/Share": 9.93,
-  "52 Week Low": 107.47,
-  "52 Week High": 75.135,
-  "Market Cap": 47996220000,
-  "EBITDA": 5311000000,
-  "Price/Sales": 0.47499472,
-  "Price/Book": 2.12,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PSX"
-}, {
-  "Symbol": "PNW",
-  "Name": "Pinnacle West Capital",
-  "Sector": "Utilities",
-  "Price": 74.34,
-  "Price/Earnings": 16.06,
-  "Dividend Yield": 3.698776,
-  "Earnings/Share": 3.95,
-  "52 Week Low": 92.48,
-  "52 Week High": 73.81,
-  "Market Cap": 8397609889,
-  "EBITDA": 1614399000,
-  "Price/Sales": 2.9931207,
-  "Price/Book": 1.65,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PNW"
-}, {
-  "Symbol": "PXD",
-  "Name": "Pioneer Natural Resources",
-  "Sector": "Energy",
-  "Price": 169.16,
-  "Price/Earnings": 118.29,
-  "Dividend Yield": 0.1816118,
-  "Earnings/Share": -3.39,
-  "52 Week Low": 199.83,
-  "52 Week High": 125.46,
-  "Market Cap": 29983119693,
-  "EBITDA": 1717000000,
-  "Price/Sales": 6.7890477,
-  "Price/Book": 2.76,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PXD"
-}, {
-  "Symbol": "PNC",
-  "Name": "PNC Financial Services",
-  "Sector": "Financials",
-  "Price": 149.38,
-  "Price/Earnings": 17.55,
-  "Dividend Yield": 1.9354838,
-  "Earnings/Share": 10.4,
-  "52 Week Low": 160.07,
-  "52 Week High": 115.25,
-  "Market Cap": 73315000000,
-  "EBITDA": 0,
-  "Price/Sales": 4.04653,
-  "Price/Book": 1.53,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PNC"
-}, {
-  "Symbol": "RL",
-  "Name": "Polo Ralph Lauren Corp.",
-  "Sector": "Consumer Discretionary",
-  "Price": 101.32,
-  "Price/Earnings": 17.74,
-  "Dividend Yield": 1.8570102,
-  "Earnings/Share": -1.19,
-  "52 Week Low": 119.33,
-  "52 Week High": 66.06,
-  "Market Cap": 8753430477,
-  "EBITDA": 506100000,
-  "Price/Sales": 1.3948758,
-  "Price/Book": 2.44,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RL"
-}, {
-  "Symbol": "PPG",
-  "Name": "PPG Industries",
-  "Sector": "Materials",
-  "Price": 110.3,
-  "Price/Earnings": 18.73,
-  "Dividend Yield": 1.5771489,
-  "Earnings/Share": 6.31,
-  "52 Week Low": 122.0697,
-  "52 Week High": 99.57,
-  "Market Cap": 29043337549,
-  "EBITDA": 2585000000,
-  "Price/Sales": 1.9551051,
-  "Price/Book": 4.83,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PPG"
-}, {
-  "Symbol": "PPL",
-  "Name": "PPL Corp.",
-  "Sector": "Utilities",
-  "Price": 29.52,
-  "Price/Earnings": 12.83,
-  "Dividend Yield": 5.2196894,
-  "Earnings/Share": 2.79,
-  "52 Week Low": 40.2,
-  "52 Week High": 29.205,
-  "Market Cap": 20839814845,
-  "EBITDA": 3937000000,
-  "Price/Sales": 3.7497053,
-  "Price/Book": 1.95,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PPL"
-}, {
-  "Symbol": "PX",
-  "Name": "Praxair Inc.",
-  "Sector": "Materials",
-  "Price": 144.07,
-  "Price/Earnings": 24.63,
-  "Dividend Yield": 2.1998534,
-  "Earnings/Share": 4.32,
-  "52 Week Low": 166.95,
-  "52 Week High": 115.53,
-  "Market Cap": 42948664203,
-  "EBITDA": 3632000000,
-  "Price/Sales": 3.887915,
-  "Price/Book": 6.88,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PX"
-}, {
-  "Symbol": "PCLN",
-  "Name": "Priceline.com Inc",
-  "Sector": "Consumer Discretionary",
-  "Price": 1806.06,
-  "Price/Earnings": 24.26,
-  "Dividend Yield": 0,
-  "Earnings/Share": 42.66,
-  "52 Week Low": 2067.99,
-  "52 Week High": 1589,
-  "Market Cap": 91817448863,
-  "EBITDA": 4803487000,
-  "Price/Sales": 9.176564,
-  "Price/Book": 6.92,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PCLN"
-}, {
-  "Symbol": "PFG",
-  "Name": "Principal Financial Group",
-  "Sector": "Financials",
-  "Price": 60.38,
-  "Price/Earnings": 11.96,
-  "Dividend Yield": 3.1914895,
-  "Earnings/Share": 4.5,
-  "52 Week Low": 75.585,
-  "52 Week High": 58.9401,
-  "Market Cap": 18457199721,
-  "EBITDA": 0,
-  "Price/Sales": 1.7167546,
-  "Price/Book": 1.53,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PFG"
-}, {
-  "Symbol": "PG",
-  "Name": "Procter & Gamble",
-  "Sector": "Consumer Staples",
-  "Price": 80.22,
-  "Price/Earnings": 20.46,
-  "Dividend Yield": 3.3704789,
-  "Earnings/Share": 5.6,
-  "52 Week Low": 94.67,
-  "52 Week High": 80.1,
-  "Market Cap": 206318943299,
-  "EBITDA": 17249000000,
-  "Price/Sales": 3.1595004,
-  "Price/Book": 3.85,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PG"
-}, {
-  "Symbol": "PGR",
-  "Name": "Progressive Corp.",
-  "Sector": "Financials",
-  "Price": 51.07,
-  "Price/Earnings": 20.76,
-  "Dividend Yield": 2.1061797,
-  "Earnings/Share": 2.73,
-  "52 Week Low": 58.25,
-  "52 Week High": 36.84,
-  "Market Cap": 31062780000,
-  "EBITDA": 0,
-  "Price/Sales": 1.1458876,
-  "Price/Book": 3.25,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PGR"
-}, {
-  "Symbol": "PLD",
-  "Name": "Prologis",
-  "Sector": "Real Estate",
-  "Price": 58.33,
-  "Price/Earnings": 20.76,
-  "Dividend Yield": 2.931379,
-  "Earnings/Share": 3.06,
-  "52 Week Low": 67.53,
-  "52 Week High": 48.69,
-  "Market Cap": 31953288000,
-  "EBITDA": 2969194000,
-  "Price/Sales": 14.380373,
-  "Price/Book": 2.11,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PLD"
-}, {
-  "Symbol": "PRU",
-  "Name": "Prudential Financial",
-  "Sector": "Financials",
-  "Price": 103.38,
-  "Price/Earnings": 9.99,
-  "Dividend Yield": 2.6985698,
-  "Earnings/Share": 9.73,
-  "52 Week Low": 127.14,
-  "52 Week High": 97.88,
-  "Market Cap": 47136080000,
-  "EBITDA": 0,
-  "Price/Sales": 1.083727,
-  "Price/Book": 0.93,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PRU"
-}, {
-  "Symbol": "PEG",
-  "Name": "Public Serv. Enterprise Inc.",
-  "Sector": "Utilities",
-  "Price": 46.73,
-  "Price/Earnings": 16.11,
-  "Dividend Yield": 3.60587,
-  "Earnings/Share": 1.75,
-  "52 Week Low": 53.28,
-  "52 Week High": 41.67,
-  "Market Cap": 24138050331,
-  "EBITDA": 3613000000,
-  "Price/Sales": 3.4491453,
-  "Price/Book": 1.88,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PEG"
-}, {
-  "Symbol": "PSA",
-  "Name": "Public Storage",
-  "Sector": "Real Estate",
-  "Price": 180.49,
-  "Price/Earnings": 18.21,
-  "Dividend Yield": 4.316159,
-  "Earnings/Share": 6.81,
-  "52 Week Low": 232.21,
-  "52 Week High": 180.9254,
-  "Market Cap": 32258539942,
-  "EBITDA": 1924803000,
-  "Price/Sales": 16.16417,
-  "Price/Book": 6.56,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PSA"
-}, {
-  "Symbol": "PHM",
-  "Name": "Pulte Homes Inc.",
-  "Sector": "Consumer Discretionary",
-  "Price": 28.67,
-  "Price/Earnings": 12.86,
-  "Dividend Yield": 1.2036108,
-  "Earnings/Share": 1.44,
-  "52 Week Low": 35.21,
-  "52 Week High": 21.06,
-  "Market Cap": 8792572352,
-  "EBITDA": 992811000,
-  "Price/Sales": 1.0341544,
-  "Price/Book": 1.99,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PHM"
-}, {
-  "Symbol": "PVH",
-  "Name": "PVH Corp.",
-  "Sector": "Consumer Discretionary",
-  "Price": 142.68,
-  "Price/Earnings": 20.98,
-  "Dividend Yield": 0.100529455,
-  "Earnings/Share": 6.77,
-  "52 Week Low": 157.96,
-  "52 Week High": 84.53,
-  "Market Cap": 11478625926,
-  "EBITDA": 1057500000,
-  "Price/Sales": 1.7617522,
-  "Price/Book": 2.14,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PVH"
-}, {
-  "Symbol": "QRVO",
-  "Name": "Qorvo",
-  "Sector": "Information Technology",
-  "Price": 76.85,
-  "Price/Earnings": 19.71,
-  "Dividend Yield": 0,
-  "Earnings/Share": -0.13,
-  "52 Week Low": 85.24,
-  "52 Week High": 62.68,
-  "Market Cap": 9877885146,
-  "EBITDA": 806875000,
-  "Price/Sales": 3.389142,
-  "Price/Book": 1.98,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=QRVO"
-}, {
-  "Symbol": "QCOM",
-  "Name": "QUALCOMM Inc.",
-  "Sector": "Information Technology",
-  "Price": 62.42,
-  "Price/Earnings": 16.51,
-  "Dividend Yield": 3.5055351,
-  "Earnings/Share": 1.65,
-  "52 Week Low": 69.28,
-  "52 Week High": 48.92,
-  "Market Cap": 96282828902,
-  "EBITDA": 4191000000,
-  "Price/Sales": 4.263658,
-  "Price/Book": 3.82,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=QCOM"
-}, {
-  "Symbol": "PWR",
-  "Name": "Quanta Services Inc.",
-  "Sector": "Industrials",
-  "Price": 33.51,
-  "Price/Earnings": 17.54,
-  "Dividend Yield": 0,
-  "Earnings/Share": 1.28,
-  "52 Week Low": 40.105,
-  "52 Week High": 30.23,
-  "Market Cap": 5330131216,
-  "EBITDA": 649404000,
-  "Price/Sales": 0.77893436,
-  "Price/Book": 1.43,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PWR"
-}, {
-  "Symbol": "DGX",
-  "Name": "Quest Diagnostics",
-  "Sector": "Health Care",
-  "Price": 96.42,
-  "Price/Earnings": 17.07,
-  "Dividend Yield": 1.9884669,
-  "Earnings/Share": 5.5,
-  "52 Week Low": 112.965,
-  "52 Week High": 90.1,
-  "Market Cap": 13578300000,
-  "EBITDA": 1453000000,
-  "Price/Sales": 1.7709883,
-  "Price/Book": 2.82,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DGX"
-}, {
-  "Symbol": "RRC",
-  "Name": "Range Resources Corp.",
-  "Sector": "Energy",
-  "Price": 12.82,
-  "Price/Earnings": 35.61,
-  "Dividend Yield": 0.6097561,
-  "Earnings/Share": -2.79,
-  "52 Week Low": 34.09,
-  "52 Week High": 12.7,
-  "Market Cap": 3255587970,
-  "EBITDA": 820095000,
-  "Price/Sales": 1.9624339,
-  "Price/Book": 0.59,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RRC"
-}, {
-  "Symbol": "RJF",
-  "Name": "Raymond James Financial Inc.",
-  "Sector": "Financials",
-  "Price": 86.06,
-  "Price/Earnings": 16.94,
-  "Dividend Yield": 1.0982976,
-  "Earnings/Share": 4.12,
-  "52 Week Low": 99.1,
-  "52 Week High": 71.35,
-  "Market Cap": 13216271700,
-  "EBITDA": 0,
-  "Price/Sales": 1.9734555,
-  "Price/Book": 2.34,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RJF"
-}, {
-  "Symbol": "RTN",
-  "Name": "Raytheon Co.",
-  "Sector": "Industrials",
-  "Price": 198.74,
-  "Price/Earnings": 25.78,
-  "Dividend Yield": 1.5612764,
-  "Earnings/Share": 6.95,
-  "52 Week Low": 213.45,
-  "52 Week High": 147.86,
-  "Market Cap": 59066255840,
-  "EBITDA": 3868000000,
-  "Price/Sales": 2.2938328,
-  "Price/Book": 5.28,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RTN"
-}, {
-  "Symbol": "O",
-  "Name": "Realty Income Corporation",
-  "Sector": "Real Estate",
-  "Price": 47.56,
-  "Price/Earnings": 15.54,
-  "Dividend Yield": 5.372036,
-  "Earnings/Share": 1.12,
-  "52 Week Low": 63.6,
-  "52 Week High": 48.89,
-  "Market Cap": 13784942453,
-  "EBITDA": 1075568000,
-  "Price/Sales": 15.588069,
-  "Price/Book": 1.92,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=O"
-}, {
-  "Symbol": "RHT",
-  "Name": "Red Hat Inc.",
-  "Sector": "Information Technology",
-  "Price": 124.65,
-  "Price/Earnings": 79.9,
-  "Dividend Yield": 0,
-  "Earnings/Share": 1.68,
-  "52 Week Low": 135.77,
-  "52 Week High": 78.48,
-  "Market Cap": 22799923883,
-  "EBITDA": 541809000,
-  "Price/Sales": 8.202077,
-  "Price/Book": 15.69,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RHT"
-}, {
-  "Symbol": "REG",
-  "Name": "Regency Centers Corporation",
-  "Sector": "Real Estate",
-  "Price": 55.58,
-  "Price/Earnings": 15.27,
-  "Dividend Yield": 3.6850338,
-  "Earnings/Share": 1.43,
-  "52 Week Low": 72.05,
-  "52 Week High": 56.66,
-  "Market Cap": 9858367494,
-  "EBITDA": 487636000,
-  "Price/Sales": 13.762162,
-  "Price/Book": 1.51,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=REG"
-}, {
-  "Symbol": "REGN",
-  "Name": "Regeneron",
-  "Sector": "Health Care",
-  "Price": 322.62,
-  "Price/Earnings": 27.93,
-  "Dividend Yield": 0,
-  "Earnings/Share": 7.74,
-  "52 Week Low": 543.5518,
-  "52 Week High": 319.5,
-  "Market Cap": 35950369241,
-  "EBITDA": 2043160000,
-  "Price/Sales": 8.48541,
-  "Price/Book": 5.89,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=REGN"
-}, {
-  "Symbol": "RF",
-  "Name": "Regions Financial Corp.",
-  "Sector": "Financials",
-  "Price": 17.9,
-  "Price/Earnings": 17.9,
-  "Dividend Yield": 1.8987342,
-  "Earnings/Share": 1,
-  "52 Week Low": 19.9,
-  "52 Week High": 13,
-  "Market Cap": 21500640000,
-  "EBITDA": 0,
-  "Price/Sales": 3.474771,
-  "Price/Book": 1.32,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RF"
-}, {
-  "Symbol": "RSG",
-  "Name": "Republic Services Inc",
-  "Sector": "Industrials",
-  "Price": 62.72,
-  "Price/Earnings": 26.13,
-  "Dividend Yield": 2.1362228,
-  "Earnings/Share": 1.77,
-  "52 Week Low": 69.4,
-  "52 Week High": 57.53,
-  "Market Cap": 21590903863,
-  "EBITDA": 2734000000,
-  "Price/Sales": 2.8841186,
-  "Price/Book": 2.83,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RSG"
-}, {
-  "Symbol": "RMD",
-  "Name": "ResMed",
-  "Sector": "Health Care",
-  "Price": 89.26,
-  "Price/Earnings": 31.54,
-  "Dividend Yield": 1.5120423,
-  "Earnings/Share": 2.41,
-  "52 Week Low": 104.78,
-  "52 Week High": 67.04,
-  "Market Cap": 13233622689,
-  "EBITDA": 636942000,
-  "Price/Sales": 6.1640687,
-  "Price/Book": 6.61,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RMD"
-}, {
-  "Symbol": "RHI",
-  "Name": "Robert Half International",
-  "Sector": "Industrials",
-  "Price": 52.26,
-  "Price/Earnings": 20.18,
-  "Dividend Yield": 1.7075773,
-  "Earnings/Share": 2.32,
-  "52 Week Low": 60.59,
-  "52 Week High": 42.92,
-  "Market Cap": 7047165475,
-  "EBITDA": 565196000,
-  "Price/Sales": 1.3330402,
-  "Price/Book": 5.98,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RHI"
-}, {
-  "Symbol": "ROK",
-  "Name": "Rockwell Automation Inc.",
-  "Sector": "Industrials",
-  "Price": 178.73,
-  "Price/Earnings": 26.48,
-  "Dividend Yield": 1.7692552,
-  "Earnings/Share": 6.35,
-  "52 Week Low": 210.72,
-  "52 Week High": 147.67,
-  "Market Cap": 24123216432,
-  "EBITDA": 1323200000,
-  "Price/Sales": 3.760594,
-  "Price/Book": 10.94,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ROK"
-}, {
-  "Symbol": "COL",
-  "Name": "Rockwell Collins",
-  "Sector": "Industrials",
-  "Price": 133.31,
-  "Price/Earnings": 22.29,
-  "Dividend Yield": 0.9748892,
-  "Earnings/Share": 4.8,
-  "52 Week Low": 139.63,
-  "52 Week High": 89.9,
-  "Market Cap": 22197870556,
-  "EBITDA": 1696000000,
-  "Price/Sales": 3.781273,
-  "Price/Book": 3.46,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=COL"
-}, {
-  "Symbol": "ROP",
-  "Name": "Roper Technologies",
-  "Sector": "Industrials",
-  "Price": 259.4,
-  "Price/Earnings": 27.57,
-  "Dividend Yield": 0.61985797,
-  "Earnings/Share": 9.38,
-  "52 Week Low": 290.415,
-  "52 Week High": 191.22,
-  "Market Cap": 27247789759,
-  "EBITDA": 1555209000,
-  "Price/Sales": 5.9715905,
-  "Price/Book": 4.23,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ROP"
-}, {
-  "Symbol": "ROST",
-  "Name": "Ross Stores",
-  "Sector": "Consumer Discretionary",
-  "Price": 75.06,
-  "Price/Earnings": 26.52,
-  "Dividend Yield": 0.82061803,
-  "Earnings/Share": 2.83,
-  "52 Week Low": 85.66,
-  "52 Week High": 52.85,
-  "Market Cap": 29803566306,
-  "EBITDA": 2247009000,
-  "Price/Sales": 2.9734495,
-  "Price/Book": 10.28,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ROST"
-}, {
-  "Symbol": "RCL",
-  "Name": "Royal Caribbean Cruises Ltd",
-  "Sector": "Consumer Discretionary",
-  "Price": 122.45,
-  "Price/Earnings": 16.26,
-  "Dividend Yield": 1.8674136,
-  "Earnings/Share": 7.53,
-  "52 Week Low": 135.65,
-  "52 Week High": 93.4,
-  "Market Cap": 27418147452,
-  "EBITDA": 2876309000,
-  "Price/Sales": 3.1026611,
-  "Price/Book": 2.56,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RCL"
-}, {
-  "Symbol": "SPGI",
-  "Name": "S&P Global, Inc.",
-  "Sector": "Financials",
-  "Price": 173.31,
-  "Price/Earnings": 27.38,
-  "Dividend Yield": 1.0947506,
-  "Earnings/Share": 7.95,
-  "52 Week Low": 185.38,
-  "52 Week High": 124.64,
-  "Market Cap": 46585950000,
-  "EBITDA": 3021000000,
-  "Price/Sales": 10.254704,
-  "Price/Book": 50.56,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SPGI"
-}, {
-  "Symbol": "CRM",
-  "Name": "Salesforce.com",
-  "Sector": "Information Technology",
-  "Price": 104.03,
-  "Price/Earnings": 520.15,
-  "Dividend Yield": 0,
-  "Earnings/Share": 0.27,
-  "52 Week Low": 114.52,
-  "52 Week High": 79.63,
-  "Market Cap": 79489115000,
-  "EBITDA": 925804000,
-  "Price/Sales": 10.3738785,
-  "Price/Book": 8.81,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CRM"
-}, {
-  "Symbol": "SBAC",
-  "Name": "SBA Communications",
-  "Sector": "Real Estate",
-  "Price": 159.85,
-  "Price/Earnings": 199.81,
-  "Dividend Yield": 0,
-  "Earnings/Share": 0.62,
-  "52 Week Low": 177.67,
-  "52 Week High": 103.51,
-  "Market Cap": 19572031314,
-  "EBITDA": 1074240000,
-  "Price/Sales": 15.189207,
-  "Price/Book": 91.04,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SBAC"
-}, {
-  "Symbol": "SCG",
-  "Name": "SCANA Corp",
-  "Sector": "Utilities",
-  "Price": 35.6,
-  "Price/Earnings": 8.75,
-  "Dividend Yield": 6.6830335,
-  "Earnings/Share": 4.16,
-  "52 Week Low": 71.28,
-  "52 Week High": 35.31,
-  "Market Cap": 5229448882,
-  "EBITDA": 1459000000,
-  "Price/Sales": 1.651705,
-  "Price/Book": 0.92,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SCG"
-}, {
-  "Symbol": "SLB",
-  "Name": "Schlumberger Ltd.",
-  "Sector": "Energy",
-  "Price": 67.4,
-  "Price/Earnings": 44.93,
-  "Dividend Yield": 2.8673835,
-  "Earnings/Share": -1.08,
-  "52 Week Low": 82.71,
-  "52 Week High": 61.02,
-  "Market Cap": 96529311126,
-  "EBITDA": 3222000000,
-  "Price/Sales": 3.2297828,
-  "Price/Book": 2.64,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SLB"
-}, {
-  "Symbol": "SNI",
-  "Name": "Scripps Networks Interactive Inc.",
-  "Sector": "Consumer Discretionary",
-  "Price": 86.46,
-  "Price/Earnings": 16.04,
-  "Dividend Yield": 1.3761468,
-  "Earnings/Share": 5.18,
-  "52 Week Low": 88.87,
-  "52 Week High": 64.87,
-  "Market Cap": 11328642413,
-  "EBITDA": 1351059000,
-  "Price/Sales": 4.374079,
-  "Price/Book": 4.22,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SNI"
-}, {
-  "Symbol": "STX",
-  "Name": "Seagate Technology",
-  "Sector": "Information Technology",
-  "Price": 47.44,
-  "Price/Earnings": 11.51,
-  "Dividend Yield": 5.085772,
-  "Earnings/Share": 2.58,
-  "52 Week Low": 56.45,
-  "52 Week High": 30.6,
-  "Market Cap": 14113197720,
-  "EBITDA": 1811000000,
-  "Price/Sales": 1.3048558,
-  "Price/Book": 13.33,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=STX"
-}, {
-  "Symbol": "SEE",
-  "Name": "Sealed Air",
-  "Sector": "Materials",
-  "Price": 42.62,
-  "Price/Earnings": 21.31,
-  "Dividend Yield": 1.4427412,
-  "Earnings/Share": 2.46,
-  "52 Week Low": 50.62,
-  "52 Week High": 41.22,
-  "Market Cap": 8001938397,
-  "EBITDA": 969700000,
-  "Price/Sales": 2.4700067,
-  "Price/Book": 10.55,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SEE"
-}, {
-  "Symbol": "SRE",
-  "Name": "Sempra Energy",
-  "Sector": "Utilities",
-  "Price": 103.36,
-  "Price/Earnings": 19.14,
-  "Dividend Yield": 3.1607263,
-  "Earnings/Share": 5.45,
-  "52 Week Low": 122.975,
-  "52 Week High": 100.63,
-  "Market Cap": 26163862235,
-  "EBITDA": 3763000000,
-  "Price/Sales": 3.15303,
-  "Price/Book": 1.98,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SRE"
-}, {
-  "Symbol": "SHW",
-  "Name": "Sherwin-Williams",
-  "Sector": "Materials",
-  "Price": 387.65,
-  "Price/Earnings": 26.75,
-  "Dividend Yield": 0.8426688,
-  "Earnings/Share": 18.61,
-  "52 Week Low": 435.15,
-  "52 Week High": 302.0101,
-  "Market Cap": 37730994828,
-  "EBITDA": 2160668000,
-  "Price/Sales": 2.5276077,
-  "Price/Book": 13.42,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SHW"
-}, {
-  "Symbol": "SIG",
-  "Name": "Signet Jewelers",
-  "Sector": "Consumer Discretionary",
-  "Price": 49.38,
-  "Price/Earnings": 6.65,
-  "Dividend Yield": 2.4730754,
-  "Earnings/Share": 7.03,
-  "52 Week Low": 77.94,
-  "52 Week High": 46.09,
-  "Market Cap": 3034275549,
-  "EBITDA": 852700000,
-  "Price/Sales": 0.7564699,
-  "Price/Book": 1.38,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SIG"
-}, {
-  "Symbol": "SPG",
-  "Name": "Simon Property Group Inc",
-  "Sector": "Real Estate",
-  "Price": 152.18,
-  "Price/Earnings": 13.56,
-  "Dividend Yield": 5.0368075,
-  "Earnings/Share": 6.25,
-  "52 Week Low": 187.35,
-  "52 Week High": 150.15,
-  "Market Cap": 48139839531,
-  "EBITDA": 4411515000,
-  "Price/Sales": 8.754495,
-  "Price/Book": 13.24,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SPG"
-}, {
-  "Symbol": "SWKS",
-  "Name": "Skyworks Solutions",
-  "Sector": "Information Technology",
-  "Price": 99.04,
-  "Price/Earnings": 16.45,
-  "Dividend Yield": 1.2629502,
-  "Earnings/Share": 5.41,
-  "52 Week Low": 117.65,
-  "52 Week High": 90.53,
-  "Market Cap": 18493080922,
-  "EBITDA": 1122900000,
-  "Price/Sales": 6.9704437,
-  "Price/Book": 4.25,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SWKS"
-}, {
-  "Symbol": "SLG",
-  "Name": "SL Green Realty",
-  "Sector": "Real Estate",
-  "Price": 90.61,
-  "Price/Earnings": 14.07,
-  "Dividend Yield": 3.4998922,
-  "Earnings/Share": 0.88,
-  "52 Week Low": 115.34,
-  "52 Week High": 91.2,
-  "Market Cap": 8617714345,
-  "EBITDA": 795889000,
-  "Price/Sales": 6.5820084,
-  "Price/Book": 1.32,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SLG"
-}, {
-  "Symbol": "SNA",
-  "Name": "Snap-On Inc.",
-  "Sector": "Consumer Discretionary",
-  "Price": 156.72,
-  "Price/Earnings": 15.81,
-  "Dividend Yield": 1.968433,
-  "Earnings/Share": 9.2,
-  "52 Week Low": 185.47,
-  "52 Week High": 140.83,
-  "Market Cap": 9499107736,
-  "EBITDA": 982200000,
-  "Price/Sales": 3.5114813,
-  "Price/Book": 3.21,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SNA"
-}, {
-  "Symbol": "SO",
-  "Name": "Southern Co.",
-  "Sector": "Utilities",
-  "Price": 43.4,
-  "Price/Earnings": 15.78,
-  "Dividend Yield": 5.3530226,
-  "Earnings/Share": 2.53,
-  "52 Week Low": 53.51,
-  "52 Week High": 42.63,
-  "Market Cap": 43497224128,
-  "EBITDA": 6012000000,
-  "Price/Sales": 2.5080602,
-  "Price/Book": 1.82,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SO"
-}, {
-  "Symbol": "LUV",
-  "Name": "Southwest Airlines",
-  "Sector": "Industrials",
-  "Price": 55.63,
-  "Price/Earnings": 15.89,
-  "Dividend Yield": 0.863707,
-  "Earnings/Share": 5.82,
-  "52 Week Low": 66.985,
-  "52 Week High": 49.76,
-  "Market Cap": 34351211637,
-  "EBITDA": 4533000000,
-  "Price/Sales": 1.6294897,
-  "Price/Book": 3.84,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LUV"
-}, {
-  "Symbol": "SWK",
-  "Name": "Stanley Black & Decker",
-  "Sector": "Consumer Discretionary",
-  "Price": 152.86,
-  "Price/Earnings": 20.57,
-  "Dividend Yield": 1.5775635,
-  "Earnings/Share": 8.05,
-  "52 Week Low": 176.62,
-  "52 Week High": 121.09,
-  "Market Cap": 24496399600,
-  "EBITDA": 2264600000,
-  "Price/Sales": 1.944325,
-  "Price/Book": 3.34,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SWK"
-}, {
-  "Symbol": "SBUX",
-  "Name": "Starbucks Corp.",
-  "Sector": "Consumer Discretionary",
-  "Price": 53.77,
-  "Price/Earnings": 25.98,
-  "Dividend Yield": 2.203452,
-  "Earnings/Share": 1.97,
-  "52 Week Low": 64.87,
-  "52 Week High": 52.58,
-  "Market Cap": 76548976000,
-  "EBITDA": 7361500000,
-  "Price/Sales": 3.4392443,
-  "Price/Book": 13.36,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SBUX"
-}, {
-  "Symbol": "STT",
-  "Name": "State Street Corp.",
-  "Sector": "Financials",
-  "Price": 98.54,
-  "Price/Earnings": 15.35,
-  "Dividend Yield": 1.6228749,
-  "Earnings/Share": 5.23,
-  "52 Week Low": 114.27,
-  "52 Week High": 75.27,
-  "Market Cap": 38059113300,
-  "EBITDA": 0,
-  "Price/Sales": 3.263072,
-  "Price/Book": 1.95,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=STT"
-}, {
-  "Symbol": "SRCL",
-  "Name": "Stericycle Inc",
-  "Sector": "Industrials",
-  "Price": 70.55,
-  "Price/Earnings": 16.26,
-  "Dividend Yield": 0,
-  "Earnings/Share": 2.08,
-  "52 Week Low": 88,
-  "52 Week High": 61.25,
-  "Market Cap": 6218560288,
-  "EBITDA": 305085000,
-  "Price/Sales": 2.2607324,
-  "Price/Book": 2.15,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SRCL"
-}, {
-  "Symbol": "SYK",
-  "Name": "Stryker Corp.",
-  "Sector": "Health Care",
-  "Price": 148.01,
-  "Price/Earnings": 23.46,
-  "Dividend Yield": 1.2234008,
-  "Earnings/Share": 2.68,
-  "52 Week Low": 170,
-  "52 Week High": 122.01,
-  "Market Cap": 57509096756,
-  "EBITDA": 2863000000,
-  "Price/Sales": 4.635566,
-  "Price/Book": 5.54,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SYK"
-}, {
-  "Symbol": "STI",
-  "Name": "SunTrust Banks",
-  "Sector": "Financials",
-  "Price": 65.8,
-  "Price/Earnings": 16.25,
-  "Dividend Yield": 2.3185046,
-  "Earnings/Share": 4.48,
-  "52 Week Low": 72.06,
-  "52 Week High": 51.96,
-  "Market Cap": 32498948310,
-  "EBITDA": 0,
-  "Price/Sales": 3.3089445,
-  "Price/Book": 1.38,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=STI"
-}, {
-  "Symbol": "SYMC",
-  "Name": "Symantec Corp.",
-  "Sector": "Information Technology",
-  "Price": 25.59,
-  "Price/Earnings": 39.37,
-  "Dividend Yield": 1.1286682,
-  "Earnings/Share": -0.17,
-  "52 Week Low": 34.2,
-  "52 Week High": 25.65,
-  "Market Cap": 16520497264,
-  "EBITDA": 1227000000,
-  "Price/Sales": 3.5516493,
-  "Price/Book": 3.36,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SYMC"
-}, {
-  "Symbol": "SYF",
-  "Name": "Synchrony Financial",
-  "Sector": "Financials",
-  "Price": 34.98,
-  "Price/Earnings": 13.35,
-  "Dividend Yield": 1.6,
-  "Earnings/Share": 2.41,
-  "52 Week Low": 40.59,
-  "52 Week High": 26.01,
-  "Market Cap": 28893750000,
-  "EBITDA": 0,
-  "Price/Sales": 2.1096623,
-  "Price/Book": 1.97,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SYF"
-}, {
-  "Symbol": "SNPS",
-  "Name": "Synopsys Inc.",
-  "Sector": "Information Technology",
-  "Price": 82.62,
-  "Price/Earnings": 67.72,
-  "Dividend Yield": 0,
-  "Earnings/Share": 0.87,
-  "52 Week Low": 94.8,
-  "52 Week High": 64.75,
-  "Market Cap": 12767067883,
-  "EBITDA": 579844000,
-  "Price/Sales": 6.276264,
-  "Price/Book": 3.98,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SNPS"
-}, {
-  "Symbol": "SYY",
-  "Name": "Sysco Corp.",
-  "Sector": "Consumer Staples",
-  "Price": 57,
-  "Price/Earnings": 22.98,
-  "Dividend Yield": 2.4644873,
-  "Earnings/Share": 2.08,
-  "52 Week Low": 64.27,
-  "52 Week High": 48.85,
-  "Market Cap": 30445320778,
-  "EBITDA": 2988725000,
-  "Price/Sales": 0.7295535,
-  "Price/Book": 13.4,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SYY"
-}, {
-  "Symbol": "TROW",
-  "Name": "T. Rowe Price Group",
-  "Sector": "Financials",
-  "Price": 101.99,
-  "Price/Earnings": 19.92,
-  "Dividend Yield": 2.140443,
-  "Earnings/Share": 4.75,
-  "52 Week Low": 120.07,
-  "52 Week High": 66.7,
-  "Market Cap": 25810865035,
-  "EBITDA": 2281400000,
-  "Price/Sales": 7.3911157,
-  "Price/Book": 4.61,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TROW"
-}, {
-  "Symbol": "TPR",
-  "Name": "Tapestry, Inc.",
-  "Sector": "Consumer Discretionary",
-  "Price": 48.85,
-  "Price/Earnings": "",
-  "Dividend Yield": 0,
-  "Earnings/Share": 2.09,
-  "52 Week Low": 50.71,
-  "52 Week High": 36.69,
-  "Market Cap": 14247199374,
-  "EBITDA": 0,
-  "Price/Sales": 4.0785494,
-  "Price/Book": 4.35,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TPR"
-}, {
-  "Symbol": "TGT",
-  "Name": "Target Corp.",
-  "Sector": "Consumer Discretionary",
-  "Price": 71.11,
-  "Price/Earnings": 14.19,
-  "Dividend Yield": 3.3856654,
-  "Earnings/Share": 4.71,
-  "52 Week Low": 78.7,
-  "52 Week High": 48.56,
-  "Market Cap": 39816696539,
-  "EBITDA": 7105000000,
-  "Price/Sales": 0.8047394,
-  "Price/Book": 3.45,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TGT"
-}, {
-  "Symbol": "TEL",
-  "Name": "TE Connectivity Ltd.",
-  "Sector": "Information Technology",
-  "Price": 95.27,
-  "Price/Earnings": 19.72,
-  "Dividend Yield": 1.6062645,
-  "Earnings/Share": 4.71,
-  "52 Week Low": 108.23,
-  "52 Week High": 71.93,
-  "Market Cap": 34983666316,
-  "EBITDA": 2797000000,
-  "Price/Sales": 2.5734365,
-  "Price/Book": 3.6,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TEL"
-}, {
-  "Symbol": "FTI",
-  "Name": "TechnipFMC",
-  "Sector": "Energy",
-  "Price": 29.1,
-  "Price/Earnings": 18.77,
-  "Dividend Yield": 1.7060367,
-  "Earnings/Share": 0,
-  "52 Week Low": 35,
-  "52 Week High": 24.53,
-  "Market Cap": 14163064455,
-  "EBITDA": 540167833.423084,
-  "Price/Sales": 1.561575,
-  "Price/Book": 1.06,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FTI"
-}, {
-  "Symbol": "TXN",
-  "Name": "Texas Instruments",
-  "Sector": "Information Technology",
-  "Price": 97.66,
-  "Price/Earnings": 24.05,
-  "Dividend Yield": 2.4318495,
-  "Earnings/Share": 3.6,
-  "52 Week Low": 120.75,
-  "52 Week High": 74.52,
-  "Market Cap": 100262526470,
-  "EBITDA": 7013000000,
-  "Price/Sales": 6.9572234,
-  "Price/Book": 9.32,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TXN"
-}, {
-  "Symbol": "TXT",
-  "Name": "Textron Inc.",
-  "Sector": "Industrials",
-  "Price": 55.54,
-  "Price/Earnings": 22.13,
-  "Dividend Yield": 0.1381454,
-  "Earnings/Share": 1.14,
-  "52 Week Low": 62.19,
-  "52 Week High": 45,
-  "Market Cap": 15254672353,
-  "EBITDA": 1454000000,
-  "Price/Sales": 1.0645695,
-  "Price/Book": 2.57,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TXT"
-}, {
-  "Symbol": "BK",
-  "Name": "The Bank of New York Mellon Corp.",
-  "Sector": "Financials",
-  "Price": 53.29,
-  "Price/Earnings": 14.76,
-  "Dividend Yield": 1.7347307,
-  "Earnings/Share": 3.73,
-  "52 Week Low": 58.99,
-  "52 Week High": 44.91,
-  "Market Cap": 56083904906,
-  "EBITDA": 0,
-  "Price/Sales": 3.3834257,
-  "Price/Book": 1.49,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BK"
-}, {
-  "Symbol": "CLX",
-  "Name": "The Clorox Company",
-  "Sector": "Consumer Staples",
-  "Price": 127.76,
-  "Price/Earnings": 23.44,
-  "Dividend Yield": 2.6286967,
-  "Earnings/Share": 5.33,
-  "52 Week Low": 150.4,
-  "52 Week High": 124.09,
-  "Market Cap": 16540418002,
-  "EBITDA": 1295000000,
-  "Price/Sales": 2.798683,
-  "Price/Book": 21.62,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CLX"
-}, {
-  "Symbol": "COO",
-  "Name": "The Cooper Companies",
-  "Sector": "Health Care",
-  "Price": 223.17,
-  "Price/Earnings": 22.96,
-  "Dividend Yield": 0.026033757,
-  "Earnings/Share": 7.52,
-  "52 Week Low": 256.39,
-  "52 Week High": 187.02,
-  "Market Cap": 11297958140,
-  "EBITDA": 615700000,
-  "Price/Sales": 6.8538465,
-  "Price/Book": 3.57,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=COO"
-}, {
-  "Symbol": "HSY",
-  "Name": "The Hershey Company",
-  "Sector": "Consumer Staples",
-  "Price": 97.65,
-  "Price/Earnings": 20.51,
-  "Dividend Yield": 2.6494346,
-  "Earnings/Share": 3.66,
-  "52 Week Low": 116.49,
-  "52 Week High": 98.851,
-  "Market Cap": 20867272020,
-  "EBITDA": 1404123000,
-  "Price/Sales": 2.8396711,
-  "Price/Book": 25.64,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HSY"
-}, {
-  "Symbol": "MOS",
-  "Name": "The Mosaic Company",
-  "Sector": "Materials",
-  "Price": 24.13,
-  "Price/Earnings": 23.66,
-  "Dividend Yield": 0.3960396,
-  "Earnings/Share": 0.85,
-  "52 Week Low": 34.36,
-  "52 Week High": 19.23,
-  "Market Cap": 9726962131,
-  "EBITDA": 1165100000,
-  "Price/Sales": 1.8161958,
-  "Price/Book": 0.94,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MOS"
-}, {
-  "Symbol": "TRV",
-  "Name": "The Travelers Companies Inc.",
-  "Sector": "Financials",
-  "Price": 135.01,
-  "Price/Earnings": 16.48,
-  "Dividend Yield": 2.0261714,
-  "Earnings/Share": 7.31,
-  "52 Week Low": 150.55,
-  "52 Week High": 113.76,
-  "Market Cap": 38903131815,
-  "EBITDA": 0,
-  "Price/Sales": 1.33382,
-  "Price/Book": 1.63,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TRV"
-}, {
-  "Symbol": "DIS",
-  "Name": "The Walt Disney Company",
-  "Sector": "Consumer Discretionary",
-  "Price": 101.35,
-  "Price/Earnings": 17.78,
-  "Dividend Yield": 1.6036655,
-  "Earnings/Share": 5.7,
-  "52 Week Low": 116.1,
-  "52 Week High": 96.2,
-  "Market Cap": 157817273295,
-  "EBITDA": 12544000000,
-  "Price/Sales": 3.9635563,
-  "Price/Book": 3.82,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DIS"
-}, {
-  "Symbol": "TMO",
-  "Name": "Thermo Fisher Scientific",
-  "Sector": "Health Care",
-  "Price": 198.73,
-  "Price/Earnings": 21.84,
-  "Dividend Yield": 0.3276319,
-  "Earnings/Share": 5.6,
-  "52 Week Low": 226.44,
-  "52 Week High": 151.69,
-  "Market Cap": 83226586345,
-  "EBITDA": 4751300000,
-  "Price/Sales": 4.015666,
-  "Price/Book": 3.38,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TMO"
-}, {
-  "Symbol": "TIF",
-  "Name": "Tiffany & Co.",
-  "Sector": "Consumer Discretionary",
-  "Price": 99.62,
-  "Price/Earnings": 27,
-  "Dividend Yield": 1.9402406,
-  "Earnings/Share": 3.55,
-  "52 Week Low": 111.44,
-  "52 Week High": 77.93,
-  "Market Cap": 12810515320,
-  "EBITDA": 949500000,
-  "Price/Sales": 4.516748,
-  "Price/Book": 3.97,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TIF"
-}, {
-  "Symbol": "TWX",
-  "Name": "Time Warner Inc.",
-  "Sector": "Consumer Discretionary",
-  "Price": 93.02,
-  "Price/Earnings": 15.35,
-  "Dividend Yield": 1.6927768,
-  "Earnings/Share": 6.62,
-  "52 Week Low": 103.9,
-  "52 Week High": 85.88,
-  "Market Cap": 74185800000,
-  "EBITDA": 7671000000,
-  "Price/Sales": 2.3735986,
-  "Price/Book": 2.73,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TWX"
-}, {
-  "Symbol": "TJX",
-  "Name": "TJX Companies Inc.",
-  "Sector": "Consumer Discretionary",
-  "Price": 74.36,
-  "Price/Earnings": 21.01,
-  "Dividend Yield": 1.64042,
-  "Earnings/Share": 3.46,
-  "52 Week Low": 81.46,
-  "52 Week High": 66.44,
-  "Market Cap": 48181450881,
-  "EBITDA": 4600216000,
-  "Price/Sales": 1.9293598,
-  "Price/Book": 10.35,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TJX"
-}, {
-  "Symbol": "TMK",
-  "Name": "Torchmark Corp.",
-  "Sector": "Financials",
-  "Price": 80.52,
-  "Price/Earnings": 17.02,
-  "Dividend Yield": 0.7204611,
-  "Earnings/Share": 4.5,
-  "52 Week Low": 93.595,
-  "52 Week High": 73.53,
-  "Market Cap": 9614412169,
-  "EBITDA": 0,
-  "Price/Sales": 3.1079664,
-  "Price/Book": 1.88,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TMK"
-}, {
-  "Symbol": "TSS",
-  "Name": "Total System Services",
-  "Sector": "Information Technology",
-  "Price": 81.17,
-  "Price/Earnings": 25.85,
-  "Dividend Yield": 0.6091133,
-  "Earnings/Share": 3.16,
-  "52 Week Low": 89.92,
-  "52 Week High": 50.96,
-  "Market Cap": 15694951118,
-  "EBITDA": 1097534000,
-  "Price/Sales": 3.175548,
-  "Price/Book": 6.57,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TSS"
-}, {
-  "Symbol": "TSCO",
-  "Name": "Tractor Supply Company",
-  "Sector": "Consumer Discretionary",
-  "Price": 65.94,
-  "Price/Earnings": 19.57,
-  "Dividend Yield": 1.6030874,
-  "Earnings/Share": 3.3,
-  "52 Week Low": 82.68,
-  "52 Week High": 49.87,
-  "Market Cap": 8459271203,
-  "EBITDA": 859519000,
-  "Price/Sales": 1.1642125,
-  "Price/Book": 6.01,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TSCO"
-}, {
-  "Symbol": "TDG",
-  "Name": "TransDigm Group",
-  "Sector": "Industrials",
-  "Price": 283,
-  "Price/Earnings": 23.76,
-  "Dividend Yield": 0,
-  "Earnings/Share": 7.92,
-  "52 Week Low": 321.38,
-  "52 Week High": 203.72,
-  "Market Cap": 15241203731,
-  "EBITDA": 1635916000,
-  "Price/Sales": 4.268832,
-  "Price/Book": "",
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TDG"
-}, {
-  "Symbol": "TRIP",
-  "Name": "TripAdvisor",
-  "Sector": "Consumer Discretionary",
-  "Price": 40.05,
-  "Price/Earnings": 58.04,
-  "Dividend Yield": 0,
-  "Earnings/Share": 0.81,
-  "52 Week Low": 53.29,
-  "52 Week High": 29.5,
-  "Market Cap": 5700998508,
-  "EBITDA": 234000000,
-  "Price/Sales": 4.5925775,
-  "Price/Book": 3.49,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TRIP"
-}, {
-  "Symbol": "FOXA",
-  "Name": "Twenty-First Century Fox Class A",
-  "Sector": "Consumer Discretionary",
-  "Price": 34.56,
-  "Price/Earnings": 17.81,
-  "Dividend Yield": 0.9983361,
-  "Earnings/Share": 1.59,
-  "52 Week Low": 39.135,
-  "52 Week High": 24.81,
-  "Market Cap": 44027094922,
-  "EBITDA": 5280000000,
-  "Price/Sales": 2.1080317,
-  "Price/Book": 4.11,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FOXA"
-}, {
-  "Symbol": "FOX",
-  "Name": "Twenty-First Century Fox Class B",
-  "Sector": "Consumer Discretionary",
-  "Price": 34.09,
-  "Price/Earnings": 17.57,
-  "Dividend Yield": 1.0084034,
-  "Earnings/Share": 1.59,
-  "52 Week Low": 38.56,
-  "52 Week High": 24.3,
-  "Market Cap": 66135313503,
-  "EBITDA": 5280000000,
-  "Price/Sales": 3.1654842,
-  "Price/Book": 4.04,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FOX"
-}, {
-  "Symbol": "TSN",
-  "Name": "Tyson Foods",
-  "Sector": "Consumer Staples",
-  "Price": 73.92,
-  "Price/Earnings": 13.92,
-  "Dividend Yield": 1.6353229,
-  "Earnings/Share": 4.79,
-  "52 Week Low": 84.65,
-  "52 Week High": 57.2,
-  "Market Cap": 26957526800,
-  "EBITDA": 2521000000,
-  "Price/Sales": 0.93730986,
-  "Price/Book": 2.55,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TSN"
-}, {
-  "Symbol": "USB",
-  "Name": "U.S. Bancorp",
-  "Sector": "Financials",
-  "Price": 52.65,
-  "Price/Earnings": 15.35,
-  "Dividend Yield": 2.189781,
-  "Earnings/Share": 3.52,
-  "52 Week Low": 58.5,
-  "52 Week High": 49.535,
-  "Market Cap": 90940115897,
-  "EBITDA": 0,
-  "Price/Sales": 3.7773547,
-  "Price/Book": 2.09,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=USB"
-}, {
-  "Symbol": "UDR",
-  "Name": "UDR Inc",
-  "Sector": "Real Estate",
-  "Price": 32.92,
-  "Price/Earnings": 17.79,
-  "Dividend Yield": 3.668639,
-  "Earnings/Share": 1.08,
-  "52 Week Low": 40.71,
-  "52 Week High": 33.31,
-  "Market Cap": 9050154422,
-  "EBITDA": 665141000,
-  "Price/Sales": 12.365829,
-  "Price/Book": 3.27,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UDR"
-}, {
-  "Symbol": "ULTA",
-  "Name": "Ulta Salon Cosmetics & Fragrance Inc",
-  "Sector": "Consumer Discretionary",
-  "Price": 209.09,
-  "Price/Earnings": 32.07,
-  "Dividend Yield": 0,
-  "Earnings/Share": 6.52,
-  "52 Week Low": 314.86,
-  "52 Week High": 187.96,
-  "Market Cap": 13300000127,
-  "EBITDA": 1002093000,
-  "Price/Sales": 3.3779113,
-  "Price/Book": 8.04,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ULTA"
-}, {
-  "Symbol": "UAA",
-  "Name": "Under Armour Class A",
-  "Sector": "Consumer Discretionary",
-  "Price": 13.14,
-  "Price/Earnings": 32.05,
-  "Dividend Yield": 0,
-  "Earnings/Share": 0.45,
-  "52 Week Low": 23.46,
-  "52 Week High": 11.4,
-  "Market Cap": 5856913571,
-  "EBITDA": 399277000,
-  "Price/Sales": 1.602308,
-  "Price/Book": 2.72,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UAA"
-}, {
-  "Symbol": "UA",
-  "Name": "Under Armour Class C",
-  "Sector": "Consumer Discretionary",
-  "Price": 11.95,
-  "Price/Earnings": 29.15,
-  "Dividend Yield": 0,
-  "Earnings/Share": 0.45,
-  "52 Week Low": 21.805,
-  "52 Week High": 10.36,
-  "Market Cap": 5366628950,
-  "EBITDA": 399277000,
-  "Price/Sales": 1.4738787,
-  "Price/Book": 2.5,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UA"
-}, {
-  "Symbol": "UNP",
-  "Name": "Union Pacific",
-  "Sector": "Industrials",
-  "Price": 124.86,
-  "Price/Earnings": 22.06,
-  "Dividend Yield": 2.062655,
-  "Earnings/Share": 13.52,
-  "52 Week Low": 143.05,
-  "52 Week High": 101.06,
-  "Market Cap": 101513290382,
-  "EBITDA": 10169000000,
-  "Price/Sales": 4.8605075,
-  "Price/Book": "",
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UNP"
-}, {
-  "Symbol": "UAL",
-  "Name": "United Continental Holdings",
-  "Sector": "Industrials",
-  "Price": 63.37,
-  "Price/Earnings": 8.85,
-  "Dividend Yield": 0,
-  "Earnings/Share": 7.05,
-  "52 Week Low": 83.04,
-  "52 Week High": 56.51,
-  "Market Cap": 19363059152,
-  "EBITDA": 5929000000,
-  "Price/Sales": 0.5020496,
-  "Price/Book": 2.09,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UAL"
-}, {
-  "Symbol": "UNH",
-  "Name": "United Health Group Inc.",
-  "Sector": "Health Care",
-  "Price": 216.46,
-  "Price/Earnings": 21.47,
-  "Dividend Yield": 1.3284917,
-  "Earnings/Share": 10.71,
-  "52 Week Low": 250.79,
-  "52 Week High": 156.49,
-  "Market Cap": 218834811333,
-  "EBITDA": 17454000000,
-  "Price/Sales": 1.0903316,
-  "Price/Book": 4.71,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UNH"
-}, {
-  "Symbol": "UPS",
-  "Name": "United Parcel Service",
-  "Sector": "Industrials",
-  "Price": 109.28,
-  "Price/Earnings": 18.27,
-  "Dividend Yield": 2.9666696,
-  "Earnings/Share": 5.62,
-  "52 Week Low": 135.53,
-  "52 Week High": 102.12,
-  "Market Cap": 96436356833,
-  "EBITDA": 7919000000,
-  "Price/Sales": 1.4744618,
-  "Price/Book": 64.7,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UPS"
-}, {
-  "Symbol": "URI",
-  "Name": "United Rentals, Inc.",
-  "Sector": "Industrials",
-  "Price": 161.99,
-  "Price/Earnings": 16.33,
-  "Dividend Yield": 0,
-  "Earnings/Share": 15.72,
-  "52 Week Low": 189,
-  "52 Week High": 100.621,
-  "Market Cap": 14654954091,
-  "EBITDA": 2760000000,
-  "Price/Sales": 2.1782618,
-  "Price/Book": 4.53,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=URI"
-}, {
-  "Symbol": "UTX",
-  "Name": "United Technologies",
-  "Sector": "Industrials",
-  "Price": 127.48,
-  "Price/Earnings": 19.26,
-  "Dividend Yield": 2.1216943,
-  "Earnings/Share": 5.7,
-  "52 Week Low": 139.24,
-  "52 Week High": 107.05,
-  "Market Cap": 105387272474,
-  "EBITDA": 10584000000,
-  "Price/Sales": 1.7324123,
-  "Price/Book": 3.4,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UTX"
-}, {
-  "Symbol": "UHS",
-  "Name": "Universal Health Services, Inc.",
-  "Sector": "Health Care",
-  "Price": 114.87,
-  "Price/Earnings": 15.36,
-  "Dividend Yield": 0.34153005,
-  "Earnings/Share": 7.14,
-  "52 Week Low": 129.74,
-  "52 Week High": 95.26,
-  "Market Cap": 11116075286,
-  "EBITDA": 1676204000,
-  "Price/Sales": 1.3158662,
-  "Price/Book": 2.21,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UHS"
-}, {
-  "Symbol": "UNM",
-  "Name": "Unum Group",
-  "Sector": "Financials",
-  "Price": 47.87,
-  "Price/Earnings": 11.51,
-  "Dividend Yield": 1.8189007,
-  "Earnings/Share": 4.38,
-  "52 Week Low": 58.73,
-  "52 Week High": 43.55,
-  "Market Cap": 11256432318,
-  "EBITDA": 0,
-  "Price/Sales": 0.9984924,
-  "Price/Book": 1.19,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UNM"
-}, {
-  "Symbol": "VFC",
-  "Name": "V.F. Corp.",
-  "Sector": "Consumer Discretionary",
-  "Price": 78.75,
-  "Price/Earnings": 25.9,
-  "Dividend Yield": 2.2865665,
-  "Earnings/Share": 2.55,
-  "52 Week Low": 82.95,
-  "52 Week High": 48.05,
-  "Market Cap": 31797645904,
-  "EBITDA": 1624441000,
-  "Price/Sales": 3.7110944,
-  "Price/Book": 7.89,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VFC"
-}, {
-  "Symbol": "VLO",
-  "Name": "Valero Energy",
-  "Sector": "Energy",
-  "Price": 86.77,
-  "Price/Earnings": 18.74,
-  "Dividend Yield": 3.5618877,
-  "Earnings/Share": 9.24,
-  "52 Week Low": 99.95,
-  "52 Week High": 60.69,
-  "Market Cap": 39312309113,
-  "EBITDA": 5401000000,
-  "Price/Sales": 0.4211918,
-  "Price/Book": 1.93,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VLO"
-}, {
-  "Symbol": "VAR",
-  "Name": "Varian Medical Systems",
-  "Sector": "Health Care",
-  "Price": 112.82,
-  "Price/Earnings": 29.93,
-  "Dividend Yield": 0,
-  "Earnings/Share": 2.69,
-  "52 Week Low": 130.29,
-  "52 Week High": 77.73,
-  "Market Cap": 10692681720,
-  "EBITDA": 500600000,
-  "Price/Sales": 3.9652252,
-  "Price/Book": 7.32,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VAR"
-}, {
-  "Symbol": "VTR",
-  "Name": "Ventas Inc",
-  "Sector": "Real Estate",
-  "Price": 50.92,
-  "Price/Earnings": 12.21,
-  "Dividend Yield": 5.965641,
-  "Earnings/Share": 1.86,
-  "52 Week Low": 72.36,
-  "52 Week High": 51.8,
-  "Market Cap": 18865999082,
-  "EBITDA": 1935931000,
-  "Price/Sales": 7.0740495,
-  "Price/Book": 1.76,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VTR"
-}, {
-  "Symbol": "VRSN",
-  "Name": "Verisign Inc.",
-  "Sector": "Information Technology",
-  "Price": 105.62,
-  "Price/Earnings": 29.5,
-  "Dividend Yield": 0,
-  "Earnings/Share": 3.43,
-  "52 Week Low": 118.28,
-  "52 Week High": 81.17,
-  "Market Cap": 10754983829,
-  "EBITDA": 767864000,
-  "Price/Sales": 12.401829,
-  "Price/Book": 10.82,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VRSN"
-}, {
-  "Symbol": "VRSK",
-  "Name": "Verisk Analytics",
-  "Sector": "Industrials",
-  "Price": 92.28,
-  "Price/Earnings": 28.84,
-  "Dividend Yield": 0,
-  "Earnings/Share": 3.45,
-  "52 Week Low": 100.54,
-  "52 Week High": 75.6,
-  "Market Cap": 15594677147,
-  "EBITDA": 1011200000,
-  "Price/Sales": 9.935474,
-  "Price/Book": 9.34,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VRSK"
-}, {
-  "Symbol": "VZ",
-  "Name": "Verizon Communications",
-  "Sector": "Telecommunication Services",
-  "Price": 49.04,
-  "Price/Earnings": 13.08,
-  "Dividend Yield": 4.626544,
-  "Earnings/Share": 7.36,
-  "52 Week Low": 54.77,
-  "52 Week High": 42.8,
-  "Market Cap": 208092277044,
-  "EBITDA": 45745000000,
-  "Price/Sales": 1.6452544,
-  "Price/Book": 7.96,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VZ"
-}, {
-  "Symbol": "VRTX",
-  "Name": "Vertex Pharmaceuticals Inc",
-  "Sector": "Health Care",
-  "Price": 151.6,
-  "Price/Earnings": 252.67,
-  "Dividend Yield": 0,
-  "Earnings/Share": 1.04,
-  "52 Week Low": 174.955,
-  "52 Week High": 84.39,
-  "Market Cap": 39369386348,
-  "EBITDA": 97562000,
-  "Price/Sales": 16.185404,
-  "Price/Book": 21.91,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VRTX"
-}, {
-  "Symbol": "VIAB",
-  "Name": "Viacom Inc.",
-  "Sector": "Consumer Discretionary",
-  "Price": 32.71,
-  "Price/Earnings": 8.68,
-  "Dividend Yield": 2.622091,
-  "Earnings/Share": 4.68,
-  "52 Week Low": 46.72,
-  "52 Week High": 22.13,
-  "Market Cap": 10601008017,
-  "EBITDA": 5600000000,
-  "Price/Sales": 1.0924768,
-  "Price/Book": 2.08,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VIAB"
-}, {
-  "Symbol": "V",
-  "Name": "Visa Inc.",
-  "Sector": "Information Technology",
-  "Price": 113.86,
-  "Price/Earnings": 32.72,
-  "Dividend Yield": 0.70204765,
-  "Earnings/Share": 2.8,
-  "52 Week Low": 126.88,
-  "52 Week High": 84.88,
-  "Market Cap": 270038723213,
-  "EBITDA": 13086000000,
-  "Price/Sales": 14.433654,
-  "Price/Book": 9.4,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=V"
-}, {
-  "Symbol": "VNO",
-  "Name": "Vornado Realty Trust",
-  "Sector": "Real Estate",
-  "Price": 66.18,
-  "Price/Earnings": 16.22,
-  "Dividend Yield": 3.744428,
-  "Earnings/Share": 4.33,
-  "52 Week Low": 111.72,
-  "52 Week High": 66.0101,
-  "Market Cap": 12778779911,
-  "EBITDA": 0,
-  "Price/Sales": 7.1491003,
-  "Price/Book": 3.63,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VNO"
-}, {
-  "Symbol": "VMC",
-  "Name": "Vulcan Materials",
-  "Sector": "Materials",
-  "Price": 121.47,
-  "Price/Earnings": 40.9,
-  "Dividend Yield": 0.7797879,
-  "Earnings/Share": 3.1,
-  "52 Week Low": 141.2,
-  "52 Week High": 108.95,
-  "Market Cap": 16964162228,
-  "EBITDA": 970976000,
-  "Price/Sales": 5.7576876,
-  "Price/Book": 3.54,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VMC"
-}, {
-  "Symbol": "WMT",
-  "Name": "Wal-Mart Stores",
-  "Sector": "Consumer Staples",
-  "Price": 100.02,
-  "Price/Earnings": 23.1,
-  "Dividend Yield": 1.983471,
-  "Earnings/Share": 4.39,
-  "52 Week Low": 109.98,
-  "52 Week High": 66.89,
-  "Market Cap": 304680931618,
-  "EBITDA": 30721000000,
-  "Price/Sales": 0.82099426,
-  "Price/Book": 3.89,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WMT"
-}, {
-  "Symbol": "WBA",
-  "Name": "Walgreens Boots Alliance",
-  "Sector": "Consumer Staples",
-  "Price": 68.22,
-  "Price/Earnings": 13.38,
-  "Dividend Yield": 2.2368238,
-  "Earnings/Share": 3.78,
-  "52 Week Low": 88,
-  "52 Week High": 63.82,
-  "Market Cap": 70862541911,
-  "EBITDA": 7083000000,
-  "Price/Sales": 0.5904388,
-  "Price/Book": 3.06,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WBA"
-}, {
-  "Symbol": "WM",
-  "Name": "Waste Management Inc.",
-  "Sector": "Industrials",
-  "Price": 79.12,
-  "Price/Earnings": 25.36,
-  "Dividend Yield": 2.0800195,
-  "Earnings/Share": 2.66,
-  "52 Week Low": 89.73,
-  "52 Week High": 69.55,
-  "Market Cap": 35488486675,
-  "EBITDA": 3896000000,
-  "Price/Sales": 3.2787669,
-  "Price/Book": 6.73,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WM"
-}, {
-  "Symbol": "WAT",
-  "Name": "Waters Corporation",
-  "Sector": "Health Care",
-  "Price": 191.79,
-  "Price/Earnings": 26.64,
-  "Dividend Yield": 0,
-  "Earnings/Share": 0.19,
-  "52 Week Low": 220.2,
-  "52 Week High": 145.94,
-  "Market Cap": 16064078572,
-  "EBITDA": 773932000,
-  "Price/Sales": 6.9824114,
-  "Price/Book": 6.15,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WAT"
-}, {
-  "Symbol": "WEC",
-  "Name": "Wec Energy Group Inc",
-  "Sector": "Utilities",
-  "Price": 59.5,
-  "Price/Earnings": 19.57,
-  "Dividend Yield": 3.691948,
-  "Earnings/Share": 3.79,
-  "52 Week Low": 70.09,
-  "52 Week High": 56.63,
-  "Market Cap": 18890296993,
-  "EBITDA": 2736500000,
-  "Price/Sales": 2.4834197,
-  "Price/Book": 2.1,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WEC"
-}, {
-  "Symbol": "WFC",
-  "Name": "Wells Fargo",
-  "Sector": "Financials",
-  "Price": 55.4,
-  "Price/Earnings": 13.58,
-  "Dividend Yield": 2.7111576,
-  "Earnings/Share": 4.07,
-  "52 Week Low": 66.31,
-  "52 Week High": 49.27,
-  "Market Cap": 281463620775,
-  "EBITDA": 0,
-  "Price/Sales": 2.8728192,
-  "Price/Book": 1.58,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WFC"
-}, {
-  "Symbol": "HCN",
-  "Name": "Welltower Inc.",
-  "Sector": "Real Estate",
-  "Price": 54.67,
-  "Price/Earnings": 12.74,
-  "Dividend Yield": 6.1538463,
-  "Earnings/Share": 2.81,
-  "52 Week Low": 78.17,
-  "52 Week High": 55.29,
-  "Market Cap": 20943679019,
-  "EBITDA": 1908253000,
-  "Price/Sales": 6.725218,
-  "Price/Book": 1.49,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HCN"
-}, {
-  "Symbol": "WDC",
-  "Name": "Western Digital",
-  "Sector": "Information Technology",
-  "Price": 80.09,
-  "Price/Earnings": 10.19,
-  "Dividend Yield": 2.389201,
-  "Earnings/Share": 1.29,
-  "52 Week Low": 95.77,
-  "52 Week High": 71.38,
-  "Market Cap": 24760297793,
-  "EBITDA": 5169000000,
-  "Price/Sales": 1.245503,
-  "Price/Book": 2,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WDC"
-}, {
-  "Symbol": "WU",
-  "Name": "Western Union Co",
-  "Sector": "Information Technology",
-  "Price": 18.81,
-  "Price/Earnings": 10.17,
-  "Dividend Yield": 3.5915854,
-  "Earnings/Share": 0.51,
-  "52 Week Low": 22.21,
-  "52 Week High": 18.39,
-  "Market Cap": 8951609207,
-  "EBITDA": 694600000,
-  "Price/Sales": 2.22677,
-  "Price/Book": 12.65,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WU"
-}, {
-  "Symbol": "WRK",
-  "Name": "WestRock Company",
-  "Sector": "Materials",
-  "Price": 60.93,
-  "Price/Earnings": 23.26,
-  "Dividend Yield": 2.6699784,
-  "Earnings/Share": 2.77,
-  "52 Week Low": 71.55,
-  "52 Week High": 49.23,
-  "Market Cap": 16433340688,
-  "EBITDA": 2262300000,
-  "Price/Sales": 1.075785,
-  "Price/Book": 1.58,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WRK"
-}, {
-  "Symbol": "WY",
-  "Name": "Weyerhaeuser Corp.",
-  "Sector": "Real Estate",
-  "Price": 33.6,
-  "Price/Earnings": 34.29,
-  "Dividend Yield": 3.7079954,
-  "Earnings/Share": 0.77,
-  "52 Week Low": 37.89,
-  "52 Week High": 30.9504,
-  "Market Cap": 26070297960,
-  "EBITDA": 1365000000,
-  "Price/Sales": 3.6396794,
-  "Price/Book": 2.9,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WY"
-}, {
-  "Symbol": "WHR",
-  "Name": "Whirlpool Corp.",
-  "Sector": "Consumer Discretionary",
-  "Price": 164.95,
-  "Price/Earnings": 11.77,
-  "Dividend Yield": 2.5652986,
-  "Earnings/Share": 4.51,
-  "52 Week Low": 202.99,
-  "52 Week High": 158.8,
-  "Market Cap": 12177920000,
-  "EBITDA": 1842000000,
-  "Price/Sales": 0.58064795,
-  "Price/Book": 2.57,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WHR"
-}, {
-  "Symbol": "WMB",
-  "Name": "Williams Cos.",
-  "Sector": "Energy",
-  "Price": 28.56,
-  "Price/Earnings": 48.41,
-  "Dividend Yield": 4,
-  "Earnings/Share": -0.57,
-  "52 Week Low": 33.67,
-  "52 Week High": 26.8188,
-  "Market Cap": 24802396470,
-  "EBITDA": 3955000000,
-  "Price/Sales": 4.2982845,
-  "Price/Book": 3.01,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WMB"
-}, {
-  "Symbol": "WLTW",
-  "Name": "Willis Towers Watson",
-  "Sector": "Financials",
-  "Price": 152.36,
-  "Price/Earnings": 18.67,
-  "Dividend Yield": 1.347058,
-  "Earnings/Share": 3.07,
-  "52 Week Low": 165,
-  "52 Week High": 120.869,
-  "Market Cap": 20780269334,
-  "EBITDA": 1440000000,
-  "Price/Sales": 3.4484663,
-  "Price/Book": 2.1,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WLTW"
-}, {
-  "Symbol": "WYN",
-  "Name": "Wyndham Worldwide",
-  "Sector": "Consumer Discretionary",
-  "Price": 113.56,
-  "Price/Earnings": 18.77,
-  "Dividend Yield": 1.9541779,
-  "Earnings/Share": 5.53,
-  "52 Week Low": 127.96,
-  "52 Week High": 80.11,
-  "Market Cap": 11993835688,
-  "EBITDA": 1232000000,
-  "Price/Sales": 2.7332082,
-  "Price/Book": 18.91,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WYN"
-}, {
-  "Symbol": "WYNN",
-  "Name": "Wynn Resorts Ltd",
-  "Sector": "Consumer Discretionary",
-  "Price": 169.28,
-  "Price/Earnings": 31.7,
-  "Dividend Yield": 1.1279043,
-  "Earnings/Share": 7.27,
-  "52 Week Low": 203.63,
-  "52 Week High": 92.67,
-  "Market Cap": 18225400525,
-  "EBITDA": 1501301000,
-  "Price/Sales": 2.478658,
-  "Price/Book": 51.69,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WYNN"
-}, {
-  "Symbol": "XEL",
-  "Name": "Xcel Energy Inc",
-  "Sector": "Utilities",
-  "Price": 42.44,
-  "Price/Earnings": 18.14,
-  "Dividend Yield": 3.3914273,
-  "Earnings/Share": 2.21,
-  "52 Week Low": 52.22,
-  "52 Week High": 41.16,
-  "Market Cap": 21559611927,
-  "EBITDA": 3885828000,
-  "Price/Sales": 2.520456,
-  "Price/Book": 1.94,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XEL"
-}, {
-  "Symbol": "XRX",
-  "Name": "Xerox Corp.",
-  "Sector": "Information Technology",
-  "Price": 29.8,
-  "Price/Earnings": 8.87,
-  "Dividend Yield": 3.207184,
-  "Earnings/Share": 0.59,
-  "52 Week Low": 37.42,
-  "52 Week High": 26.64,
-  "Market Cap": 7938833340,
-  "EBITDA": 1191000000,
-  "Price/Sales": 0.7877656,
-  "Price/Book": 1.49,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XRX"
-}, {
-  "Symbol": "XLNX",
-  "Name": "Xilinx Inc",
-  "Sector": "Information Technology",
-  "Price": 62.82,
-  "Price/Earnings": 27.19,
-  "Dividend Yield": 2.0904882,
-  "Earnings/Share": 2.32,
-  "52 Week Low": 77.26,
-  "52 Week High": 54.99,
-  "Market Cap": 17064975551,
-  "EBITDA": 845468000,
-  "Price/Sales": 7.101206,
-  "Price/Book": 7.22,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XLNX"
-}, {
-  "Symbol": "XL",
-  "Name": "XL Capital",
-  "Sector": "Financials",
-  "Price": 41.26,
-  "Price/Earnings": -19.93,
-  "Dividend Yield": 2.0952382,
-  "Earnings/Share": -2.24,
-  "52 Week Low": 47.27,
-  "52 Week High": 33.77,
-  "Market Cap": 10753423590,
-  "EBITDA": 0,
-  "Price/Sales": 0.84394187,
-  "Price/Book": 0.97,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XL"
-}, {
-  "Symbol": "XYL",
-  "Name": "Xylem Inc.",
-  "Sector": "Industrials",
-  "Price": 70.24,
-  "Price/Earnings": 30.94,
-  "Dividend Yield": 1.1700794,
-  "Earnings/Share": 1.83,
-  "52 Week Low": 76.81,
-  "52 Week High": 46.86,
-  "Market Cap": 12915021000,
-  "EBITDA": 722000000,
-  "Price/Sales": 2.7262094,
-  "Price/Book": 5.31,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XYL"
-}, {
-  "Symbol": "YUM",
-  "Name": "Yum! Brands Inc",
-  "Sector": "Consumer Discretionary",
-  "Price": 76.3,
-  "Price/Earnings": 27.25,
-  "Dividend Yield": 1.7970798,
-  "Earnings/Share": 4.07,
-  "52 Week Low": 86.93,
-  "52 Week High": 62.85,
-  "Market Cap": 27003303098,
-  "EBITDA": 2289000000,
-  "Price/Sales": 6.3136363,
-  "Price/Book": 212.08,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=YUM"
-}, {
-  "Symbol": "ZBH",
-  "Name": "Zimmer Biomet Holdings",
-  "Sector": "Health Care",
-  "Price": 115.53,
-  "Price/Earnings": 14.32,
-  "Dividend Yield": 0.7948336,
-  "Earnings/Share": 9.01,
-  "52 Week Low": 133.49,
-  "52 Week High": 108.17,
-  "Market Cap": 24454698119,
-  "EBITDA": 2007400000,
-  "Price/Sales": 3.1648953,
-  "Price/Book": 2.39,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ZBH"
-}, {
-  "Symbol": "ZION",
-  "Name": "Zions Bancorp",
-  "Sector": "Financials",
-  "Price": 50.71,
-  "Price/Earnings": 17.73,
-  "Dividend Yield": 1.480933,
-  "Earnings/Share": 2.6,
-  "52 Week Low": 55.61,
-  "52 Week High": 38.43,
-  "Market Cap": 10670678640,
-  "EBITDA": 0,
-  "Price/Sales": 3.7945793,
-  "Price/Book": 1.42,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ZION"
-}, {
-  "Symbol": "ZTS",
-  "Name": "Zoetis",
-  "Sector": "Health Care",
-  "Price": 71.51,
-  "Price/Earnings": 32.8,
-  "Dividend Yield": 0.68237203,
-  "Earnings/Share": 1.65,
-  "52 Week Low": 80.13,
-  "52 Week High": 52,
-  "Market Cap": 35991109776,
-  "EBITDA": 1734000000,
-  "Price/Sales": 9.280896,
-  "Price/Book": 18.09,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ZTS"
-}]));
+module.exports = parse; // console.log(parse([
+//   {
+//     "Symbol": "MMM",
+//     "Name": "3M Company",
+//     "Sector": "Industrials",
+//     "Price": 222.89,
+//     "Price/Earnings": 24.31,
+//     "Dividend Yield": 2.3328617,
+//     "Earnings/Share": 7.92,
+//     "52 Week Low": 259.77,
+//     "52 Week High": 175.49,
+//     "Market Cap": 138721055226,
+//     "EBITDA": 9048000000,
+//     "Price/Sales": 4.3902707,
+//     "Price/Book": 11.34,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MMM"
+//   },
+//   {
+//     "Symbol": "AOS",
+//     "Name": "A.O. Smith Corp",
+//     "Sector": "Industrials",
+//     "Price": 60.24,
+//     "Price/Earnings": 27.76,
+//     "Dividend Yield": 1.1479592,
+//     "Earnings/Share": 1.7,
+//     "52 Week Low": 68.39,
+//     "52 Week High": 48.925,
+//     "Market Cap": 10783419933,
+//     "EBITDA": 601000000,
+//     "Price/Sales": 3.5754826,
+//     "Price/Book": 6.35,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AOS"
+//   },
+//   {
+//     "Symbol": "ABT",
+//     "Name": "Abbott Laboratories",
+//     "Sector": "Health Care",
+//     "Price": 56.27,
+//     "Price/Earnings": 22.51,
+//     "Dividend Yield": 1.9089824,
+//     "Earnings/Share": 0.26,
+//     "52 Week Low": 64.6,
+//     "52 Week High": 42.28,
+//     "Market Cap": 102121042306,
+//     "EBITDA": 5744000000,
+//     "Price/Sales": 3.7404804,
+//     "Price/Book": 3.19,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ABT"
+//   },
+//   {
+//     "Symbol": "ABBV",
+//     "Name": "AbbVie Inc.",
+//     "Sector": "Health Care",
+//     "Price": 108.48,
+//     "Price/Earnings": 19.41,
+//     "Dividend Yield": 2.4995599,
+//     "Earnings/Share": 3.29,
+//     "52 Week Low": 125.86,
+//     "52 Week High": 60.05,
+//     "Market Cap": 181386347059,
+//     "EBITDA": 10310000000,
+//     "Price/Sales": 6.291571,
+//     "Price/Book": 26.14,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ABBV"
+//   },
+//   {
+//     "Symbol": "ACN",
+//     "Name": "Accenture plc",
+//     "Sector": "Information Technology",
+//     "Price": 150.51,
+//     "Price/Earnings": 25.47,
+//     "Dividend Yield": 1.7144699,
+//     "Earnings/Share": 5.44,
+//     "52 Week Low": 162.6,
+//     "52 Week High": 114.82,
+//     "Market Cap": 98765855553,
+//     "EBITDA": 5643228000,
+//     "Price/Sales": 2.604117,
+//     "Price/Book": 10.62,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ACN"
+//   },
+//   {
+//     "Symbol": "ATVI",
+//     "Name": "Activision Blizzard",
+//     "Sector": "Information Technology",
+//     "Price": 65.83,
+//     "Price/Earnings": 31.8,
+//     "Dividend Yield": 0.43190324,
+//     "Earnings/Share": 1.28,
+//     "52 Week Low": 74.945,
+//     "52 Week High": 38.93,
+//     "Market Cap": 52518668144,
+//     "EBITDA": 2704000000,
+//     "Price/Sales": 10.59512,
+//     "Price/Book": 5.16,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ATVI"
+//   },
+//   {
+//     "Symbol": "AYI",
+//     "Name": "Acuity Brands Inc",
+//     "Sector": "Industrials",
+//     "Price": 145.41,
+//     "Price/Earnings": 18.22,
+//     "Dividend Yield": 0.35118526,
+//     "Earnings/Share": 7.43,
+//     "52 Week Low": 225.36,
+//     "52 Week High": 142,
+//     "Market Cap": 6242377704,
+//     "EBITDA": 587800000,
+//     "Price/Sales": 1.7953473,
+//     "Price/Book": 3.55,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AYI"
+//   },
+//   {
+//     "Symbol": "ADBE",
+//     "Name": "Adobe Systems Inc",
+//     "Sector": "Information Technology",
+//     "Price": 185.16,
+//     "Price/Earnings": 52.31,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 3.39,
+//     "52 Week Low": 204.45,
+//     "52 Week High": 114.451,
+//     "Market Cap": 94550214268,
+//     "EBITDA": 2538040000,
+//     "Price/Sales": 13.092818,
+//     "Price/Book": 11.06,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ADBE"
+//   },
+//   {
+//     "Symbol": "AAP",
+//     "Name": "Advance Auto Parts",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 109.63,
+//     "Price/Earnings": 19.54,
+//     "Dividend Yield": 0.21832074,
+//     "Earnings/Share": 6.19,
+//     "52 Week Low": 169.55,
+//     "52 Week High": 78.81,
+//     "Market Cap": 8123611867,
+//     "EBITDA": 853941000,
+//     "Price/Sales": 1.1301061,
+//     "Price/Book": 2.51,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AAP"
+//   },
+//   {
+//     "Symbol": "AMD",
+//     "Name": "Advanced Micro Devices Inc",
+//     "Sector": "Information Technology",
+//     "Price": 11.22,
+//     "Price/Earnings": 187,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 0.03,
+//     "52 Week Low": 15.65,
+//     "52 Week High": 9.7,
+//     "Market Cap": 11191663795,
+//     "EBITDA": 339000000,
+//     "Price/Sales": 2.1091955,
+//     "Price/Book": 21.47,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AMD"
+//   },
+//   {
+//     "Symbol": "AES",
+//     "Name": "AES Corp",
+//     "Sector": "Utilities",
+//     "Price": 10.06,
+//     "Price/Earnings": 9.96,
+//     "Dividend Yield": 4.961832,
+//     "Earnings/Share": -1.72,
+//     "52 Week Low": 12.05,
+//     "52 Week High": 10,
+//     "Market Cap": 6920851212,
+//     "EBITDA": 3001000000,
+//     "Price/Sales": 0.65951383,
+//     "Price/Book": 2.2,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AES"
+//   },
+//   {
+//     "Symbol": "AET",
+//     "Name": "Aetna Inc",
+//     "Sector": "Health Care",
+//     "Price": 178,
+//     "Price/Earnings": 18.11,
+//     "Dividend Yield": 1.101989,
+//     "Earnings/Share": 5.75,
+//     "52 Week Low": 194.4,
+//     "52 Week High": 119.51,
+//     "Market Cap": 59197016353,
+//     "EBITDA": 4139000000,
+//     "Price/Sales": 0.9923546,
+//     "Price/Book": 3.79,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AET"
+//   },
+//   {
+//     "Symbol": "AMG",
+//     "Name": "Affiliated Managers Group Inc",
+//     "Sector": "Financials",
+//     "Price": 179.11,
+//     "Price/Earnings": 12.24,
+//     "Dividend Yield": 0.6387395,
+//     "Earnings/Share": 12.07,
+//     "52 Week Low": 216.995,
+//     "52 Week High": 148.81,
+//     "Market Cap": 10442174371,
+//     "EBITDA": 1261400000,
+//     "Price/Sales": 4.591235,
+//     "Price/Book": 2.89,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AMG"
+//   },
+//   {
+//     "Symbol": "AFL",
+//     "Name": "AFLAC Inc",
+//     "Sector": "Financials",
+//     "Price": 83.25,
+//     "Price/Earnings": 12.24,
+//     "Dividend Yield": 2.4299066,
+//     "Earnings/Share": 11.01,
+//     "52 Week Low": 91.73,
+//     "52 Week High": 68.8,
+//     "Market Cap": 33422948000,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.5429344,
+//     "Price/Book": 1.53,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AFL"
+//   },
+//   {
+//     "Symbol": "A",
+//     "Name": "Agilent Technologies Inc",
+//     "Sector": "Health Care",
+//     "Price": 65.05,
+//     "Price/Earnings": 27.45,
+//     "Dividend Yield": 0.8756979,
+//     "Earnings/Share": 2.1,
+//     "52 Week Low": 75,
+//     "52 Week High": 49.23,
+//     "Market Cap": 21984606918,
+//     "EBITDA": 1094000000,
+//     "Price/Sales": 6.493563,
+//     "Price/Book": 4.56,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=A"
+//   },
+//   {
+//     "Symbol": "APD",
+//     "Name": "Air Products & Chemicals Inc",
+//     "Sector": "Materials",
+//     "Price": 152.8,
+//     "Price/Earnings": 24.22,
+//     "Dividend Yield": 2.7811136,
+//     "Earnings/Share": 13.66,
+//     "52 Week Low": 175.17,
+//     "52 Week High": 133.6301,
+//     "Market Cap": 34638387128,
+//     "EBITDA": 2542500000,
+//     "Price/Sales": 4.1163683,
+//     "Price/Book": 3.35,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=APD"
+//   },
+//   {
+//     "Symbol": "AKAM",
+//     "Name": "Akamai Technologies Inc",
+//     "Sector": "Information Technology",
+//     "Price": 62.49,
+//     "Price/Earnings": 32.55,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 1.79,
+//     "52 Week Low": 69.56,
+//     "52 Week High": 44.65,
+//     "Market Cap": 10906904066,
+//     "EBITDA": 789517000,
+//     "Price/Sales": 5.8546524,
+//     "Price/Book": 3.25,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AKAM"
+//   },
+//   {
+//     "Symbol": "ALK",
+//     "Name": "Alaska Air Group Inc",
+//     "Sector": "Industrials",
+//     "Price": 64.04,
+//     "Price/Earnings": 9.66,
+//     "Dividend Yield": 1.9928383,
+//     "Earnings/Share": 8.28,
+//     "52 Week Low": 101.43,
+//     "52 Week High": 59.25,
+//     "Market Cap": 7903173734,
+//     "EBITDA": 1665000000,
+//     "Price/Sales": 0.9801092,
+//     "Price/Book": 2.21,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ALK"
+//   },
+//   {
+//     "Symbol": "ALB",
+//     "Name": "Albemarle Corp",
+//     "Sector": "Materials",
+//     "Price": 105.18,
+//     "Price/Earnings": 26.03,
+//     "Dividend Yield": 1.2004126,
+//     "Earnings/Share": 5.66,
+//     "52 Week Low": 144.99,
+//     "52 Week High": 90.35,
+//     "Market Cap": 11782151266,
+//     "EBITDA": 686030000,
+//     "Price/Sales": 5.3666205,
+//     "Price/Book": 2.98,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ALB"
+//   },
+//   {
+//     "Symbol": "ARE",
+//     "Name": "Alexandria Real Estate Equities Inc",
+//     "Sector": "Real Estate",
+//     "Price": 114.58,
+//     "Price/Earnings": 19.03,
+//     "Dividend Yield": 3.0262272,
+//     "Earnings/Share": 1.57,
+//     "52 Week Low": 134.37,
+//     "52 Week High": 106.89,
+//     "Market Cap": 12043374429,
+//     "EBITDA": 0,
+//     "Price/Sales": 10.492155,
+//     "Price/Book": 2.07,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ARE"
+//   },
+//   {
+//     "Symbol": "ALXN",
+//     "Name": "Alexion Pharmaceuticals",
+//     "Sector": "Health Care",
+//     "Price": 108.47,
+//     "Price/Earnings": 22.18,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 1.77,
+//     "52 Week Low": 149.34,
+//     "52 Week High": 96.18,
+//     "Market Cap": 26172439795,
+//     "EBITDA": 1072000000,
+//     "Price/Sales": 9.720562,
+//     "Price/Book": 2.82,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ALXN"
+//   },
+//   {
+//     "Symbol": "ALGN",
+//     "Name": "Align Technology",
+//     "Sector": "Health Care",
+//     "Price": 220.71,
+//     "Price/Earnings": 56.59,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 2.84,
+//     "52 Week Low": 287.32,
+//     "52 Week High": 92.61,
+//     "Market Cap": 18788041378,
+//     "EBITDA": 380326000,
+//     "Price/Sales": 13.138819,
+//     "Price/Book": 16.44,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ALGN"
+//   },
+//   {
+//     "Symbol": "ALLE",
+//     "Name": "Allegion",
+//     "Sector": "Industrials",
+//     "Price": 77.32,
+//     "Price/Earnings": 21.07,
+//     "Dividend Yield": 0.8004002,
+//     "Earnings/Share": 2.37,
+//     "52 Week Low": 89.81,
+//     "52 Week High": 66.72,
+//     "Market Cap": 7599609494,
+//     "EBITDA": 531800000,
+//     "Price/Sales": 4.265232,
+//     "Price/Book": 20.48,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ALLE"
+//   },
+//   {
+//     "Symbol": "AGN",
+//     "Name": "Allergan, Plc",
+//     "Sector": "Health Care",
+//     "Price": 164.2,
+//     "Price/Earnings": 10.65,
+//     "Dividend Yield": 1.643289,
+//     "Earnings/Share": 38.35,
+//     "52 Week Low": 256.8,
+//     "52 Week High": 160.07,
+//     "Market Cap": 56668833898,
+//     "EBITDA": -2888100000,
+//     "Price/Sales": 4.820115,
+//     "Price/Book": 0.83,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AGN"
+//   },
+//   {
+//     "Symbol": "ADS",
+//     "Name": "Alliance Data Systems",
+//     "Sector": "Information Technology",
+//     "Price": 240.6,
+//     "Price/Earnings": 13.02,
+//     "Dividend Yield": 0.9240122,
+//     "Earnings/Share": 14.13,
+//     "52 Week Low": 278.33,
+//     "52 Week High": 209,
+//     "Market Cap": 13632608582,
+//     "EBITDA": 2143200000,
+//     "Price/Sales": 1.7282298,
+//     "Price/Book": 8.28,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ADS"
+//   },
+//   {
+//     "Symbol": "LNT",
+//     "Name": "Alliant Energy Corp",
+//     "Sector": "Utilities",
+//     "Price": 37.14,
+//     "Price/Earnings": 19.86,
+//     "Dividend Yield": 3.5733333,
+//     "Earnings/Share": 1.65,
+//     "52 Week Low": 45.55,
+//     "52 Week High": 36.84,
+//     "Market Cap": 8670163500,
+//     "EBITDA": 1168400000,
+//     "Price/Sales": 3.4331481,
+//     "Price/Book": 2.13,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LNT"
+//   },
+//   {
+//     "Symbol": "ALL",
+//     "Name": "Allstate Corp",
+//     "Sector": "Financials",
+//     "Price": 90.06,
+//     "Price/Earnings": 13.26,
+//     "Dividend Yield": 1.5278208,
+//     "Earnings/Share": 4.68,
+//     "52 Week Low": 105.36,
+//     "52 Week High": 77.73,
+//     "Market Cap": 34759468905,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.2085556,
+//     "Price/Book": 1.67,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ALL"
+//   },
+//   {
+//     "Symbol": "GOOGL",
+//     "Name": "Alphabet Inc Class A",
+//     "Sector": "Information Technology",
+//     "Price": 1007.71,
+//     "Price/Earnings": 31.48,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 22.27,
+//     "52 Week Low": 1198,
+//     "52 Week High": 824.3,
+//     "Market Cap": 733823966137,
+//     "EBITDA": 34217000000,
+//     "Price/Sales": 6.801692,
+//     "Price/Book": 4.7,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GOOGL"
+//   },
+//   {
+//     "Symbol": "GOOG",
+//     "Name": "Alphabet Inc Class C",
+//     "Sector": "Information Technology",
+//     "Price": 1001.52,
+//     "Price/Earnings": 40.29,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 22.27,
+//     "52 Week Low": 1186.89,
+//     "52 Week High": 803.1903,
+//     "Market Cap": 728535558140,
+//     "EBITDA": 32714000000,
+//     "Price/Sales": 6.772653,
+//     "Price/Book": 4.67,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GOOG"
+//   },
+//   {
+//     "Symbol": "MO",
+//     "Name": "Altria Group Inc",
+//     "Sector": "Consumer Staples",
+//     "Price": 64.05,
+//     "Price/Earnings": 18.89,
+//     "Dividend Yield": 3.9526875,
+//     "Earnings/Share": 5.31,
+//     "52 Week Low": 77.79,
+//     "52 Week High": 60.01,
+//     "Market Cap": 126985101434,
+//     "EBITDA": 10773000000,
+//     "Price/Sales": 4.945682,
+//     "Price/Book": 10.32,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MO"
+//   },
+//   {
+//     "Symbol": "AMZN",
+//     "Name": "Amazon.com Inc",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 1350.5,
+//     "Price/Earnings": 296.16,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 6.16,
+//     "52 Week Low": 1498,
+//     "52 Week High": 812.5,
+//     "Market Cap": 685873374731,
+//     "EBITDA": 16132000000,
+//     "Price/Sales": 3.927053,
+//     "Price/Book": 24.28,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AMZN"
+//   },
+//   {
+//     "Symbol": "AEE",
+//     "Name": "Ameren Corp",
+//     "Sector": "Utilities",
+//     "Price": 52.59,
+//     "Price/Earnings": 20.38,
+//     "Dividend Yield": 3.4404964,
+//     "Earnings/Share": 2.68,
+//     "52 Week Low": 64.89,
+//     "52 Week High": 51.81,
+//     "Market Cap": 12905744906,
+//     "EBITDA": 2298000000,
+//     "Price/Sales": 2.693119,
+//     "Price/Book": 1.79,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AEE"
+//   },
+//   {
+//     "Symbol": "AAL",
+//     "Name": "American Airlines Group",
+//     "Sector": "Industrials",
+//     "Price": 48.6,
+//     "Price/Earnings": 9.92,
+//     "Dividend Yield": 0.7782101,
+//     "Earnings/Share": 3.91,
+//     "52 Week Low": 59.08,
+//     "52 Week High": 39.21,
+//     "Market Cap": 24594852352,
+//     "EBITDA": 5761000000,
+//     "Price/Sales": 0.58022565,
+//     "Price/Book": 6.03,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AAL"
+//   },
+//   {
+//     "Symbol": "AEP",
+//     "Name": "American Electric Power",
+//     "Sector": "Utilities",
+//     "Price": 63.38,
+//     "Price/Earnings": 17.32,
+//     "Dividend Yield": 3.8479443,
+//     "Earnings/Share": 1.24,
+//     "52 Week Low": 78.07,
+//     "52 Week High": 62.69,
+//     "Market Cap": 31701916517,
+//     "EBITDA": 4450800000,
+//     "Price/Sales": 2.7489934,
+//     "Price/Book": 1.81,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AEP"
+//   },
+//   {
+//     "Symbol": "AXP",
+//     "Name": "American Express Co",
+//     "Sector": "Financials",
+//     "Price": 88.34,
+//     "Price/Earnings": 15,
+//     "Dividend Yield": 1.4955667,
+//     "Earnings/Share": 2.9,
+//     "52 Week Low": 102.385,
+//     "52 Week High": 75.51,
+//     "Market Cap": 80410990000,
+//     "EBITDA": 0,
+//     "Price/Sales": 2.273575,
+//     "Price/Book": 3.75,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AXP"
+//   },
+//   {
+//     "Symbol": "AIG",
+//     "Name": "American International Group, Inc.",
+//     "Sector": "Financials",
+//     "Price": 58.28,
+//     "Price/Earnings": 23.22,
+//     "Dividend Yield": 2.1167521,
+//     "Earnings/Share": -0.76,
+//     "52 Week Low": 67.3,
+//     "52 Week High": 57.85,
+//     "Market Cap": 54360073164,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.4686536,
+//     "Price/Book": 0.75,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AIG"
+//   },
+//   {
+//     "Symbol": "AMT",
+//     "Name": "American Tower Corp A",
+//     "Sector": "Real Estate",
+//     "Price": 133.57,
+//     "Price/Earnings": 20.68,
+//     "Dividend Yield": 2,
+//     "Earnings/Share": 1.97,
+//     "52 Week Low": 155.28,
+//     "52 Week High": 103.36,
+//     "Market Cap": 59213892640,
+//     "EBITDA": 3792383000,
+//     "Price/Sales": 11.954137,
+//     "Price/Book": 9.22,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AMT"
+//   },
+//   {
+//     "Symbol": "AWK",
+//     "Name": "American Water Works Company Inc",
+//     "Sector": "Utilities",
+//     "Price": 76.06,
+//     "Price/Earnings": 26.23,
+//     "Dividend Yield": 2.129297,
+//     "Earnings/Share": 2.63,
+//     "52 Week Low": 92.37,
+//     "52 Week High": 71.89,
+//     "Market Cap": 13906146184,
+//     "EBITDA": 1711000000,
+//     "Price/Sales": 5.553833,
+//     "Price/Book": 2.55,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AWK"
+//   },
+//   {
+//     "Symbol": "AMP",
+//     "Name": "Ameriprise Financial",
+//     "Sector": "Financials",
+//     "Price": 152.5,
+//     "Price/Earnings": 12.41,
+//     "Dividend Yield": 2.0735743,
+//     "Earnings/Share": 9.44,
+//     "52 Week Low": 183.9,
+//     "52 Week High": 118.84,
+//     "Market Cap": 23472126000,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.9493247,
+//     "Price/Book": 3.73,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AMP"
+//   },
+//   {
+//     "Symbol": "ABC",
+//     "Name": "AmerisourceBergen Corp",
+//     "Sector": "Health Care",
+//     "Price": 91.55,
+//     "Price/Earnings": 15.54,
+//     "Dividend Yield": 1.6132456,
+//     "Earnings/Share": 1.64,
+//     "52 Week Low": 106.27,
+//     "52 Week High": 71.9,
+//     "Market Cap": 20587704101,
+//     "EBITDA": 991884000,
+//     "Price/Sales": 0.17396984,
+//     "Price/Book": 9.73,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ABC"
+//   },
+//   {
+//     "Symbol": "AME",
+//     "Name": "AMETEK Inc",
+//     "Sector": "Industrials",
+//     "Price": 72.05,
+//     "Price/Earnings": 27.61,
+//     "Dividend Yield": 0.75512403,
+//     "Earnings/Share": 2.94,
+//     "52 Week Low": 78.51,
+//     "52 Week High": 51.31,
+//     "Market Cap": 17139651923,
+//     "EBITDA": 1025763000,
+//     "Price/Sales": 4.015368,
+//     "Price/Book": 4.54,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AME"
+//   },
+//   {
+//     "Symbol": "AMGN",
+//     "Name": "Amgen Inc",
+//     "Sector": "Health Care",
+//     "Price": 173.12,
+//     "Price/Earnings": 13.76,
+//     "Dividend Yield": 2.9751508,
+//     "Earnings/Share": 2.57,
+//     "52 Week Low": 201.23,
+//     "52 Week High": 152.16,
+//     "Market Cap": 128133340000,
+//     "EBITDA": 11945000000,
+//     "Price/Sales": 5.58192,
+//     "Price/Book": 3.91,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AMGN"
+//   },
+//   {
+//     "Symbol": "APH",
+//     "Name": "Amphenol Corp",
+//     "Sector": "Information Technology",
+//     "Price": 84.44,
+//     "Price/Earnings": 25.9,
+//     "Dividend Yield": 0.8608971,
+//     "Earnings/Share": 2.05,
+//     "52 Week Low": 93.62,
+//     "52 Week High": 67.26,
+//     "Market Cap": 26955335395,
+//     "EBITDA": 1671700000,
+//     "Price/Sales": 3.85675,
+//     "Price/Book": 6.64,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=APH"
+//   },
+//   {
+//     "Symbol": "APC",
+//     "Name": "Anadarko Petroleum Corp",
+//     "Sector": "Energy",
+//     "Price": 56.2,
+//     "Price/Earnings": -21.29,
+//     "Dividend Yield": 1.7029973,
+//     "Earnings/Share": -5.9,
+//     "52 Week Low": 70,
+//     "52 Week High": 39.96,
+//     "Market Cap": 32129091747,
+//     "EBITDA": 3115000000,
+//     "Price/Sales": 3.9682212,
+//     "Price/Book": 2.88,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=APC"
+//   },
+//   {
+//     "Symbol": "ADI",
+//     "Name": "Analog Devices, Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 82.68,
+//     "Price/Earnings": 17.67,
+//     "Dividend Yield": 2.108963,
+//     "Earnings/Share": 2.11,
+//     "52 Week Low": 98.38,
+//     "52 Week High": 74.65,
+//     "Market Cap": 31811578855,
+//     "EBITDA": 1663384000,
+//     "Price/Sales": 8.00391,
+//     "Price/Book": 3.13,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ADI"
+//   },
+//   {
+//     "Symbol": "ANDV",
+//     "Name": "Andeavor",
+//     "Sector": "Energy",
+//     "Price": 96.9,
+//     "Price/Earnings": 18.78,
+//     "Dividend Yield": 2.3454583,
+//     "Earnings/Share": 6.13,
+//     "52 Week Low": 121.71,
+//     "52 Week High": 75.11,
+//     "Market Cap": 15696449735,
+//     "EBITDA": 2548000000,
+//     "Price/Sales": 0.6618165,
+//     "Price/Book": 1.7,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ANDV"
+//   },
+//   {
+//     "Symbol": "ANSS",
+//     "Name": "ANSYS",
+//     "Sector": "Information Technology",
+//     "Price": 148.84,
+//     "Price/Earnings": 42.53,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 2.99,
+//     "52 Week Low": 164.9,
+//     "52 Week High": 94.52,
+//     "Market Cap": 13155919129,
+//     "EBITDA": 458515000,
+//     "Price/Sales": 16.8134,
+//     "Price/Book": 5.79,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ANSS"
+//   },
+//   {
+//     "Symbol": "ANTM",
+//     "Name": "Anthem Inc.",
+//     "Sector": "Health Care",
+//     "Price": 230.57,
+//     "Price/Earnings": 19.23,
+//     "Dividend Yield": 1.2581781,
+//     "Earnings/Share": 14.36,
+//     "52 Week Low": 267.95,
+//     "52 Week High": 156.81,
+//     "Market Cap": 61221978627,
+//     "EBITDA": 0,
+//     "Price/Sales": 0.6696521,
+//     "Price/Book": 2.28,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ANTM"
+//   },
+//   {
+//     "Symbol": "AON",
+//     "Name": "Aon plc",
+//     "Sector": "Financials",
+//     "Price": 136.05,
+//     "Price/Earnings": 20.8,
+//     "Dividend Yield": 1.0245464,
+//     "Earnings/Share": 4.66,
+//     "52 Week Low": 152.78,
+//     "52 Week High": 113.2201,
+//     "Market Cap": 35123123422,
+//     "EBITDA": 1858000000,
+//     "Price/Sales": 3.4972682,
+//     "Price/Book": 6.78,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AON"
+//   },
+//   {
+//     "Symbol": "APA",
+//     "Name": "Apache Corporation",
+//     "Sector": "Energy",
+//     "Price": 37.73,
+//     "Price/Earnings": -251.53,
+//     "Dividend Yield": 2.528445,
+//     "Earnings/Share": -3.72,
+//     "52 Week Low": 57.9,
+//     "52 Week High": 38.14,
+//     "Market Cap": 15066280977,
+//     "EBITDA": 3265000000,
+//     "Price/Sales": 3.651366,
+//     "Price/Book": 2.22,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=APA"
+//   },
+//   {
+//     "Symbol": "AIV",
+//     "Name": "Apartment Investment & Management",
+//     "Sector": "Real Estate",
+//     "Price": 38.21,
+//     "Price/Earnings": 15.6,
+//     "Dividend Yield": 3.876562,
+//     "Earnings/Share": 1.95,
+//     "52 Week Low": 46.855,
+//     "52 Week High": 38.85,
+//     "Market Cap": 6156884142,
+//     "EBITDA": 874871000,
+//     "Price/Sales": 6.187621,
+//     "Price/Book": 4.69,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AIV"
+//   },
+//   {
+//     "Symbol": "AAPL",
+//     "Name": "Apple Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 155.15,
+//     "Price/Earnings": 16.86,
+//     "Dividend Yield": 1.5795412,
+//     "Earnings/Share": 9.2,
+//     "52 Week Low": 180.1,
+//     "52 Week High": 131.12,
+//     "Market Cap": 809508034020,
+//     "EBITDA": 79386000000,
+//     "Price/Sales": 3.4586093,
+//     "Price/Book": 5.66,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AAPL"
+//   },
+//   {
+//     "Symbol": "AMAT",
+//     "Name": "Applied Materials Inc",
+//     "Sector": "Information Technology",
+//     "Price": 45.75,
+//     "Price/Earnings": 14.08,
+//     "Dividend Yield": 0.8215239,
+//     "Earnings/Share": 3.17,
+//     "52 Week Low": 60.89,
+//     "52 Week High": 34.58,
+//     "Market Cap": 51296481503,
+//     "EBITDA": 4336000000,
+//     "Price/Sales": 4.7020154,
+//     "Price/Book": 5.44,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AMAT"
+//   },
+//   {
+//     "Symbol": "APTV",
+//     "Name": "Aptiv Plc",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 89.27,
+//     "Price/Earnings": 69.74,
+//     "Dividend Yield": 0.9392678,
+//     "Earnings/Share": 5.05,
+//     "52 Week Low": 96.91,
+//     "52 Week High": 82.97,
+//     "Market Cap": 24906530300,
+//     "EBITDA": 2370000000,
+//     "Price/Sales": 1.5025798,
+//     "Price/Book": 7.56,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=APTV"
+//   },
+//   {
+//     "Symbol": "ADM",
+//     "Name": "Archer-Daniels-Midland Co",
+//     "Sector": "Consumer Staples",
+//     "Price": 41.35,
+//     "Price/Earnings": 17.45,
+//     "Dividend Yield": 3.1761081,
+//     "Earnings/Share": 2.17,
+//     "52 Week Low": 47.44,
+//     "52 Week High": 38.59,
+//     "Market Cap": 23594770663,
+//     "EBITDA": 2927000000,
+//     "Price/Sales": 0.52478915,
+//     "Price/Book": 1.29,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ADM"
+//   },
+//   {
+//     "Symbol": "ARNC",
+//     "Name": "Arconic Inc",
+//     "Sector": "Industrials",
+//     "Price": 24.45,
+//     "Price/Earnings": 20.21,
+//     "Dividend Yield": 0.9561753,
+//     "Earnings/Share": -0.21,
+//     "52 Week Low": 31.17,
+//     "52 Week High": 21.755,
+//     "Market Cap": 12123300000,
+//     "EBITDA": 1517000000,
+//     "Price/Sales": 0.94214815,
+//     "Price/Book": "",
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ARNC"
+//   },
+//   {
+//     "Symbol": "AJG",
+//     "Name": "Arthur J. Gallagher & Co.",
+//     "Sector": "Financials",
+//     "Price": 64.4,
+//     "Price/Earnings": 21.05,
+//     "Dividend Yield": 2.4807138,
+//     "Earnings/Share": 2.54,
+//     "52 Week Low": 70.55,
+//     "52 Week High": 53.63,
+//     "Market Cap": 11968488290,
+//     "EBITDA": 888000000,
+//     "Price/Sales": 1.9400215,
+//     "Price/Book": 2.92,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AJG"
+//   },
+//   {
+//     "Symbol": "AIZ",
+//     "Name": "Assurant Inc",
+//     "Sector": "Financials",
+//     "Price": 85.16,
+//     "Price/Earnings": 33.27,
+//     "Dividend Yield": 2.5313594,
+//     "Earnings/Share": 9.08,
+//     "52 Week Low": 106.985,
+//     "52 Week High": 85.91,
+//     "Market Cap": 4653993594,
+//     "EBITDA": 0,
+//     "Price/Sales": 0.9821866,
+//     "Price/Book": 1.12,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AIZ"
+//   },
+//   {
+//     "Symbol": "T",
+//     "Name": "AT&T Inc",
+//     "Sector": "Telecommunication Services",
+//     "Price": 35.57,
+//     "Price/Earnings": 12.14,
+//     "Dividend Yield": 5.4156513,
+//     "Earnings/Share": 4.76,
+//     "52 Week Low": 42.7,
+//     "52 Week High": 32.55,
+//     "Market Cap": 226713270000,
+//     "EBITDA": 49653000000,
+//     "Price/Sales": 1.4083152,
+//     "Price/Book": 1.8,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=T"
+//   },
+//   {
+//     "Symbol": "ADSK",
+//     "Name": "Autodesk Inc",
+//     "Sector": "Information Technology",
+//     "Price": 104.81,
+//     "Price/Earnings": -77.07,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": -2.61,
+//     "52 Week Low": 131.1,
+//     "52 Week High": 81.75,
+//     "Market Cap": 24348294504,
+//     "EBITDA": -378100000,
+//     "Price/Sales": 16.50682,
+//     "Price/Book": 224.13,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ADSK"
+//   },
+//   {
+//     "Symbol": "ADP",
+//     "Name": "Automatic Data Processing",
+//     "Sector": "Information Technology",
+//     "Price": 108.25,
+//     "Price/Earnings": 29.34,
+//     "Dividend Yield": 2.2190912,
+//     "Earnings/Share": 3.85,
+//     "52 Week Low": 125.24,
+//     "52 Week High": 95.5,
+//     "Market Cap": 50337702249,
+//     "EBITDA": 2767400000,
+//     "Price/Sales": 4.0483294,
+//     "Price/Book": 12.86,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ADP"
+//   },
+//   {
+//     "Symbol": "AZO",
+//     "Name": "AutoZone Inc",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 718.57,
+//     "Price/Earnings": 16.31,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 44.09,
+//     "52 Week Low": 797.89,
+//     "52 Week High": 491.13,
+//     "Market Cap": 19922021415,
+//     "EBITDA": 2347304000,
+//     "Price/Sales": 1.8510429,
+//     "Price/Book": 136.23,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AZO"
+//   },
+//   {
+//     "Symbol": "AVB",
+//     "Name": "AvalonBay Communities, Inc.",
+//     "Sector": "Real Estate",
+//     "Price": 154.94,
+//     "Price/Earnings": 17.97,
+//     "Dividend Yield": 3.7149355,
+//     "Earnings/Share": 6.36,
+//     "52 Week Low": 199.52,
+//     "52 Week High": 156.01,
+//     "Market Cap": 21856547430,
+//     "EBITDA": 1331579000,
+//     "Price/Sales": 10.251216,
+//     "Price/Book": 2.12,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AVB"
+//   },
+//   {
+//     "Symbol": "AVY",
+//     "Name": "Avery Dennison Corp",
+//     "Sector": "Materials",
+//     "Price": 110.77,
+//     "Price/Earnings": 22.11,
+//     "Dividend Yield": 1.5682175,
+//     "Earnings/Share": 3.11,
+//     "52 Week Low": 123.67,
+//     "52 Week High": 78.471,
+//     "Market Cap": 10104814319,
+//     "EBITDA": 831200000,
+//     "Price/Sales": 1.5206499,
+//     "Price/Book": 8.83,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AVY"
+//   },
+//   {
+//     "Symbol": "BHGE",
+//     "Name": "Baker Hughes, a GE Company",
+//     "Sector": "Energy",
+//     "Price": 27.5,
+//     "Price/Earnings": 305.56,
+//     "Dividend Yield": 2.4991322,
+//     "Earnings/Share": -0.31,
+//     "52 Week Low": 57.73,
+//     "52 Week High": 28.03,
+//     "Market Cap": 32995712852,
+//     "EBITDA": 285000000,
+//     "Price/Sales": 1.9390045,
+//     "Price/Book": 2.25,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BHGE"
+//   },
+//   {
+//     "Symbol": "BLL",
+//     "Name": "Ball Corp",
+//     "Sector": "Materials",
+//     "Price": 38.44,
+//     "Price/Earnings": 20.56,
+//     "Dividend Yield": 1.0170354,
+//     "Earnings/Share": 0.85,
+//     "52 Week Low": 43.24,
+//     "52 Week High": 35.6,
+//     "Market Cap": 13767688518,
+//     "EBITDA": 1317000000,
+//     "Price/Sales": 1.5696399,
+//     "Price/Book": 3.62,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BLL"
+//   },
+//   {
+//     "Symbol": "BAC",
+//     "Name": "Bank of America Corp",
+//     "Sector": "Financials",
+//     "Price": 29.74,
+//     "Price/Earnings": 16.34,
+//     "Dividend Yield": 1.536,
+//     "Earnings/Share": 1.55,
+//     "52 Week Low": 32.67,
+//     "52 Week High": 22.07,
+//     "Market Cap": 321478200969,
+//     "EBITDA": 0,
+//     "Price/Sales": 3.2011874,
+//     "Price/Book": 1.24,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BAC"
+//   },
+//   {
+//     "Symbol": "BAX",
+//     "Name": "Baxter International Inc.",
+//     "Sector": "Health Care",
+//     "Price": 62.56,
+//     "Price/Earnings": 25.12,
+//     "Dividend Yield": 0.97635394,
+//     "Earnings/Share": 1.29,
+//     "52 Week Low": 72.58,
+//     "52 Week High": 48.15,
+//     "Market Cap": 35713732553,
+//     "EBITDA": 1832000000,
+//     "Price/Sales": 3.4394414,
+//     "Price/Book": 3.77,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BAX"
+//   },
+//   {
+//     "Symbol": "BBT",
+//     "Name": "BB&T Corporation",
+//     "Sector": "Financials",
+//     "Price": 51.07,
+//     "Price/Earnings": 16.26,
+//     "Dividend Yield": 2.4526198,
+//     "Earnings/Share": 2.74,
+//     "52 Week Low": 55.99,
+//     "52 Week High": 41.17,
+//     "Market Cap": 42087562920,
+//     "EBITDA": 0,
+//     "Price/Sales": 3.4552107,
+//     "Price/Book": 1.55,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BBT"
+//   },
+//   {
+//     "Symbol": "BDX",
+//     "Name": "Becton Dickinson",
+//     "Sector": "Health Care",
+//     "Price": 211.44,
+//     "Price/Earnings": 22.28,
+//     "Dividend Yield": 1.3518385,
+//     "Earnings/Share": 4.65,
+//     "52 Week Low": 248.3888,
+//     "52 Week High": 175.66,
+//     "Market Cap": 50910180308,
+//     "EBITDA": 1537000000,
+//     "Price/Sales": 5.6912947,
+//     "Price/Book": 3.98,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BDX"
+//   },
+//   {
+//     "Symbol": "BRK.B",
+//     "Name": "Berkshire Hathaway",
+//     "Sector": "Financials",
+//     "Price": 191.42,
+//     "Price/Earnings": 30.43,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 9.76,
+//     "52 Week Low": 217.62,
+//     "52 Week High": 160.93,
+//     "Market Cap": 261401203633,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.4328232,
+//     "Price/Book": 1.58,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BRK.B"
+//   },
+//   {
+//     "Symbol": "BBY",
+//     "Name": "Best Buy Co. Inc.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 68.79,
+//     "Price/Earnings": 19.22,
+//     "Dividend Yield": 1.9085041,
+//     "Earnings/Share": 3.81,
+//     "52 Week Low": 78.59,
+//     "52 Week High": 41.67,
+//     "Market Cap": 20831186176,
+//     "EBITDA": 2555000000,
+//     "Price/Sales": 0.76715523,
+//     "Price/Book": 4.79,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BBY"
+//   },
+//   {
+//     "Symbol": "BIIB",
+//     "Name": "Biogen Inc.",
+//     "Sector": "Health Care",
+//     "Price": 311.79,
+//     "Price/Earnings": 14.3,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 11.94,
+//     "52 Week Low": 370.57,
+//     "52 Week High": 244.28,
+//     "Market Cap": 69157726427,
+//     "EBITDA": 6511400000,
+//     "Price/Sales": 5.737439,
+//     "Price/Book": 5.51,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BIIB"
+//   },
+//   {
+//     "Symbol": "BLK",
+//     "Name": "BlackRock",
+//     "Sector": "Financials",
+//     "Price": 509.38,
+//     "Price/Earnings": 22.49,
+//     "Dividend Yield": 2.1643558,
+//     "Earnings/Share": 30.3,
+//     "52 Week Low": 594.52,
+//     "52 Week High": 368,
+//     "Market Cap": 85907759858,
+//     "EBITDA": 5684000000,
+//     "Price/Sales": 6.9158196,
+//     "Price/Book": 2.95,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BLK"
+//   },
+//   {
+//     "Symbol": "HRB",
+//     "Name": "Block H&R",
+//     "Sector": "Financials",
+//     "Price": 25.19,
+//     "Price/Earnings": 12.29,
+//     "Dividend Yield": 3.7296038,
+//     "Earnings/Share": 1.92,
+//     "52 Week Low": 31.8,
+//     "52 Week High": 19.85,
+//     "Market Cap": 5381433872,
+//     "EBITDA": 894754000,
+//     "Price/Sales": 2.0188456,
+//     "Price/Book": 205.41,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HRB"
+//   },
+//   {
+//     "Symbol": "BA",
+//     "Name": "Boeing Company",
+//     "Sector": "Industrials",
+//     "Price": 329.66,
+//     "Price/Earnings": 27.29,
+//     "Dividend Yield": 1.9648397,
+//     "Earnings/Share": 13.47,
+//     "52 Week Low": 361.45,
+//     "52 Week High": 163.69,
+//     "Market Cap": 205617405233,
+//     "EBITDA": 12476000000,
+//     "Price/Sales": 2.1560605,
+//     "Price/Book": 182.86,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BA"
+//   },
+//   {
+//     "Symbol": "BWA",
+//     "Name": "BorgWarner",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 51.94,
+//     "Price/Earnings": 14.15,
+//     "Dividend Yield": 1.2363636,
+//     "Earnings/Share": 0.55,
+//     "52 Week Low": 58.22,
+//     "52 Week High": 37.54,
+//     "Market Cap": 11596117445,
+//     "EBITDA": 867900000,
+//     "Price/Sales": 1.5831376,
+//     "Price/Book": 2.89,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BWA"
+//   },
+//   {
+//     "Symbol": "BXP",
+//     "Name": "Boston Properties",
+//     "Sector": "Real Estate",
+//     "Price": 112.09,
+//     "Price/Earnings": 18.05,
+//     "Dividend Yield": 2.7744062,
+//     "Earnings/Share": 2.93,
+//     "52 Week Low": 140.13,
+//     "52 Week High": 111.87,
+//     "Market Cap": 17799878487,
+//     "EBITDA": 1546846000,
+//     "Price/Sales": 6.839459,
+//     "Price/Book": 3.15,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BXP"
+//   },
+//   {
+//     "Symbol": "BSX",
+//     "Name": "Boston Scientific",
+//     "Sector": "Health Care",
+//     "Price": 25.2,
+//     "Price/Earnings": 20,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 0.07,
+//     "52 Week Low": 29.93,
+//     "52 Week High": 23.29,
+//     "Market Cap": 36142506007,
+//     "EBITDA": 1726000000,
+//     "Price/Sales": 4.055685,
+//     "Price/Book": 4.78,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BSX"
+//   },
+//   {
+//     "Symbol": "BHF",
+//     "Name": "Brighthouse Financial Inc",
+//     "Sector": "Financials",
+//     "Price": 55.44,
+//     "Price/Earnings": 22.63,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": -24.62,
+//     "52 Week Low": 75,
+//     "52 Week High": 52.751,
+//     "Market Cap": 7066613254,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.4188358,
+//     "Price/Book": 0.51,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BHF"
+//   },
+//   {
+//     "Symbol": "BMY",
+//     "Name": "Bristol-Myers Squibb",
+//     "Sector": "Health Care",
+//     "Price": 62.69,
+//     "Price/Earnings": 20.83,
+//     "Dividend Yield": 2.5546863,
+//     "Earnings/Share": 2.65,
+//     "52 Week Low": 66.1,
+//     "52 Week High": 51.12,
+//     "Market Cap": 102506501960,
+//     "EBITDA": 5170000000,
+//     "Price/Sales": 6.503231,
+//     "Price/Book": 6.75,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BMY"
+//   },
+//   {
+//     "Symbol": "AVGO",
+//     "Name": "Broadcom",
+//     "Sector": "Information Technology",
+//     "Price": 229.57,
+//     "Price/Earnings": 15.94,
+//     "Dividend Yield": 2.9488583,
+//     "Earnings/Share": 4.01,
+//     "52 Week Low": 285.68,
+//     "52 Week High": 202.61,
+//     "Market Cap": 92791974933,
+//     "EBITDA": 7016000000,
+//     "Price/Sales": 6.961893,
+//     "Price/Book": 4.4,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=AVGO"
+//   },
+//   {
+//     "Symbol": "BF.B",
+//     "Name": "Brown-Forman Corp.",
+//     "Sector": "Consumer Staples",
+//     "Price": 63.33,
+//     "Price/Earnings": 37.04,
+//     "Dividend Yield": 1.1216964,
+//     "Earnings/Share": 1.7,
+//     "52 Week Low": 69.9028,
+//     "52 Week High": 45.415,
+//     "Market Cap": 5498033502,
+//     "EBITDA": 1139000000,
+//     "Price/Sales": 1.8411398,
+//     "Price/Book": 12.36,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BF.B"
+//   },
+//   {
+//     "Symbol": "CHRW",
+//     "Name": "C. H. Robinson Worldwide",
+//     "Sector": "Industrials",
+//     "Price": 90.47,
+//     "Price/Earnings": 26,
+//     "Dividend Yield": 1.987685,
+//     "Earnings/Share": 3.57,
+//     "52 Week Low": 100.18,
+//     "52 Week High": 63.41,
+//     "Market Cap": 12932483889,
+//     "EBITDA": 868096000,
+//     "Price/Sales": 0.85282737,
+//     "Price/Book": 9.31,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CHRW"
+//   },
+//   {
+//     "Symbol": "CA",
+//     "Name": "CA, Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 32.66,
+//     "Price/Earnings": 14.32,
+//     "Dividend Yield": 3,
+//     "Earnings/Share": 1.85,
+//     "52 Week Low": 36.56,
+//     "52 Week High": 30.45,
+//     "Market Cap": 14175422936,
+//     "EBITDA": 1613000000,
+//     "Price/Sales": 3.3742425,
+//     "Price/Book": 2.44,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CA"
+//   },
+//   {
+//     "Symbol": "COG",
+//     "Name": "Cabot Oil & Gas",
+//     "Sector": "Energy",
+//     "Price": 23.01,
+//     "Price/Earnings": 60.55,
+//     "Dividend Yield": 1.0269576,
+//     "Earnings/Share": -0.92,
+//     "52 Week Low": 29.57,
+//     "52 Week High": 21.4,
+//     "Market Cap": 10808821635,
+//     "EBITDA": 404951000,
+//     "Price/Sales": 8.636729,
+//     "Price/Book": 4.21,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=COG"
+//   },
+//   {
+//     "Symbol": "CDNS",
+//     "Name": "Cadence Design Systems",
+//     "Sector": "Information Technology",
+//     "Price": 36.82,
+//     "Price/Earnings": 34.09,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 0.74,
+//     "52 Week Low": 46,
+//     "52 Week High": 29.01,
+//     "Market Cap": 10890625200,
+//     "EBITDA": 455607000,
+//     "Price/Sales": 5.751737,
+//     "Price/Book": 10.98,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CDNS"
+//   },
+//   {
+//     "Symbol": "CPB",
+//     "Name": "Campbell Soup",
+//     "Sector": "Consumer Staples",
+//     "Price": 44.83,
+//     "Price/Earnings": 14.84,
+//     "Dividend Yield": 3.125,
+//     "Earnings/Share": 2.89,
+//     "52 Week Low": 64.23,
+//     "52 Week High": 43.5,
+//     "Market Cap": 13467193376,
+//     "EBITDA": 1683000000,
+//     "Price/Sales": 2.3898203,
+//     "Price/Book": 7.91,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CPB"
+//   },
+//   {
+//     "Symbol": "COF",
+//     "Name": "Capital One Financial",
+//     "Sector": "Financials",
+//     "Price": 91.8,
+//     "Price/Earnings": 11.85,
+//     "Dividend Yield": 1.6306564,
+//     "Earnings/Share": 3.45,
+//     "52 Week Low": 106.5,
+//     "52 Week High": 76.05,
+//     "Market Cap": 47637260000,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.5931405,
+//     "Price/Book": 0.94,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=COF"
+//   },
+//   {
+//     "Symbol": "CAH",
+//     "Name": "Cardinal Health Inc.",
+//     "Sector": "Health Care",
+//     "Price": 66.63,
+//     "Price/Earnings": 12.29,
+//     "Dividend Yield": 2.8394227,
+//     "Earnings/Share": 4.04,
+//     "52 Week Low": 84.88,
+//     "52 Week High": 54.66,
+//     "Market Cap": 20493281175,
+//     "EBITDA": 1913000000,
+//     "Price/Sales": 0.21131156,
+//     "Price/Book": 3.03,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CAH"
+//   },
+//   {
+//     "Symbol": "KMX",
+//     "Name": "Carmax Inc",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 64.34,
+//     "Price/Earnings": 19.44,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 3.97,
+//     "52 Week Low": 77.64,
+//     "52 Week High": 54.29,
+//     "Market Cap": 11827453706,
+//     "EBITDA": 1339628000,
+//     "Price/Sales": 0.6913859,
+//     "Price/Book": 3.55,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KMX"
+//   },
+//   {
+//     "Symbol": "CCL",
+//     "Name": "Carnival Corp.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 66.76,
+//     "Price/Earnings": 17.48,
+//     "Dividend Yield": 2.6041667,
+//     "Earnings/Share": 3.58,
+//     "52 Week Low": 72.7,
+//     "52 Week High": 54.75,
+//     "Market Cap": 49180044050,
+//     "EBITDA": 4711000000,
+//     "Price/Sales": 2.8147783,
+//     "Price/Book": 2,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CCL"
+//   },
+//   {
+//     "Symbol": "CAT",
+//     "Name": "Caterpillar Inc.",
+//     "Sector": "Industrials",
+//     "Price": 145.99,
+//     "Price/Earnings": 21.22,
+//     "Dividend Yield": 2.0215108,
+//     "Earnings/Share": 1.26,
+//     "52 Week Low": 173.24,
+//     "52 Week High": 90.34,
+//     "Market Cap": 91822049046,
+//     "EBITDA": 8136000000,
+//     "Price/Sales": 2.0468428,
+//     "Price/Book": 5.75,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CAT"
+//   },
+//   {
+//     "Symbol": "CBOE",
+//     "Name": "CBOE Holdings",
+//     "Sector": "Financials",
+//     "Price": 111.15,
+//     "Price/Earnings": 35.06,
+//     "Dividend Yield": 0.9426963,
+//     "Earnings/Share": 2.27,
+//     "52 Week Low": 138.54,
+//     "52 Week High": 76.75,
+//     "Market Cap": 12998295607,
+//     "EBITDA": 488406000,
+//     "Price/Sales": 8.249042,
+//     "Price/Book": 5.15,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CBOE"
+//   },
+//   {
+//     "Symbol": "CBG",
+//     "Name": "CBRE Group",
+//     "Sector": "Real Estate",
+//     "Price": 41.92,
+//     "Price/Earnings": 15.82,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 1.69,
+//     "52 Week Low": 46.6,
+//     "52 Week High": 30.43,
+//     "Market Cap": 14440591731,
+//     "EBITDA": 1652961000,
+//     "Price/Sales": 1.4622321,
+//     "Price/Book": 3.74,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CBG"
+//   },
+//   {
+//     "Symbol": "CBS",
+//     "Name": "CBS Corp.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 51.8,
+//     "Price/Earnings": 12.05,
+//     "Dividend Yield": 1.3473054,
+//     "Earnings/Share": 2.81,
+//     "52 Week Low": 70.095,
+//     "52 Week High": 52.75,
+//     "Market Cap": 20431395736,
+//     "EBITDA": 2841000000,
+//     "Price/Sales": 2.1055017,
+//     "Price/Book": 6.91,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CBS"
+//   },
+//   {
+//     "Symbol": "CELG",
+//     "Name": "Celgene Corp.",
+//     "Sector": "Health Care",
+//     "Price": 91.02,
+//     "Price/Earnings": 13.27,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 3.58,
+//     "52 Week Low": 147.17,
+//     "52 Week High": 92.85,
+//     "Market Cap": 74921079154,
+//     "EBITDA": 5233000000,
+//     "Price/Sales": 5.830071,
+//     "Price/Book": 7.49,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CELG"
+//   },
+//   {
+//     "Symbol": "CNC",
+//     "Name": "Centene Corporation",
+//     "Sector": "Health Care",
+//     "Price": 100.36,
+//     "Price/Earnings": 19.12,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 3.23,
+//     "52 Week Low": 112.42,
+//     "52 Week High": 65.03,
+//     "Market Cap": 18012494506,
+//     "EBITDA": 2063000000,
+//     "Price/Sales": 0.5028663,
+//     "Price/Book": 2.58,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CNC"
+//   },
+//   {
+//     "Symbol": "CNP",
+//     "Name": "CenterPoint Energy",
+//     "Sector": "Utilities",
+//     "Price": 25.85,
+//     "Price/Earnings": 19.73,
+//     "Dividend Yield": 4.2109256,
+//     "Earnings/Share": 1,
+//     "52 Week Low": 30.45,
+//     "52 Week High": 25.51,
+//     "Market Cap": 11362043297,
+//     "EBITDA": 2337000000,
+//     "Price/Sales": 1.6262617,
+//     "Price/Book": 3.21,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CNP"
+//   },
+//   {
+//     "Symbol": "CTL",
+//     "Name": "CenturyLink Inc",
+//     "Sector": "Telecommunication Services",
+//     "Price": 16.2,
+//     "Price/Earnings": 8.35,
+//     "Dividend Yield": 12.661196,
+//     "Earnings/Share": 1.16,
+//     "52 Week Low": 27.61,
+//     "52 Week High": 13.161,
+//     "Market Cap": 18237196861,
+//     "EBITDA": 5577000000,
+//     "Price/Sales": 1.4795984,
+//     "Price/Book": 1.39,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CTL"
+//   },
+//   {
+//     "Symbol": "CERN",
+//     "Name": "Cerner",
+//     "Sector": "Health Care",
+//     "Price": 61.22,
+//     "Price/Earnings": 27.09,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 1.84,
+//     "52 Week Low": 73.86,
+//     "52 Week High": 51.2617,
+//     "Market Cap": 21101697598,
+//     "EBITDA": 1523440000,
+//     "Price/Sales": 5.5560412,
+//     "Price/Book": 4.62,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CERN"
+//   },
+//   {
+//     "Symbol": "CF",
+//     "Name": "CF Industries Holdings Inc",
+//     "Sector": "Materials",
+//     "Price": 37.46,
+//     "Price/Earnings": -59.46,
+//     "Dividend Yield": 3.0395136,
+//     "Earnings/Share": -1.2,
+//     "52 Week Low": 43.98,
+//     "52 Week High": 25.04,
+//     "Market Cap": 9209106695,
+//     "EBITDA": 711000000,
+//     "Price/Sales": 3.0044448,
+//     "Price/Book": 2.81,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CF"
+//   },
+//   {
+//     "Symbol": "SCHW",
+//     "Name": "Charles Schwab Corporation",
+//     "Sector": "Financials",
+//     "Price": 48.9,
+//     "Price/Earnings": 29.82,
+//     "Dividend Yield": 0.76878726,
+//     "Earnings/Share": 1.61,
+//     "52 Week Low": 56.25,
+//     "52 Week High": 37.16,
+//     "Market Cap": 69750188843,
+//     "EBITDA": 0,
+//     "Price/Sales": 7.949615,
+//     "Price/Book": 4.51,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SCHW"
+//   },
+//   {
+//     "Symbol": "CHTR",
+//     "Name": "Charter Communications",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 348.65,
+//     "Price/Earnings": 162.92,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 34.08,
+//     "52 Week Low": 408.83,
+//     "52 Week High": 308.3,
+//     "Market Cap": 86708878113,
+//     "EBITDA": 14694000000,
+//     "Price/Sales": 2.1208634,
+//     "Price/Book": 2.27,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CHTR"
+//   },
+//   {
+//     "Symbol": "CHK",
+//     "Name": "Chesapeake Energy",
+//     "Sector": "Energy",
+//     "Price": 2.82,
+//     "Price/Earnings": 4.7,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": -6.44,
+//     "52 Week Low": 6.59,
+//     "52 Week High": 2.8,
+//     "Market Cap": 2626102121,
+//     "EBITDA": 1470000000,
+//     "Price/Sales": 0.40765184,
+//     "Price/Book": 1.84,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CHK"
+//   },
+//   {
+//     "Symbol": "CVX",
+//     "Name": "Chevron Corp.",
+//     "Sector": "Energy",
+//     "Price": 112.3,
+//     "Price/Earnings": 27.52,
+//     "Dividend Yield": 3.885853,
+//     "Earnings/Share": 4.85,
+//     "52 Week Low": 133.88,
+//     "52 Week High": 102.55,
+//     "Market Cap": 218978820159,
+//     "EBITDA": 28877000000,
+//     "Price/Sales": 1.6489863,
+//     "Price/Book": 1.71,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CVX"
+//   },
+//   {
+//     "Symbol": "CMG",
+//     "Name": "Chipotle Mexican Grill",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 266.01,
+//     "Price/Earnings": 45.86,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 0.8,
+//     "52 Week Low": 499,
+//     "52 Week High": 263,
+//     "Market Cap": 7685283970,
+//     "EBITDA": 401293000,
+//     "Price/Sales": 2.5523853,
+//     "Price/Book": 6.11,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CMG"
+//   },
+//   {
+//     "Symbol": "CB",
+//     "Name": "Chubb Limited",
+//     "Sector": "Financials",
+//     "Price": 140.39,
+//     "Price/Earnings": 17.5,
+//     "Dividend Yield": 1.9251627,
+//     "Earnings/Share": 8.2,
+//     "52 Week Low": 157.5,
+//     "52 Week High": 130.17,
+//     "Market Cap": 68424670566,
+//     "EBITDA": 0,
+//     "Price/Sales": 2.0985637,
+//     "Price/Book": 1.35,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CB"
+//   },
+//   {
+//     "Symbol": "CHD",
+//     "Name": "Church & Dwight",
+//     "Sector": "Consumer Staples",
+//     "Price": 47.38,
+//     "Price/Earnings": 24.42,
+//     "Dividend Yield": 1.8366054,
+//     "Earnings/Share": 2.92,
+//     "52 Week Low": 54.1799,
+//     "52 Week High": 43.21,
+//     "Market Cap": 11838963451,
+//     "EBITDA": 868000000,
+//     "Price/Sales": 3.1682448,
+//     "Price/Book": 6.28,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CHD"
+//   },
+//   {
+//     "Symbol": "CI",
+//     "Name": "CIGNA Corp.",
+//     "Sector": "Health Care",
+//     "Price": 189.27,
+//     "Price/Earnings": 18.11,
+//     "Dividend Yield": 0.020466639,
+//     "Earnings/Share": 7.2,
+//     "52 Week Low": 227.13,
+//     "52 Week High": 141.93,
+//     "Market Cap": 47680910480,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.550762,
+//     "Price/Book": 3.39,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CI"
+//   },
+//   {
+//     "Symbol": "XEC",
+//     "Name": "Cimarex Energy",
+//     "Sector": "Energy",
+//     "Price": 100.19,
+//     "Price/Earnings": 26.37,
+//     "Dividend Yield": 0.30214334,
+//     "Earnings/Share": -4.64,
+//     "52 Week Low": 136.31,
+//     "52 Week High": 89.49,
+//     "Market Cap": 10089082025,
+//     "EBITDA": 1061056000,
+//     "Price/Sales": 7.556446,
+//     "Price/Book": 4.28,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XEC"
+//   },
+//   {
+//     "Symbol": "CINF",
+//     "Name": "Cincinnati Financial",
+//     "Sector": "Financials",
+//     "Price": 70.34,
+//     "Price/Earnings": 27.48,
+//     "Dividend Yield": 2.918904,
+//     "Earnings/Share": 3.55,
+//     "52 Week Low": 81.98,
+//     "52 Week High": 68.24,
+//     "Market Cap": 11916533018,
+//     "EBITDA": 0,
+//     "Price/Sales": 2.756679,
+//     "Price/Book": 1.6,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CINF"
+//   },
+//   {
+//     "Symbol": "CTAS",
+//     "Name": "Cintas Corporation",
+//     "Sector": "Industrials",
+//     "Price": 149.32,
+//     "Price/Earnings": 32.75,
+//     "Dividend Yield": 1.0344827,
+//     "Earnings/Share": 4.38,
+//     "52 Week Low": 169.96,
+//     "52 Week High": 113.79,
+//     "Market Cap": 16676145923,
+//     "EBITDA": 1097295000,
+//     "Price/Sales": 2.7614057,
+//     "Price/Book": 6.53,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CTAS"
+//   },
+//   {
+//     "Symbol": "CSCO",
+//     "Name": "Cisco Systems",
+//     "Sector": "Information Technology",
+//     "Price": 38.77,
+//     "Price/Earnings": 17.87,
+//     "Dividend Yield": 2.8755577,
+//     "Earnings/Share": 1.91,
+//     "52 Week Low": 42.98,
+//     "52 Week High": 30.36,
+//     "Market Cap": 199425716482,
+//     "EBITDA": 15447000000,
+//     "Price/Sales": 5.484418,
+//     "Price/Book": 3.07,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CSCO"
+//   },
+//   {
+//     "Symbol": "C",
+//     "Name": "Citigroup Inc.",
+//     "Sector": "Financials",
+//     "Price": 71.87,
+//     "Price/Earnings": 13.48,
+//     "Dividend Yield": 1.7068943,
+//     "Earnings/Share": -3.1,
+//     "52 Week Low": 80.7,
+//     "52 Week High": 56.14,
+//     "Market Cap": 192709302000,
+//     "EBITDA": 0,
+//     "Price/Sales": 2.1857586,
+//     "Price/Book": 0.9,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=C"
+//   },
+//   {
+//     "Symbol": "CFG",
+//     "Name": "Citizens Financial Group",
+//     "Sector": "Financials",
+//     "Price": 42.19,
+//     "Price/Earnings": 16.04,
+//     "Dividend Yield": 1.9625335,
+//     "Earnings/Share": 3.27,
+//     "52 Week Low": 48.23,
+//     "52 Week High": 31.51,
+//     "Market Cap": 22008050974,
+//     "EBITDA": 0,
+//     "Price/Sales": 3.3917346,
+//     "Price/Book": 1.08,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CFG"
+//   },
+//   {
+//     "Symbol": "CTXS",
+//     "Name": "Citrix Systems",
+//     "Sector": "Information Technology",
+//     "Price": 84.53,
+//     "Price/Earnings": 20.37,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": -0.24,
+//     "52 Week Low": 95,
+//     "52 Week High": 73.3346,
+//     "Market Cap": 13199167493,
+//     "EBITDA": 810268000,
+//     "Price/Sales": 4.7538714,
+//     "Price/Book": 6.73,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CTXS"
+//   },
+//   {
+//     "Symbol": "CME",
+//     "Name": "CME Group Inc.",
+//     "Sector": "Financials",
+//     "Price": 153.04,
+//     "Price/Earnings": 32.15,
+//     "Dividend Yield": 3.6828613,
+//     "Earnings/Share": 11.94,
+//     "52 Week Low": 163,
+//     "52 Week High": 114.8176,
+//     "Market Cap": 54423298745,
+//     "EBITDA": 2851800000,
+//     "Price/Sales": 14.881806,
+//     "Price/Book": 2.51,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CME"
+//   },
+//   {
+//     "Symbol": "CMS",
+//     "Name": "CMS Energy",
+//     "Sector": "Utilities",
+//     "Price": 41.77,
+//     "Price/Earnings": 21.42,
+//     "Dividend Yield": 3.3918407,
+//     "Earnings/Share": 1.99,
+//     "52 Week Low": 50.85,
+//     "52 Week High": 41.07,
+//     "Market Cap": 11873960824,
+//     "EBITDA": 2099000000,
+//     "Price/Sales": 2.4711676,
+//     "Price/Book": 2.65,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CMS"
+//   },
+//   {
+//     "Symbol": "KO",
+//     "Name": "Coca-Cola Company (The)",
+//     "Sector": "Consumer Staples",
+//     "Price": 43.1,
+//     "Price/Earnings": 22.8,
+//     "Dividend Yield": 3.3213644,
+//     "Earnings/Share": 1.49,
+//     "52 Week Low": 48.615,
+//     "52 Week High": 40.22,
+//     "Market Cap": 189855335601,
+//     "EBITDA": 8589000000,
+//     "Price/Sales": 6.822138,
+//     "Price/Book": 8.65,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KO"
+//   },
+//   {
+//     "Symbol": "CTSH",
+//     "Name": "Cognizant Technology Solutions",
+//     "Sector": "Information Technology",
+//     "Price": 75.16,
+//     "Price/Earnings": 22.44,
+//     "Dividend Yield": 1.0454783,
+//     "Earnings/Share": 2.54,
+//     "52 Week Low": 79.28,
+//     "52 Week High": 54.76,
+//     "Market Cap": 45119684067,
+//     "EBITDA": 2946000000,
+//     "Price/Sales": 3.9678397,
+//     "Price/Book": 3.94,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CTSH"
+//   },
+//   {
+//     "Symbol": "CL",
+//     "Name": "Colgate-Palmolive",
+//     "Sector": "Consumer Staples",
+//     "Price": 68.95,
+//     "Price/Earnings": 24.02,
+//     "Dividend Yield": 2.2801766,
+//     "Earnings/Share": 2.28,
+//     "52 Week Low": 77.91,
+//     "52 Week High": 66.26,
+//     "Market Cap": 61616643498,
+//     "EBITDA": 4064000000,
+//     "Price/Sales": 4.000737,
+//     "Price/Book": 236.42,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CL"
+//   },
+//   {
+//     "Symbol": "CMCSA",
+//     "Name": "Comcast Corp.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 38.19,
+//     "Price/Earnings": 18.54,
+//     "Dividend Yield": 1.8929017,
+//     "Earnings/Share": 4.74,
+//     "52 Week Low": 44,
+//     "52 Week High": 34.78,
+//     "Market Cap": 186476996883,
+//     "EBITDA": 28675000000,
+//     "Price/Sales": 2.1797748,
+//     "Price/Book": 2.65,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CMCSA"
+//   },
+//   {
+//     "Symbol": "CMA",
+//     "Name": "Comerica Inc.",
+//     "Sector": "Financials",
+//     "Price": 89.18,
+//     "Price/Earnings": 18.89,
+//     "Dividend Yield": 1.2823253,
+//     "Earnings/Share": 4.13,
+//     "52 Week Low": 98.18,
+//     "52 Week High": 64.04,
+//     "Market Cap": 16274969256,
+//     "EBITDA": 0,
+//     "Price/Sales": 4.905472,
+//     "Price/Book": 1.96,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CMA"
+//   },
+//   {
+//     "Symbol": "CAG",
+//     "Name": "Conagra Brands",
+//     "Sector": "Consumer Staples",
+//     "Price": 35.49,
+//     "Price/Earnings": 18.2,
+//     "Dividend Yield": 2.3683476,
+//     "Earnings/Share": 1.46,
+//     "52 Week Low": 41.68,
+//     "52 Week High": 32.16,
+//     "Market Cap": 14379717835,
+//     "EBITDA": 1281200000,
+//     "Price/Sales": 1.8294994,
+//     "Price/Book": 3.86,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CAG"
+//   },
+//   {
+//     "Symbol": "CXO",
+//     "Name": "Concho Resources",
+//     "Sector": "Energy",
+//     "Price": 140.09,
+//     "Price/Earnings": 84.39,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": -11.04,
+//     "52 Week Low": 162.91,
+//     "52 Week High": 106.73,
+//     "Market Cap": 22021882339,
+//     "EBITDA": 2151190000,
+//     "Price/Sales": 12.271951,
+//     "Price/Book": 2.61,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CXO"
+//   },
+//   {
+//     "Symbol": "COP",
+//     "Name": "ConocoPhillips",
+//     "Sector": "Energy",
+//     "Price": 53.24,
+//     "Price/Earnings": 72.93,
+//     "Dividend Yield": 2.049254,
+//     "Earnings/Share": -0.65,
+//     "52 Week Low": 61.315,
+//     "52 Week High": 42.265,
+//     "Market Cap": 65482462410,
+//     "EBITDA": 5328000000,
+//     "Price/Sales": 2.0764177,
+//     "Price/Book": 2.16,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=COP"
+//   },
+//   {
+//     "Symbol": "ED",
+//     "Name": "Consolidated Edison",
+//     "Sector": "Utilities",
+//     "Price": 74.73,
+//     "Price/Earnings": 18.64,
+//     "Dividend Yield": 3.8001595,
+//     "Earnings/Share": 4.1,
+//     "52 Week Low": 89.7,
+//     "52 Week High": 72.63,
+//     "Market Cap": 23335777662,
+//     "EBITDA": 4288000000,
+//     "Price/Sales": 2.960244,
+//     "Price/Book": 1.58,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ED"
+//   },
+//   {
+//     "Symbol": "STZ",
+//     "Name": "Constellation Brands",
+//     "Sector": "Consumer Staples",
+//     "Price": 208.73,
+//     "Price/Earnings": 30.92,
+//     "Dividend Yield": 0.9712818,
+//     "Earnings/Share": 8.71,
+//     "52 Week Low": 229.5,
+//     "52 Week High": 152.01,
+//     "Market Cap": 41697453163,
+//     "EBITDA": 3033300000,
+//     "Price/Sales": 5.145596,
+//     "Price/Book": 5.14,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=STZ"
+//   },
+//   {
+//     "Symbol": "GLW",
+//     "Name": "Corning Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 28.45,
+//     "Price/Earnings": 16.45,
+//     "Dividend Yield": 2.0791416,
+//     "Earnings/Share": -0.78,
+//     "52 Week Low": 35.1,
+//     "52 Week High": 26.31,
+//     "Market Cap": 25759280346,
+//     "EBITDA": 2970000000,
+//     "Price/Sales": 2.544682,
+//     "Price/Book": 1.71,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GLW"
+//   },
+//   {
+//     "Symbol": "COST",
+//     "Name": "Costco Wholesale Corp.",
+//     "Sector": "Consumer Staples",
+//     "Price": 178.61,
+//     "Price/Earnings": 30.69,
+//     "Dividend Yield": 1.0917627,
+//     "Earnings/Share": 6.09,
+//     "52 Week Low": 199.88,
+//     "52 Week High": 150,
+//     "Market Cap": 80439804508,
+//     "EBITDA": 5679000000,
+//     "Price/Sales": 0.61203885,
+//     "Price/Book": 7.24,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=COST"
+//   },
+//   {
+//     "Symbol": "COTY",
+//     "Name": "Coty, Inc",
+//     "Sector": "Consumer Staples",
+//     "Price": 19.96,
+//     "Price/Earnings": 24.64,
+//     "Dividend Yield": 2.860412,
+//     "Earnings/Share": -0.63,
+//     "52 Week Low": 21.175,
+//     "52 Week High": 14.24,
+//     "Market Cap": 13101112504,
+//     "EBITDA": 211400000,
+//     "Price/Sales": 2.0061796,
+//     "Price/Book": 1.37,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=COTY"
+//   },
+//   {
+//     "Symbol": "CCI",
+//     "Name": "Crown Castle International Corp.",
+//     "Sector": "Real Estate",
+//     "Price": 103.81,
+//     "Price/Earnings": 21.45,
+//     "Dividend Yield": 3.862069,
+//     "Earnings/Share": 1.02,
+//     "52 Week Low": 114.97,
+//     "52 Week High": 86.93,
+//     "Market Cap": 44183023189,
+//     "EBITDA": 2292600000,
+//     "Price/Sales": 10.125291,
+//     "Price/Book": 3.54,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CCI"
+//   },
+//   {
+//     "Symbol": "CSRA",
+//     "Name": "CSRA Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 30.85,
+//     "Price/Earnings": 15.12,
+//     "Dividend Yield": 1.275917,
+//     "Earnings/Share": 1.83,
+//     "52 Week Low": 33.79,
+//     "52 Week High": 27.38,
+//     "Market Cap": 5134501276,
+//     "EBITDA": 543000000,
+//     "Price/Sales": 1.3324839,
+//     "Price/Book": 11.37,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CSRA"
+//   },
+//   {
+//     "Symbol": "CSX",
+//     "Name": "CSX Corp.",
+//     "Sector": "Industrials",
+//     "Price": 50.47,
+//     "Price/Earnings": 21.94,
+//     "Dividend Yield": 1.5102888,
+//     "Earnings/Share": 6.07,
+//     "52 Week Low": 60.04,
+//     "52 Week High": 45.41,
+//     "Market Cap": 47340511707,
+//     "EBITDA": 5003000000,
+//     "Price/Sales": 4.216355,
+//     "Price/Book": 4.27,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CSX"
+//   },
+//   {
+//     "Symbol": "CMI",
+//     "Name": "Cummins Inc.",
+//     "Sector": "Industrials",
+//     "Price": 165.73,
+//     "Price/Earnings": 16.83,
+//     "Dividend Yield": 2.5008683,
+//     "Earnings/Share": 8.23,
+//     "52 Week Low": 194.18,
+//     "52 Week High": 143.8301,
+//     "Market Cap": 28669230787,
+//     "EBITDA": 2924000000,
+//     "Price/Sales": 1.9406168,
+//     "Price/Book": 3.89,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CMI"
+//   },
+//   {
+//     "Symbol": "CVS",
+//     "Name": "CVS Health",
+//     "Sector": "Consumer Staples",
+//     "Price": 70.55,
+//     "Price/Earnings": 12.36,
+//     "Dividend Yield": 2.6899798,
+//     "Earnings/Share": 4.91,
+//     "52 Week Low": 84,
+//     "52 Week High": 66.45,
+//     "Market Cap": 75323141722,
+//     "EBITDA": 11704000000,
+//     "Price/Sales": 0.549852,
+//     "Price/Book": 2.13,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CVS"
+//   },
+//   {
+//     "Symbol": "DHI",
+//     "Name": "D. R. Horton",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 44.55,
+//     "Price/Earnings": 16.32,
+//     "Dividend Yield": 1.0801469,
+//     "Earnings/Share": 2.73,
+//     "52 Week Low": 53.32,
+//     "52 Week High": 29.3716,
+//     "Market Cap": 17390873686,
+//     "EBITDA": 1691000000,
+//     "Price/Sales": 1.1931022,
+//     "Price/Book": 2.17,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DHI"
+//   },
+//   {
+//     "Symbol": "DHR",
+//     "Name": "Danaher Corp.",
+//     "Sector": "Health Care",
+//     "Price": 92.16,
+//     "Price/Earnings": 22.87,
+//     "Dividend Yield": 0.5879265,
+//     "Earnings/Share": 3.53,
+//     "52 Week Low": 104.82,
+//     "52 Week High": 78.97,
+//     "Market Cap": 66351150000,
+//     "EBITDA": 4339800000,
+//     "Price/Sales": 3.688278,
+//     "Price/Book": 2.65,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DHR"
+//   },
+//   {
+//     "Symbol": "DRI",
+//     "Name": "Darden Restaurants",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 91.33,
+//     "Price/Earnings": 22.72,
+//     "Dividend Yield": 2.6503997,
+//     "Earnings/Share": 3.81,
+//     "52 Week Low": 100.11,
+//     "52 Week High": 71.7,
+//     "Market Cap": 11745595320,
+//     "EBITDA": 997600000,
+//     "Price/Sales": 1.5278828,
+//     "Price/Book": 5.89,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DRI"
+//   },
+//   {
+//     "Symbol": "DVA",
+//     "Name": "DaVita Inc.",
+//     "Sector": "Health Care",
+//     "Price": 71.91,
+//     "Price/Earnings": 20.55,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 4.3,
+//     "52 Week Low": 80.71,
+//     "52 Week High": 52.51,
+//     "Market Cap": 13685178000,
+//     "EBITDA": 2252294000,
+//     "Price/Sales": 1.1451397,
+//     "Price/Book": 2.79,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DVA"
+//   },
+//   {
+//     "Symbol": "DE",
+//     "Name": "Deere & Co.",
+//     "Sector": "Industrials",
+//     "Price": 153.66,
+//     "Price/Earnings": 23.14,
+//     "Dividend Yield": 1.4866204,
+//     "Earnings/Share": 6.64,
+//     "52 Week Low": 171.96,
+//     "52 Week High": 106.72,
+//     "Market Cap": 52186628646,
+//     "EBITDA": 4053300000,
+//     "Price/Sales": 2.3746448,
+//     "Price/Book": 5.31,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DE"
+//   },
+//   {
+//     "Symbol": "DAL",
+//     "Name": "Delta Air Lines Inc.",
+//     "Sector": "Industrials",
+//     "Price": 51.23,
+//     "Price/Earnings": 10.37,
+//     "Dividend Yield": 2.2655525,
+//     "Earnings/Share": 4.94,
+//     "52 Week Low": 60.79,
+//     "52 Week High": 43.81,
+//     "Market Cap": 38393603535,
+//     "EBITDA": 8348000000,
+//     "Price/Sales": 0.91792434,
+//     "Price/Book": 2.67,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DAL"
+//   },
+//   {
+//     "Symbol": "XRAY",
+//     "Name": "Dentsply Sirona",
+//     "Sector": "Health Care",
+//     "Price": 56.85,
+//     "Price/Earnings": 22.65,
+//     "Dividend Yield": 0.60034305,
+//     "Earnings/Share": 1.99,
+//     "52 Week Low": 68.98,
+//     "52 Week High": 52.535,
+//     "Market Cap": 13390513478,
+//     "EBITDA": -411100000,
+//     "Price/Sales": 4.626262,
+//     "Price/Book": 1.8,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XRAY"
+//   },
+//   {
+//     "Symbol": "DVN",
+//     "Name": "Devon Energy Corp.",
+//     "Sector": "Energy",
+//     "Price": 34.94,
+//     "Price/Earnings": 23.93,
+//     "Dividend Yield": 0.6528836,
+//     "Earnings/Share": -6.89,
+//     "52 Week Low": 47.25,
+//     "52 Week High": 28.7947,
+//     "Market Cap": 19317380000,
+//     "EBITDA": 3723000000,
+//     "Price/Sales": 2.0660408,
+//     "Price/Book": 2.85,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DVN"
+//   },
+//   {
+//     "Symbol": "DLR",
+//     "Name": "Digital Realty Trust Inc",
+//     "Sector": "Real Estate",
+//     "Price": 98.96,
+//     "Price/Earnings": 16.55,
+//     "Dividend Yield": 3.5710857,
+//     "Earnings/Share": 2.19,
+//     "52 Week Low": 127.23,
+//     "52 Week High": 101.101,
+//     "Market Cap": 21400952517,
+//     "EBITDA": 1260662000,
+//     "Price/Sales": 12.434961,
+//     "Price/Book": 2.32,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DLR"
+//   },
+//   {
+//     "Symbol": "DFS",
+//     "Name": "Discover Financial Services",
+//     "Sector": "Financials",
+//     "Price": 72.4,
+//     "Price/Earnings": 12.13,
+//     "Dividend Yield": 1.8269607,
+//     "Earnings/Share": 5.41,
+//     "52 Week Low": 81.93,
+//     "52 Week High": 57.5,
+//     "Market Cap": 27433540000,
+//     "EBITDA": 0,
+//     "Price/Sales": 2.3610325,
+//     "Price/Book": 2.52,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DFS"
+//   },
+//   {
+//     "Symbol": "DISCA",
+//     "Name": "Discovery Communications-A",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 22.87,
+//     "Price/Earnings": 11,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 1.96,
+//     "52 Week Low": 30.25,
+//     "52 Week High": 15.99,
+//     "Market Cap": 8763756733,
+//     "EBITDA": 2100000000,
+//     "Price/Sales": 1.804088,
+//     "Price/Book": 1.5,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DISCA"
+//   },
+//   {
+//     "Symbol": "DISCK",
+//     "Name": "Discovery Communications-C",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 21.58,
+//     "Price/Earnings": 10.37,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 1.96,
+//     "52 Week Low": 29.18,
+//     "52 Week High": 14.99,
+//     "Market Cap": 8320262123,
+//     "EBITDA": 2100000000,
+//     "Price/Sales": 1.7147918,
+//     "Price/Book": 1.43,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DISCK"
+//   },
+//   {
+//     "Symbol": "DISH",
+//     "Name": "Dish Network",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 43.77,
+//     "Price/Earnings": 16.09,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 3.06,
+//     "52 Week Low": 66.5,
+//     "52 Week High": 42.48,
+//     "Market Cap": 21032719056,
+//     "EBITDA": 2754331000,
+//     "Price/Sales": 1.8521843,
+//     "Price/Book": 3.76,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DISH"
+//   },
+//   {
+//     "Symbol": "DG",
+//     "Name": "Dollar General",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 95.1,
+//     "Price/Earnings": 21.18,
+//     "Dividend Yield": 1.0625255,
+//     "Earnings/Share": 4.43,
+//     "52 Week Low": 105.82,
+//     "52 Week High": 65.97,
+//     "Market Cap": 26580644874,
+//     "EBITDA": 2457604000,
+//     "Price/Sales": 1.5283886,
+//     "Price/Book": 4.53,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DG"
+//   },
+//   {
+//     "Symbol": "DLTR",
+//     "Name": "Dollar Tree",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 101.58,
+//     "Price/Earnings": 26.66,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 3.77,
+//     "52 Week Low": 116.65,
+//     "52 Week High": 65.63,
+//     "Market Cap": 25151198417,
+//     "EBITDA": 2430300000,
+//     "Price/Sales": 1.6097589,
+//     "Price/Book": 4.08,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DLTR"
+//   },
+//   {
+//     "Symbol": "D",
+//     "Name": "Dominion Energy",
+//     "Sector": "Utilities",
+//     "Price": 73.31,
+//     "Price/Earnings": 20.42,
+//     "Dividend Yield": 4.5281997,
+//     "Earnings/Share": 4.91,
+//     "52 Week Low": 85.3,
+//     "52 Week High": 71.59,
+//     "Market Cap": 47543571860,
+//     "EBITDA": 6428000000,
+//     "Price/Sales": 3.7954214,
+//     "Price/Book": 2.96,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=D"
+//   },
+//   {
+//     "Symbol": "DOV",
+//     "Name": "Dover Corp.",
+//     "Sector": "Industrials",
+//     "Price": 96.2,
+//     "Price/Earnings": 23.87,
+//     "Dividend Yield": 1.8815053,
+//     "Earnings/Share": 5.15,
+//     "52 Week Low": 109.06,
+//     "52 Week High": 75.51,
+//     "Market Cap": 15566645713,
+//     "EBITDA": 1513291000,
+//     "Price/Sales": 1.986176,
+//     "Price/Book": 3.59,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DOV"
+//   },
+//   {
+//     "Symbol": "DWDP",
+//     "Name": "DowDuPont",
+//     "Sector": "Materials",
+//     "Price": 68.21,
+//     "Price/Earnings": 49.43,
+//     "Dividend Yield": 2.1529746,
+//     "Earnings/Share": 1.59,
+//     "52 Week Low": 77.08,
+//     "52 Week High": 64.01,
+//     "Market Cap": 165203312427,
+//     "EBITDA": 5250000000,
+//     "Price/Sales": 2.6922395,
+//     "Price/Book": 1.54,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DWDP"
+//   },
+//   {
+//     "Symbol": "DPS",
+//     "Name": "Dr Pepper Snapple Group",
+//     "Sector": "Consumer Staples",
+//     "Price": 116.93,
+//     "Price/Earnings": 26.57,
+//     "Dividend Yield": 1.9661016,
+//     "Earnings/Share": 4.54,
+//     "52 Week Low": 126.65,
+//     "52 Week High": 83.23,
+//     "Market Cap": 21209783858,
+//     "EBITDA": 1507000000,
+//     "Price/Sales": 4.2149186,
+//     "Price/Book": 9.99,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DPS"
+//   },
+//   {
+//     "Symbol": "DTE",
+//     "Name": "DTE Energy Co.",
+//     "Sector": "Utilities",
+//     "Price": 98.49,
+//     "Price/Earnings": 19.12,
+//     "Dividend Yield": 3.5559585,
+//     "Earnings/Share": 4.82,
+//     "52 Week Low": 116.74,
+//     "52 Week High": 96.56,
+//     "Market Cap": 17808073691,
+//     "EBITDA": 2790000000,
+//     "Price/Sales": 1.9091922,
+//     "Price/Book": 1.95,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DTE"
+//   },
+//   {
+//     "Symbol": "DUK",
+//     "Name": "Duke Energy",
+//     "Sector": "Utilities",
+//     "Price": 74.32,
+//     "Price/Earnings": 16.7,
+//     "Dividend Yield": 4.7849464,
+//     "Earnings/Share": 3.12,
+//     "52 Week Low": 91.8,
+//     "52 Week High": 72.93,
+//     "Market Cap": 52078185682,
+//     "EBITDA": 9895000000,
+//     "Price/Sales": 2.9348857,
+//     "Price/Book": 1.27,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DUK"
+//   },
+//   {
+//     "Symbol": "DRE",
+//     "Name": "Duke Realty Corp",
+//     "Sector": "Real Estate",
+//     "Price": 24.52,
+//     "Price/Earnings": 19.77,
+//     "Dividend Yield": 3.1533308,
+//     "Earnings/Share": 0.88,
+//     "52 Week Low": 30.14,
+//     "52 Week High": 24.73,
+//     "Market Cap": 9035293365,
+//     "EBITDA": 529483000,
+//     "Price/Sales": 16.077257,
+//     "Price/Book": 1.94,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DRE"
+//   },
+//   {
+//     "Symbol": "DXC",
+//     "Name": "DXC Technology",
+//     "Sector": "Information Technology",
+//     "Price": 91.92,
+//     "Price/Earnings": 79.93,
+//     "Dividend Yield": 0.7493755,
+//     "Earnings/Share": -0.89,
+//     "52 Week Low": 102.95,
+//     "52 Week High": 67.76,
+//     "Market Cap": 27408621020,
+//     "EBITDA": 1628000000,
+//     "Price/Sales": 1.9598055,
+//     "Price/Book": 2.26,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DXC"
+//   },
+//   {
+//     "Symbol": "ETFC",
+//     "Name": "E*Trade",
+//     "Sector": "Financials",
+//     "Price": 48.48,
+//     "Price/Earnings": 22.14,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 2.15,
+//     "52 Week Low": 56,
+//     "52 Week High": 32.25,
+//     "Market Cap": 13754977266,
+//     "EBITDA": 0,
+//     "Price/Sales": 5.689136,
+//     "Price/Book": 2.15,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ETFC"
+//   },
+//   {
+//     "Symbol": "EMN",
+//     "Name": "Eastman Chemical",
+//     "Sector": "Materials",
+//     "Price": 93.57,
+//     "Price/Earnings": 12.28,
+//     "Dividend Yield": 2.2630835,
+//     "Earnings/Share": 10.12,
+//     "52 Week Low": 104.08,
+//     "52 Week High": 76.02,
+//     "Market Cap": 14226830813,
+//     "EBITDA": 2152000000,
+//     "Price/Sales": 1.4904785,
+//     "Price/Book": 2.78,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EMN"
+//   },
+//   {
+//     "Symbol": "ETN",
+//     "Name": "Eaton Corporation",
+//     "Sector": "Industrials",
+//     "Price": 79.41,
+//     "Price/Earnings": 17.08,
+//     "Dividend Yield": 2.9404557,
+//     "Earnings/Share": 6.68,
+//     "52 Week Low": 89.85,
+//     "52 Week High": 69.45,
+//     "Market Cap": 35961772000,
+//     "EBITDA": 4253000000,
+//     "Price/Sales": 1.8161736,
+//     "Price/Book": 2.17,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ETN"
+//   },
+//   {
+//     "Symbol": "EBAY",
+//     "Name": "eBay Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 41.02,
+//     "Price/Earnings": 24.86,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": -1.07,
+//     "52 Week Low": 46.99,
+//     "52 Week High": 31.89,
+//     "Market Cap": 44216696399,
+//     "EBITDA": 2941000000,
+//     "Price/Sales": 4.6720185,
+//     "Price/Book": 3.8,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EBAY"
+//   },
+//   {
+//     "Symbol": "ECL",
+//     "Name": "Ecolab Inc.",
+//     "Sector": "Materials",
+//     "Price": 127.76,
+//     "Price/Earnings": 28.08,
+//     "Dividend Yield": 1.2319711,
+//     "Earnings/Share": 4.14,
+//     "52 Week Low": 140.5,
+//     "52 Week High": 119.61,
+//     "Market Cap": 38460272282,
+//     "EBITDA": 2848600000,
+//     "Price/Sales": 3.7360687,
+//     "Price/Book": 5.28,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ECL"
+//   },
+//   {
+//     "Symbol": "EIX",
+//     "Name": "Edison Int'l",
+//     "Sector": "Utilities",
+//     "Price": 58.07,
+//     "Price/Earnings": 13.23,
+//     "Dividend Yield": 4.0542803,
+//     "Earnings/Share": 3.96,
+//     "52 Week Low": 83.38,
+//     "52 Week High": 58.76,
+//     "Market Cap": 19447670886,
+//     "EBITDA": 4284000000,
+//     "Price/Sales": 2.161095,
+//     "Price/Book": 1.59,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EIX"
+//   },
+//   {
+//     "Symbol": "EW",
+//     "Name": "Edwards Lifesciences",
+//     "Sector": "Health Care",
+//     "Price": 123.78,
+//     "Price/Earnings": 32.57,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 2.88,
+//     "52 Week Low": 138.48,
+//     "52 Week High": 89.2,
+//     "Market Cap": 27447099863,
+//     "EBITDA": 1156700000,
+//     "Price/Sales": 7.8283277,
+//     "Price/Book": 8.48,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EW"
+//   },
+//   {
+//     "Symbol": "EA",
+//     "Name": "Electronic Arts",
+//     "Sector": "Information Technology",
+//     "Price": 116.54,
+//     "Price/Earnings": 34.48,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 3.07,
+//     "52 Week Low": 131.01,
+//     "52 Week High": 81.27,
+//     "Market Cap": 37890226992,
+//     "EBITDA": 1560000000,
+//     "Price/Sales": 7.4415817,
+//     "Price/Book": 8.54,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EA"
+//   },
+//   {
+//     "Symbol": "EMR",
+//     "Name": "Emerson Electric Company",
+//     "Sector": "Industrials",
+//     "Price": 66.4,
+//     "Price/Earnings": 25.74,
+//     "Dividend Yield": 2.813225,
+//     "Earnings/Share": 2.35,
+//     "52 Week Low": 74.45,
+//     "52 Week High": 56.77,
+//     "Market Cap": 44040298425,
+//     "EBITDA": 2542000000,
+//     "Price/Sales": 3.6707752,
+//     "Price/Book": 5.01,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EMR"
+//   },
+//   {
+//     "Symbol": "ETR",
+//     "Name": "Entergy Corp.",
+//     "Sector": "Utilities",
+//     "Price": 72.02,
+//     "Price/Earnings": 10.65,
+//     "Dividend Yield": 4.892126,
+//     "Earnings/Share": -3.26,
+//     "52 Week Low": 87.95,
+//     "52 Week High": 69.63,
+//     "Market Cap": 13116894887,
+//     "EBITDA": 880700000,
+//     "Price/Sales": 1.5543115,
+//     "Price/Book": 1.54,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ETR"
+//   },
+//   {
+//     "Symbol": "EVHC",
+//     "Name": "Envision Healthcare",
+//     "Sector": "Health Care",
+//     "Price": 35.34,
+//     "Price/Earnings": 10.91,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": -0.48,
+//     "52 Week Low": 73,
+//     "52 Week High": 23.77,
+//     "Market Cap": 4212729247,
+//     "EBITDA": 827200000,
+//     "Price/Sales": 1.227099,
+//     "Price/Book": 0.64,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EVHC"
+//   },
+//   {
+//     "Symbol": "EOG",
+//     "Name": "EOG Resources",
+//     "Sector": "Energy",
+//     "Price": 101.04,
+//     "Price/Earnings": 246.44,
+//     "Dividend Yield": 0.63339007,
+//     "Earnings/Share": -1.98,
+//     "52 Week Low": 119,
+//     "52 Week High": 81.99,
+//     "Market Cap": 61164030149,
+//     "EBITDA": 3692749000,
+//     "Price/Sales": 8.02302,
+//     "Price/Book": 4.55,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EOG"
+//   },
+//   {
+//     "Symbol": "EQT",
+//     "Name": "EQT Corporation",
+//     "Sector": "Energy",
+//     "Price": 46.25,
+//     "Price/Earnings": 53.16,
+//     "Dividend Yield": 0.2518363,
+//     "Earnings/Share": -2.69,
+//     "52 Week Low": 67.84,
+//     "52 Week High": 47.13,
+//     "Market Cap": 12638828950,
+//     "EBITDA": 1518305000,
+//     "Price/Sales": 6.4987307,
+//     "Price/Book": 2.15,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EQT"
+//   },
+//   {
+//     "Symbol": "EFX",
+//     "Name": "Equifax Inc.",
+//     "Sector": "Industrials",
+//     "Price": 114,
+//     "Price/Earnings": 19.03,
+//     "Dividend Yield": 1.3265306,
+//     "Earnings/Share": 4.04,
+//     "52 Week Low": 147.02,
+//     "52 Week High": 90.72,
+//     "Market Cap": 14121334618,
+//     "EBITDA": 1141200000,
+//     "Price/Sales": 5.6338058,
+//     "Price/Book": 4.59,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EFX"
+//   },
+//   {
+//     "Symbol": "EQIX",
+//     "Name": "Equinix",
+//     "Sector": "Real Estate",
+//     "Price": 409.98,
+//     "Price/Earnings": 23.06,
+//     "Dividend Yield": 1.8775817,
+//     "Earnings/Share": 1.77,
+//     "52 Week Low": 495.345,
+//     "52 Week High": 361.9,
+//     "Market Cap": 33333813618,
+//     "EBITDA": 1687152000,
+//     "Price/Sales": 10.639136,
+//     "Price/Book": 5.14,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EQIX"
+//   },
+//   {
+//     "Symbol": "EQR",
+//     "Name": "Equity Residential",
+//     "Sector": "Real Estate",
+//     "Price": 55.26,
+//     "Price/Earnings": 17.6,
+//     "Dividend Yield": 3.5437918,
+//     "Earnings/Share": 1.63,
+//     "52 Week Low": 70.455,
+//     "52 Week High": 56.07,
+//     "Market Cap": 20925508143,
+//     "EBITDA": 1710686000,
+//     "Price/Sales": 8.593619,
+//     "Price/Book": 2.09,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EQR"
+//   },
+//   {
+//     "Symbol": "ESS",
+//     "Name": "Essex Property Trust, Inc.",
+//     "Sector": "Real Estate",
+//     "Price": 218.28,
+//     "Price/Earnings": 18.66,
+//     "Dividend Yield": 3.2138102,
+//     "Earnings/Share": 6.27,
+//     "52 Week Low": 270.04,
+//     "52 Week High": 214.03,
+//     "Market Cap": 14383525286,
+//     "EBITDA": 1237886000,
+//     "Price/Sales": 14.1830845,
+//     "Price/Book": 2.3,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ESS"
+//   },
+//   {
+//     "Symbol": "EL",
+//     "Name": "Estee Lauder Cos.",
+//     "Sector": "Consumer Staples",
+//     "Price": 131.46,
+//     "Price/Earnings": 37.78,
+//     "Dividend Yield": 1.1283498,
+//     "Earnings/Share": 3.35,
+//     "52 Week Low": 138.74,
+//     "52 Week High": 81.69,
+//     "Market Cap": 49543264457,
+//     "EBITDA": 2478000000,
+//     "Price/Sales": 3.9522583,
+//     "Price/Book": 10.82,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EL"
+//   },
+//   {
+//     "Symbol": "RE",
+//     "Name": "Everest Re Group Ltd.",
+//     "Sector": "Financials",
+//     "Price": 241.06,
+//     "Price/Earnings": 27.24,
+//     "Dividend Yield": 2.1078234,
+//     "Earnings/Share": 23.71,
+//     "52 Week Low": 277.17,
+//     "52 Week High": 208.81,
+//     "Market Cap": 10131892523,
+//     "EBITDA": 0,
+//     "Price/Sales": 2.0991988,
+//     "Price/Book": 1.16,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RE"
+//   },
+//   {
+//     "Symbol": "ES",
+//     "Name": "Eversource Energy",
+//     "Sector": "Utilities",
+//     "Price": 56.11,
+//     "Price/Earnings": 18.22,
+//     "Dividend Yield": 3.3397784,
+//     "Earnings/Share": 2.96,
+//     "52 Week Low": 66.15,
+//     "52 Week High": 55.2,
+//     "Market Cap": 18027633617,
+//     "EBITDA": 2738713000,
+//     "Price/Sales": 3.1134193,
+//     "Price/Book": 1.68,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ES"
+//   },
+//   {
+//     "Symbol": "EXC",
+//     "Name": "Exelon Corp.",
+//     "Sector": "Utilities",
+//     "Price": 35.98,
+//     "Price/Earnings": 14.51,
+//     "Dividend Yield": 3.8174274,
+//     "Earnings/Share": 1.23,
+//     "52 Week Low": 42.67,
+//     "52 Week High": 33.3,
+//     "Market Cap": 34734816899,
+//     "EBITDA": 8548000000,
+//     "Price/Sales": 1.3933871,
+//     "Price/Book": 1.26,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EXC"
+//   },
+//   {
+//     "Symbol": "EXPE",
+//     "Name": "Expedia Inc.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 123.03,
+//     "Price/Earnings": 30.99,
+//     "Dividend Yield": 0.92785895,
+//     "Earnings/Share": 1.81,
+//     "52 Week Low": 161,
+//     "52 Week High": 115.55,
+//     "Market Cap": 19722178609,
+//     "EBITDA": 1481458000,
+//     "Price/Sales": 2.5074897,
+//     "Price/Book": 4.14,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EXPE"
+//   },
+//   {
+//     "Symbol": "EXPD",
+//     "Name": "Expeditors International",
+//     "Sector": "Industrials",
+//     "Price": 60.36,
+//     "Price/Earnings": 25.26,
+//     "Dividend Yield": 1.3520038,
+//     "Earnings/Share": 2.36,
+//     "52 Week Low": 67.54,
+//     "52 Week High": 51.96,
+//     "Market Cap": 11040678071,
+//     "EBITDA": 721643000,
+//     "Price/Sales": 2.190319,
+//     "Price/Book": 5.55,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EXPD"
+//   },
+//   {
+//     "Symbol": "ESRX",
+//     "Name": "Express Scripts",
+//     "Sector": "Health Care",
+//     "Price": 73.35,
+//     "Price/Earnings": 10.72,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 5.39,
+//     "52 Week Low": 83.485,
+//     "52 Week High": 55.8,
+//     "Market Cap": 42449656350,
+//     "EBITDA": 7309300000,
+//     "Price/Sales": 0.57588416,
+//     "Price/Book": 2.65,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ESRX"
+//   },
+//   {
+//     "Symbol": "EXR",
+//     "Name": "Extra Space Storage",
+//     "Sector": "Real Estate",
+//     "Price": 77.56,
+//     "Price/Earnings": 18.12,
+//     "Dividend Yield": 3.879632,
+//     "Earnings/Share": 2.92,
+//     "52 Week Low": 88.56,
+//     "52 Week High": 71.34,
+//     "Market Cap": 10133547517,
+//     "EBITDA": 717468000,
+//     "Price/Sales": 12.204818,
+//     "Price/Book": 4.54,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=EXR"
+//   },
+//   {
+//     "Symbol": "XOM",
+//     "Name": "Exxon Mobil Corp.",
+//     "Sector": "Energy",
+//     "Price": 76.07,
+//     "Price/Earnings": 21.37,
+//     "Dividend Yield": 4.0031195,
+//     "Earnings/Share": 1.88,
+//     "52 Week Low": 89.3,
+//     "52 Week High": 76.05,
+//     "Market Cap": 326148660000,
+//     "EBITDA": 39052000000,
+//     "Price/Sales": 1.7701944,
+//     "Price/Book": 1.85,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XOM"
+//   },
+//   {
+//     "Symbol": "FFIV",
+//     "Name": "F5 Networks",
+//     "Sector": "Information Technology",
+//     "Price": 137.25,
+//     "Price/Earnings": 21.21,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 6.51,
+//     "52 Week Low": 149.5,
+//     "52 Week High": 114.63,
+//     "Market Cap": 8744185796,
+//     "EBITDA": 629940000,
+//     "Price/Sales": 4.1203604,
+//     "Price/Book": 6.86,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FFIV"
+//   },
+//   {
+//     "Symbol": "FB",
+//     "Name": "Facebook, Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 171.58,
+//     "Price/Earnings": 27.9,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 5.39,
+//     "52 Week Low": 195.32,
+//     "52 Week High": 132.44,
+//     "Market Cap": 523423036576,
+//     "EBITDA": 23624000000,
+//     "Price/Sales": 13.241967,
+//     "Price/Book": 7.08,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FB"
+//   },
+//   {
+//     "Symbol": "FAST",
+//     "Name": "Fastenal Co",
+//     "Sector": "Industrials",
+//     "Price": 52.15,
+//     "Price/Earnings": 27.02,
+//     "Dividend Yield": 2.7798648,
+//     "Earnings/Share": 2.01,
+//     "52 Week Low": 57.815,
+//     "52 Week High": 39.79,
+//     "Market Cap": 15311373377,
+//     "EBITDA": 1009600000,
+//     "Price/Sales": 3.472977,
+//     "Price/Book": 7.39,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FAST"
+//   },
+//   {
+//     "Symbol": "FRT",
+//     "Name": "Federal Realty Investment Trust",
+//     "Sector": "Real Estate",
+//     "Price": 108.11,
+//     "Price/Earnings": 18.35,
+//     "Dividend Yield": 3.5925992,
+//     "Earnings/Share": 3.5,
+//     "52 Week Low": 143.79,
+//     "52 Week High": 109.74,
+//     "Market Cap": 8077368506,
+//     "EBITDA": 540767000,
+//     "Price/Sales": 12.898601,
+//     "Price/Book": 3.98,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FRT"
+//   },
+//   {
+//     "Symbol": "FDX",
+//     "Name": "FedEx Corporation",
+//     "Sector": "Industrials",
+//     "Price": 239.27,
+//     "Price/Earnings": 19.45,
+//     "Dividend Yield": 0.7963368,
+//     "Earnings/Share": 11.07,
+//     "52 Week Low": 274.66,
+//     "52 Week High": 182.89,
+//     "Market Cap": 67280478816,
+//     "EBITDA": 8062000000,
+//     "Price/Sales": 1.0751684,
+//     "Price/Book": 3.9,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FDX"
+//   },
+//   {
+//     "Symbol": "FIS",
+//     "Name": "Fidelity National Information Services",
+//     "Sector": "Information Technology",
+//     "Price": 92.74,
+//     "Price/Earnings": 22.08,
+//     "Dividend Yield": 1.322724,
+//     "Earnings/Share": 1.72,
+//     "52 Week Low": 103.65,
+//     "52 Week High": 77.63,
+//     "Market Cap": 32308459680,
+//     "EBITDA": 2782000000,
+//     "Price/Sales": 4.7038417,
+//     "Price/Book": 3.25,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FIS"
+//   },
+//   {
+//     "Symbol": "FITB",
+//     "Name": "Fifth Third Bancorp",
+//     "Sector": "Financials",
+//     "Price": 31.1,
+//     "Price/Earnings": 16.9,
+//     "Dividend Yield": 1.9789734,
+//     "Earnings/Share": 2.85,
+//     "52 Week Low": 33.91,
+//     "52 Week High": 23.2,
+//     "Market Cap": 22437653700,
+//     "EBITDA": 0,
+//     "Price/Sales": 2.8802848,
+//     "Price/Book": 1.46,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FITB"
+//   },
+//   {
+//     "Symbol": "FE",
+//     "Name": "FirstEnergy Corp",
+//     "Sector": "Utilities",
+//     "Price": 30.64,
+//     "Price/Earnings": 11.18,
+//     "Dividend Yield": 4.673807,
+//     "Earnings/Share": -14.49,
+//     "52 Week Low": 35.22,
+//     "52 Week High": 27.93,
+//     "Market Cap": 13706075072,
+//     "EBITDA": -5067000000,
+//     "Price/Sales": 1.2994481,
+//     "Price/Book": 2.19,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FE"
+//   },
+//   {
+//     "Symbol": "FISV",
+//     "Name": "Fiserv Inc",
+//     "Sector": "Information Technology",
+//     "Price": 133.05,
+//     "Price/Earnings": 27.32,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 4.14,
+//     "52 Week Low": 144.2,
+//     "52 Week High": 106.2,
+//     "Market Cap": 26918949723,
+//     "EBITDA": 1911000000,
+//     "Price/Sales": 6.518713,
+//     "Price/Book": 11.54,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FISV"
+//   },
+//   {
+//     "Symbol": "FLIR",
+//     "Name": "FLIR Systems",
+//     "Sector": "Information Technology",
+//     "Price": 46.46,
+//     "Price/Earnings": 25.53,
+//     "Dividend Yield": 1.2396694,
+//     "Earnings/Share": 1.21,
+//     "52 Week Low": 52.88,
+//     "52 Week High": 33.75,
+//     "Market Cap": 6706992926,
+//     "EBITDA": 375267000,
+//     "Price/Sales": 5.137961,
+//     "Price/Book": 3.52,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FLIR"
+//   },
+//   {
+//     "Symbol": "FLS",
+//     "Name": "Flowserve Corporation",
+//     "Sector": "Industrials",
+//     "Price": 40.82,
+//     "Price/Earnings": 26.17,
+//     "Dividend Yield": 1.8291216,
+//     "Earnings/Share": 1.12,
+//     "52 Week Low": 51.92,
+//     "52 Week High": 37.51,
+//     "Market Cap": 5427884956,
+//     "EBITDA": 463066000,
+//     "Price/Sales": 2.0803037,
+//     "Price/Book": 3.15,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FLS"
+//   },
+//   {
+//     "Symbol": "FLR",
+//     "Name": "Fluor Corp.",
+//     "Sector": "Industrials",
+//     "Price": 55.31,
+//     "Price/Earnings": 19.9,
+//     "Dividend Yield": 1.4726508,
+//     "Earnings/Share": 1.99,
+//     "52 Week Low": 62.09,
+//     "52 Week High": 37.0351,
+//     "Market Cap": 7978485059,
+//     "EBITDA": 709756000,
+//     "Price/Sales": 0.5516402,
+//     "Price/Book": 2.4,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FLR"
+//   },
+//   {
+//     "Symbol": "FMC",
+//     "Name": "FMC Corporation",
+//     "Sector": "Materials",
+//     "Price": 80.87,
+//     "Price/Earnings": 32.48,
+//     "Dividend Yield": 0.785995,
+//     "Earnings/Share": 1.56,
+//     "52 Week Low": 98.7,
+//     "52 Week High": 56.53,
+//     "Market Cap": 11273961835,
+//     "EBITDA": 557800000,
+//     "Price/Sales": 6.0089035,
+//     "Price/Book": 5.26,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FMC"
+//   },
+//   {
+//     "Symbol": "FL",
+//     "Name": "Foot Locker Inc",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 45.88,
+//     "Price/Earnings": 9.5,
+//     "Dividend Yield": 2.5827951,
+//     "Earnings/Share": 4.91,
+//     "52 Week Low": 77.86,
+//     "52 Week High": 28.42,
+//     "Market Cap": 5819080328,
+//     "EBITDA": 957000000,
+//     "Price/Sales": 1.0362948,
+//     "Price/Book": "",
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FL"
+//   },
+//   {
+//     "Symbol": "F",
+//     "Name": "Ford Motor",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 10.43,
+//     "Price/Earnings": 5.89,
+//     "Dividend Yield": 6.7843866,
+//     "Earnings/Share": 1.9,
+//     "52 Week Low": 13.48,
+//     "52 Week High": 10.19,
+//     "Market Cap": 42414328338,
+//     "EBITDA": 9281000000,
+//     "Price/Sales": 0.27054095,
+//     "Price/Book": 1.26,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=F"
+//   },
+//   {
+//     "Symbol": "FTV",
+//     "Name": "Fortive Corp",
+//     "Sector": "Industrials",
+//     "Price": 69.14,
+//     "Price/Earnings": 25.05,
+//     "Dividend Yield": 0.39057052,
+//     "Earnings/Share": 2.46,
+//     "52 Week Low": 76.68,
+//     "52 Week High": 54.8844,
+//     "Market Cap": 24916503061,
+//     "EBITDA": 1508300000,
+//     "Price/Sales": 5.1682673,
+//     "Price/Book": 7.17,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FTV"
+//   },
+//   {
+//     "Symbol": "FBHS",
+//     "Name": "Fortune Brands Home & Security",
+//     "Sector": "Industrials",
+//     "Price": 62.44,
+//     "Price/Earnings": 20.27,
+//     "Dividend Yield": 1.2618296,
+//     "Earnings/Share": 3.04,
+//     "52 Week Low": 73.62,
+//     "52 Week High": 55.25,
+//     "Market Cap": 9624169008,
+//     "EBITDA": 814500000,
+//     "Price/Sales": 1.8434572,
+//     "Price/Book": 3.76,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FBHS"
+//   },
+//   {
+//     "Symbol": "BEN",
+//     "Name": "Franklin Resources",
+//     "Sector": "Financials",
+//     "Price": 38,
+//     "Price/Earnings": 12.67,
+//     "Dividend Yield": 2.332657,
+//     "Earnings/Share": 3,
+//     "52 Week Low": 47.65,
+//     "52 Week High": 37.01,
+//     "Market Cap": 21759187973,
+//     "EBITDA": 2711300000,
+//     "Price/Sales": 3.399101,
+//     "Price/Book": 1.83,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BEN"
+//   },
+//   {
+//     "Symbol": "FCX",
+//     "Name": "Freeport-McMoRan Inc.",
+//     "Sector": "Materials",
+//     "Price": 17.16,
+//     "Price/Earnings": 14.67,
+//     "Dividend Yield": 1.1198208,
+//     "Earnings/Share": 1.24,
+//     "52 Week Low": 20.25,
+//     "52 Week High": 11.05,
+//     "Market Cap": 25853969330,
+//     "EBITDA": 5347000000,
+//     "Price/Sales": 1.6538345,
+//     "Price/Book": 3.66,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FCX"
+//   },
+//   {
+//     "Symbol": "GPS",
+//     "Name": "Gap Inc.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 31.17,
+//     "Price/Earnings": 15.35,
+//     "Dividend Yield": 2.8203557,
+//     "Earnings/Share": 1.69,
+//     "52 Week Low": 35.68,
+//     "52 Week High": 21.02,
+//     "Market Cap": 12684517721,
+//     "EBITDA": 1959000000,
+//     "Price/Sales": 1.1289738,
+//     "Price/Book": 3.93,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GPS"
+//   },
+//   {
+//     "Symbol": "GRMN",
+//     "Name": "Garmin Ltd.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 61.13,
+//     "Price/Earnings": 21.23,
+//     "Dividend Yield": 3.2339885,
+//     "Earnings/Share": 2.69,
+//     "52 Week Low": 64.96,
+//     "52 Week High": 48.5,
+//     "Market Cap": 11840331607,
+//     "EBITDA": 736798000,
+//     "Price/Sales": 5.319881,
+//     "Price/Book": 3.14,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GRMN"
+//   },
+//   {
+//     "Symbol": "IT",
+//     "Name": "Gartner Inc",
+//     "Sector": "Information Technology",
+//     "Price": 114.26,
+//     "Price/Earnings": 36.86,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 2.31,
+//     "52 Week Low": 142.16,
+//     "52 Week High": 97.96,
+//     "Market Cap": 10828314389,
+//     "EBITDA": 234935000,
+//     "Price/Sales": 4.894499,
+//     "Price/Book": 13.47,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IT"
+//   },
+//   {
+//     "Symbol": "GD",
+//     "Name": "General Dynamics",
+//     "Sector": "Industrials",
+//     "Price": 206.05,
+//     "Price/Earnings": 20.71,
+//     "Dividend Yield": 1.5631542,
+//     "Earnings/Share": 9.55,
+//     "52 Week Low": 229.54,
+//     "52 Week High": 181.94,
+//     "Market Cap": 64180390701,
+//     "EBITDA": 4618000000,
+//     "Price/Sales": 2.0481362,
+//     "Price/Book": 5.45,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GD"
+//   },
+//   {
+//     "Symbol": "GE",
+//     "Name": "General Electric",
+//     "Sector": "Industrials",
+//     "Price": 14.45,
+//     "Price/Earnings": 13.76,
+//     "Dividend Yield": 3.147541,
+//     "Earnings/Share": -0.72,
+//     "52 Week Low": 30.59,
+//     "52 Week High": 14.71,
+//     "Market Cap": 132249296250,
+//     "EBITDA": -206000000,
+//     "Price/Sales": 1.0887611,
+//     "Price/Book": 1.7,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GE"
+//   },
+//   {
+//     "Symbol": "GGP",
+//     "Name": "General Growth Properties Inc.",
+//     "Sector": "Real Estate",
+//     "Price": 21.62,
+//     "Price/Earnings": 13.86,
+//     "Dividend Yield": 4.005462,
+//     "Earnings/Share": 1.34,
+//     "52 Week Low": 25.72,
+//     "52 Week High": 18.83,
+//     "Market Cap": 21018887283,
+//     "EBITDA": 1740540000,
+//     "Price/Sales": 17.003777,
+//     "Price/Book": 2.57,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GGP"
+//   },
+//   {
+//     "Symbol": "GIS",
+//     "Name": "General Mills",
+//     "Sector": "Consumer Staples",
+//     "Price": 53.99,
+//     "Price/Earnings": 17.53,
+//     "Dividend Yield": 3.5864594,
+//     "Earnings/Share": 2.77,
+//     "52 Week Low": 63.73,
+//     "52 Week High": 49.65,
+//     "Market Cap": 31098243069,
+//     "EBITDA": 3107600000,
+//     "Price/Sales": 2.0389178,
+//     "Price/Book": 7.26,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GIS"
+//   },
+//   {
+//     "Symbol": "GM",
+//     "Name": "General Motors",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 40.75,
+//     "Price/Earnings": 6.58,
+//     "Dividend Yield": 3.5857513,
+//     "Earnings/Share": 6,
+//     "52 Week Low": 46.76,
+//     "52 Week High": 31.92,
+//     "Market Cap": 61536606173,
+//     "EBITDA": 23541000000,
+//     "Price/Sales": 0.5633218,
+//     "Price/Book": 1.33,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GM"
+//   },
+//   {
+//     "Symbol": "GPC",
+//     "Name": "Genuine Parts",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 96.31,
+//     "Price/Earnings": 21.17,
+//     "Dividend Yield": 2.7198548,
+//     "Earnings/Share": 4.6,
+//     "52 Week Low": 107.75,
+//     "52 Week High": 79.86,
+//     "Market Cap": 14554321748,
+//     "EBITDA": 1201517000,
+//     "Price/Sales": 1.212236,
+//     "Price/Book": 4.33,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GPC"
+//   },
+//   {
+//     "Symbol": "GILD",
+//     "Name": "Gilead Sciences",
+//     "Sector": "Health Care",
+//     "Price": 78.22,
+//     "Price/Earnings": 8.16,
+//     "Dividend Yield": 2.754954,
+//     "Earnings/Share": 9.95,
+//     "52 Week Low": 89.54,
+//     "52 Week High": 63.759,
+//     "Market Cap": 108106822109,
+//     "EBITDA": 17590000000,
+//     "Price/Sales": 5.2087464,
+//     "Price/Book": 4.12,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GILD"
+//   },
+//   {
+//     "Symbol": "GPN",
+//     "Name": "Global Payments Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 100.59,
+//     "Price/Earnings": 27.86,
+//     "Dividend Yield": 0.037622273,
+//     "Earnings/Share": 1.58,
+//     "52 Week Low": 113.26,
+//     "52 Week High": 76.47,
+//     "Market Cap": 16920023264,
+//     "EBITDA": 960345000,
+//     "Price/Sales": 5.775833,
+//     "Price/Book": 4.73,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GPN"
+//   },
+//   {
+//     "Symbol": "GS",
+//     "Name": "Goldman Sachs Group",
+//     "Sector": "Financials",
+//     "Price": 246.35,
+//     "Price/Earnings": 12.44,
+//     "Dividend Yield": 1.1668612,
+//     "Earnings/Share": 8.61,
+//     "52 Week Low": 273.79,
+//     "52 Week High": 209.62,
+//     "Market Cap": 96978500251,
+//     "EBITDA": 0,
+//     "Price/Sales": 2.309415,
+//     "Price/Book": 1.25,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GS"
+//   },
+//   {
+//     "Symbol": "GT",
+//     "Name": "Goodyear Tire & Rubber",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 30.75,
+//     "Price/Earnings": 9.92,
+//     "Dividend Yield": 1.6731402,
+//     "Earnings/Share": 4.74,
+//     "52 Week Low": 37.2,
+//     "52 Week High": 28.81,
+//     "Market Cap": 8244568238,
+//     "EBITDA": 2044000000,
+//     "Price/Sales": 0.72725976,
+//     "Price/Book": 1.65,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GT"
+//   },
+//   {
+//     "Symbol": "GWW",
+//     "Name": "Grainger (W.W.) Inc.",
+//     "Sector": "Industrials",
+//     "Price": 258.6,
+//     "Price/Earnings": 22.57,
+//     "Dividend Yield": 1.9700643,
+//     "Earnings/Share": 10.02,
+//     "52 Week Low": 298.145,
+//     "52 Week High": 155,
+//     "Market Cap": 14639308205,
+//     "EBITDA": 1279846000,
+//     "Price/Sales": 1.3995146,
+//     "Price/Book": 8.1,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GWW"
+//   },
+//   {
+//     "Symbol": "HAL",
+//     "Name": "Halliburton Co.",
+//     "Sector": "Energy",
+//     "Price": 47.41,
+//     "Price/Earnings": 38.86,
+//     "Dividend Yield": 1.4489837,
+//     "Earnings/Share": -0.53,
+//     "52 Week Low": 57.86,
+//     "52 Week High": 38.181,
+//     "Market Cap": 43356557470,
+//     "EBITDA": 2910000000,
+//     "Price/Sales": 2.1424224,
+//     "Price/Book": 4.74,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HAL"
+//   },
+//   {
+//     "Symbol": "HBI",
+//     "Name": "Hanesbrands Inc",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 19.57,
+//     "Price/Earnings": 10.04,
+//     "Dividend Yield": 2.7322404,
+//     "Earnings/Share": 1.41,
+//     "52 Week Low": 25.73,
+//     "52 Week High": 18.9,
+//     "Market Cap": 8006268615,
+//     "EBITDA": 926153000,
+//     "Price/Sales": 1.6339768,
+//     "Price/Book": 6.17,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HBI"
+//   },
+//   {
+//     "Symbol": "HOG",
+//     "Name": "Harley-Davidson",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 47.54,
+//     "Price/Earnings": 13.7,
+//     "Dividend Yield": 3.0218647,
+//     "Earnings/Share": 2.98,
+//     "52 Week Low": 63.4,
+//     "52 Week High": 44.52,
+//     "Market Cap": 8158949890,
+//     "EBITDA": 1058817000,
+//     "Price/Sales": 1.66195,
+//     "Price/Book": 4.31,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HOG"
+//   },
+//   {
+//     "Symbol": "HRS",
+//     "Name": "Harris Corporation",
+//     "Sector": "Information Technology",
+//     "Price": 149.84,
+//     "Price/Earnings": 26.38,
+//     "Dividend Yield": 1.4922442,
+//     "Earnings/Share": 4.43,
+//     "52 Week Low": 160.67,
+//     "52 Week High": 104.16,
+//     "Market Cap": 18140726600,
+//     "EBITDA": 1368000000,
+//     "Price/Sales": 2.9516637,
+//     "Price/Book": 5.88,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HRS"
+//   },
+//   {
+//     "Symbol": "HIG",
+//     "Name": "Hartford Financial Svc.Gp.",
+//     "Sector": "Financials",
+//     "Price": 53.34,
+//     "Price/Earnings": 14.34,
+//     "Dividend Yield": 1.7901897,
+//     "Earnings/Share": 2.27,
+//     "52 Week Low": 59.2,
+//     "52 Week High": 46.35,
+//     "Market Cap": 19926305632,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.3939538,
+//     "Price/Book": 1.15,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HIG"
+//   },
+//   {
+//     "Symbol": "HAS",
+//     "Name": "Hasbro Inc.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 96.48,
+//     "Price/Earnings": 20.57,
+//     "Dividend Yield": 2.2304833,
+//     "Earnings/Share": 4.34,
+//     "52 Week Low": 116.2,
+//     "52 Week High": 87.92,
+//     "Market Cap": 12732072001,
+//     "EBITDA": 1028425000,
+//     "Price/Sales": 3.2375681,
+//     "Price/Book": 5.82,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HAS"
+//   },
+//   {
+//     "Symbol": "HCA",
+//     "Name": "HCA Holdings",
+//     "Sector": "Health Care",
+//     "Price": 95.97,
+//     "Price/Earnings": 14.07,
+//     "Dividend Yield": 1.4227642,
+//     "Earnings/Share": 5.94,
+//     "52 Week Low": 106.84,
+//     "52 Week High": 71.18,
+//     "Market Cap": 34449052800,
+//     "EBITDA": 8202000000,
+//     "Price/Sales": 0.7251921,
+//     "Price/Book": "",
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HCA"
+//   },
+//   {
+//     "Symbol": "HCP",
+//     "Name": "HCP Inc.",
+//     "Sector": "Real Estate",
+//     "Price": 22.64,
+//     "Price/Earnings": 10.99,
+//     "Dividend Yield": 6.330197,
+//     "Earnings/Share": 1.33,
+//     "52 Week Low": 33.67,
+//     "52 Week High": 22.8,
+//     "Market Cap": 10967755538,
+//     "EBITDA": 1412684000,
+//     "Price/Sales": 8.127109,
+//     "Price/Book": 1.97,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HCP"
+//   },
+//   {
+//     "Symbol": "HP",
+//     "Name": "Helmerich & Payne",
+//     "Sector": "Energy",
+//     "Price": 64.87,
+//     "Price/Earnings": -54.51,
+//     "Dividend Yield": 4.1499925,
+//     "Earnings/Share": -1.2,
+//     "52 Week Low": 75.02,
+//     "52 Week High": 42.16,
+//     "Market Cap": 7345243806,
+//     "EBITDA": 483673000,
+//     "Price/Sales": 3.7385862,
+//     "Price/Book": 1.62,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HP"
+//   },
+//   {
+//     "Symbol": "HSIC",
+//     "Name": "Henry Schein",
+//     "Sector": "Health Care",
+//     "Price": 70.85,
+//     "Price/Earnings": 19.85,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 3.1,
+//     "52 Week Low": 93.495,
+//     "52 Week High": 65.28,
+//     "Market Cap": 11452961984,
+//     "EBITDA": 1033985000,
+//     "Price/Sales": 1.262194,
+//     "Price/Book": 3.74,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HSIC"
+//   },
+//   {
+//     "Symbol": "HES",
+//     "Name": "Hess Corporation",
+//     "Sector": "Energy",
+//     "Price": 43,
+//     "Price/Earnings": -9.33,
+//     "Dividend Yield": 2.2670596,
+//     "Earnings/Share": -19.94,
+//     "52 Week Low": 55.48,
+//     "52 Week High": 37.25,
+//     "Market Cap": 14016129999,
+//     "EBITDA": -819000000,
+//     "Price/Sales": 3.780475,
+//     "Price/Book": 1.08,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HES"
+//   },
+//   {
+//     "Symbol": "HPE",
+//     "Name": "Hewlett Packard Enterprise",
+//     "Sector": "Information Technology",
+//     "Price": 15.04,
+//     "Price/Earnings": 11.57,
+//     "Dividend Yield": 1.9280206,
+//     "Earnings/Share": 0.21,
+//     "52 Week Low": 24.88,
+//     "52 Week High": 12.815,
+//     "Market Cap": 24800859640,
+//     "EBITDA": 3683000000,
+//     "Price/Sales": 1.4609766,
+//     "Price/Book": 1.06,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HPE"
+//   },
+//   {
+//     "Symbol": "HLT",
+//     "Name": "Hilton Worldwide Holdings Inc",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 78.66,
+//     "Price/Earnings": 36.42,
+//     "Dividend Yield": 0.7315289,
+//     "Earnings/Share": 1.05,
+//     "52 Week Low": 88.11,
+//     "52 Week High": 55.79,
+//     "Market Cap": 26242415796,
+//     "EBITDA": 2815000000,
+//     "Price/Sales": 3.7628453,
+//     "Price/Book": 17.67,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HLT"
+//   },
+//   {
+//     "Symbol": "HOLX",
+//     "Name": "Hologic",
+//     "Sector": "Health Care",
+//     "Price": 38.8,
+//     "Price/Earnings": 19.21,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 2.64,
+//     "52 Week Low": 46.8,
+//     "52 Week High": 35.76,
+//     "Market Cap": 11181493750,
+//     "EBITDA": 1561000000,
+//     "Price/Sales": 4.80335,
+//     "Price/Book": 4,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HOLX"
+//   },
+//   {
+//     "Symbol": "HD",
+//     "Name": "Home Depot",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 181.22,
+//     "Price/Earnings": 28.1,
+//     "Dividend Yield": 1.8610487,
+//     "Earnings/Share": 6.46,
+//     "52 Week Low": 207.605,
+//     "52 Week High": 136.82,
+//     "Market Cap": 223378633329,
+//     "EBITDA": 16513000000,
+//     "Price/Sales": 2.8964398,
+//     "Price/Book": 84.08,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HD"
+//   },
+//   {
+//     "Symbol": "HON",
+//     "Name": "Honeywell Int'l Inc.",
+//     "Sector": "Industrials",
+//     "Price": 146.02,
+//     "Price/Earnings": 20.68,
+//     "Dividend Yield": 1.9710299,
+//     "Earnings/Share": 2.08,
+//     "52 Week Low": 165.13,
+//     "52 Week High": 119.31,
+//     "Market Cap": 114422168609,
+//     "EBITDA": 8333000000,
+//     "Price/Sales": 2.8267899,
+//     "Price/Book": 5.71,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HON"
+//   },
+//   {
+//     "Symbol": "HRL",
+//     "Name": "Hormel Foods Corp.",
+//     "Sector": "Consumer Staples",
+//     "Price": 32.21,
+//     "Price/Earnings": 20.39,
+//     "Dividend Yield": 2.2907758,
+//     "Earnings/Share": 1.57,
+//     "52 Week Low": 38,
+//     "52 Week High": 29.75,
+//     "Market Cap": 17338613096,
+//     "EBITDA": 1422305000,
+//     "Price/Sales": 2.5174792,
+//     "Price/Book": 3.49,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HRL"
+//   },
+//   {
+//     "Symbol": "HST",
+//     "Name": "Host Hotels & Resorts",
+//     "Sector": "Real Estate",
+//     "Price": 18.75,
+//     "Price/Earnings": 11.23,
+//     "Dividend Yield": 4.1131105,
+//     "Earnings/Share": 1.02,
+//     "52 Week Low": 21.53,
+//     "52 Week High": 17.26,
+//     "Market Cap": 14394715334,
+//     "EBITDA": 1547000000,
+//     "Price/Sales": 3.5549128,
+//     "Price/Book": 2.02,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HST"
+//   },
+//   {
+//     "Symbol": "HPQ",
+//     "Name": "HP Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 19.92,
+//     "Price/Earnings": 12.07,
+//     "Dividend Yield": 2.6270628,
+//     "Earnings/Share": 1.49,
+//     "52 Week Low": 24.1,
+//     "52 Week High": 15.39,
+//     "Market Cap": 34895294088,
+//     "EBITDA": 3700000000,
+//     "Price/Sales": 0.8954903,
+//     "Price/Book": 0.66,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HPQ"
+//   },
+//   {
+//     "Symbol": "HUM",
+//     "Name": "Humana Inc.",
+//     "Sector": "Health Care",
+//     "Price": 262.37,
+//     "Price/Earnings": 22.39,
+//     "Dividend Yield": 0.6040015,
+//     "Earnings/Share": 4.06,
+//     "52 Week Low": 293.35,
+//     "52 Week High": 189.01,
+//     "Market Cap": 36973617235,
+//     "EBITDA": 0,
+//     "Price/Sales": 0.9256895,
+//     "Price/Book": 3.33,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HUM"
+//   },
+//   {
+//     "Symbol": "HBAN",
+//     "Name": "Huntington Bancshares",
+//     "Sector": "Financials",
+//     "Price": 15.1,
+//     "Price/Earnings": 15.41,
+//     "Dividend Yield": 2.8132992,
+//     "Earnings/Share": 1,
+//     "52 Week Low": 16.53,
+//     "52 Week High": 12.14,
+//     "Market Cap": 16766497291,
+//     "EBITDA": 0,
+//     "Price/Sales": 3.5112102,
+//     "Price/Book": 1.72,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HBAN"
+//   },
+//   {
+//     "Symbol": "HII",
+//     "Name": "Huntington Ingalls Industries",
+//     "Sector": "Industrials",
+//     "Price": 225.37,
+//     "Price/Earnings": 18.75,
+//     "Dividend Yield": 1.2264713,
+//     "Earnings/Share": 12.15,
+//     "52 Week Low": 253.44,
+//     "52 Week High": 183.42,
+//     "Market Cap": 10628247899,
+//     "EBITDA": 1107000000,
+//     "Price/Sales": 1.8924941,
+//     "Price/Book": 6.04,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HII"
+//   },
+//   {
+//     "Symbol": "IDXX",
+//     "Name": "IDEXX Laboratories",
+//     "Sector": "Health Care",
+//     "Price": 169.28,
+//     "Price/Earnings": 53.57,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 2.94,
+//     "52 Week Low": 198.73,
+//     "52 Week High": 140.63,
+//     "Market Cap": 15422885020,
+//     "EBITDA": 478307000,
+//     "Price/Sales": 7.97525,
+//     "Price/Book": 196.21,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IDXX"
+//   },
+//   {
+//     "Symbol": "INFO",
+//     "Name": "IHS Markit Ltd.",
+//     "Sector": "Industrials",
+//     "Price": 43.73,
+//     "Price/Earnings": 26.19,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 1,
+//     "52 Week Low": 49.19,
+//     "52 Week High": 37.82,
+//     "Market Cap": 17969275816,
+//     "EBITDA": 1018900000,
+//     "Price/Sales": 5.0604,
+//     "Price/Book": 2.24,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=INFO"
+//   },
+//   {
+//     "Symbol": "ITW",
+//     "Name": "Illinois Tool Works",
+//     "Sector": "Industrials",
+//     "Price": 156.15,
+//     "Price/Earnings": 23.62,
+//     "Dividend Yield": 1.9089574,
+//     "Earnings/Share": 4.86,
+//     "52 Week Low": 179.07,
+//     "52 Week High": 126.52,
+//     "Market Cap": 55994378108,
+//     "EBITDA": 3924000000,
+//     "Price/Sales": 3.9286149,
+//     "Price/Book": 10.99,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ITW"
+//   },
+//   {
+//     "Symbol": "ILMN",
+//     "Name": "Illumina Inc",
+//     "Sector": "Health Care",
+//     "Price": 209.54,
+//     "Price/Earnings": 52.25,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 4.92,
+//     "52 Week Low": 248.97,
+//     "52 Week High": 158.0203,
+//     "Market Cap": 32295200000,
+//     "EBITDA": 1192000000,
+//     "Price/Sales": 11.713953,
+//     "Price/Book": 10.89,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ILMN"
+//   },
+//   {
+//     "Symbol": "INCY",
+//     "Name": "Incyte",
+//     "Sector": "Health Care",
+//     "Price": 83.92,
+//     "Price/Earnings": -119.89,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 0.54,
+//     "52 Week Low": 153.15,
+//     "52 Week High": 84.21,
+//     "Market Cap": 18220961259,
+//     "EBITDA": -81686000,
+//     "Price/Sales": 17.02699,
+//     "Price/Book": 10.25,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=INCY"
+//   },
+//   {
+//     "Symbol": "IR",
+//     "Name": "Ingersoll-Rand PLC",
+//     "Sector": "Industrials",
+//     "Price": 87.6,
+//     "Price/Earnings": 19.38,
+//     "Dividend Yield": 1.9739007,
+//     "Earnings/Share": 5.07,
+//     "52 Week Low": 97.67,
+//     "52 Week High": 77.26,
+//     "Market Cap": 22785450609,
+//     "EBITDA": 1987100000,
+//     "Price/Sales": 1.6147361,
+//     "Price/Book": 3.34,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IR"
+//   },
+//   {
+//     "Symbol": "INTC",
+//     "Name": "Intel Corp.",
+//     "Sector": "Information Technology",
+//     "Price": 42.75,
+//     "Price/Earnings": 12.32,
+//     "Dividend Yield": 2.6548672,
+//     "Earnings/Share": 1.98,
+//     "52 Week Low": 50.85,
+//     "52 Week High": 33.23,
+//     "Market Cap": 211536000000,
+//     "EBITDA": 26247000000,
+//     "Price/Sales": 3.348876,
+//     "Price/Book": 3.34,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=INTC"
+//   },
+//   {
+//     "Symbol": "ICE",
+//     "Name": "Intercontinental Exchange",
+//     "Sector": "Financials",
+//     "Price": 67,
+//     "Price/Earnings": 22.95,
+//     "Dividend Yield": 5.4298644,
+//     "Earnings/Share": 2.37,
+//     "52 Week Low": 76.1378,
+//     "52 Week High": 56.8,
+//     "Market Cap": 41373051167,
+//     "EBITDA": 3103000000,
+//     "Price/Sales": 9.619987,
+//     "Price/Book": 2.62,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ICE"
+//   },
+//   {
+//     "Symbol": "IBM",
+//     "Name": "International Business Machines",
+//     "Sector": "Information Technology",
+//     "Price": 147.59,
+//     "Price/Earnings": 10.67,
+//     "Dividend Yield": 3.8999026,
+//     "Earnings/Share": 6.11,
+//     "52 Week Low": 182.79,
+//     "52 Week High": 139.13,
+//     "Market Cap": 142433003505,
+//     "EBITDA": 16557000000,
+//     "Price/Sales": 1.817167,
+//     "Price/Book": 7.7,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IBM"
+//   },
+//   {
+//     "Symbol": "IP",
+//     "Name": "International Paper",
+//     "Sector": "Materials",
+//     "Price": 56.05,
+//     "Price/Earnings": 15.57,
+//     "Dividend Yield": 3.206751,
+//     "Earnings/Share": 5.14,
+//     "52 Week Low": 66.94,
+//     "52 Week High": 49.6,
+//     "Market Cap": 24465996443,
+//     "EBITDA": 3004000000,
+//     "Price/Sales": 1.0738261,
+//     "Price/Book": 4.99,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IP"
+//   },
+//   {
+//     "Symbol": "IPG",
+//     "Name": "Interpublic Group",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 21.34,
+//     "Price/Earnings": 15.46,
+//     "Dividend Yield": 3.3802817,
+//     "Earnings/Share": 1.49,
+//     "52 Week Low": 25.71,
+//     "52 Week High": 18.3,
+//     "Market Cap": 8277363031,
+//     "EBITDA": 1074900000,
+//     "Price/Sales": 1.4712903,
+//     "Price/Book": 4.01,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IPG"
+//   },
+//   {
+//     "Symbol": "IFF",
+//     "Name": "Intl Flavors & Fragrances",
+//     "Sector": "Materials",
+//     "Price": 138,
+//     "Price/Earnings": 24.17,
+//     "Dividend Yield": 1.9341276,
+//     "Earnings/Share": 5.05,
+//     "52 Week Low": 157.4,
+//     "52 Week High": 116.3,
+//     "Market Cap": 11270040447,
+//     "EBITDA": 699963000,
+//     "Price/Sales": 4.4208813,
+//     "Price/Book": 6.34,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IFF"
+//   },
+//   {
+//     "Symbol": "INTU",
+//     "Name": "Intuit Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 152.75,
+//     "Price/Earnings": 40.52,
+//     "Dividend Yield": 0.96720195,
+//     "Earnings/Share": 3.72,
+//     "52 Week Low": 170.59,
+//     "52 Week High": 111.9,
+//     "Market Cap": 41233771565,
+//     "EBITDA": 1654000000,
+//     "Price/Sales": 9.633731,
+//     "Price/Book": 33.5,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=INTU"
+//   },
+//   {
+//     "Symbol": "ISRG",
+//     "Name": "Intuitive Surgical Inc.",
+//     "Sector": "Health Care",
+//     "Price": 381.87,
+//     "Price/Earnings": 48.58,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 5.67,
+//     "52 Week Low": 452,
+//     "52 Week High": 233.10643,
+//     "Market Cap": 44866621303,
+//     "EBITDA": 1153700000,
+//     "Price/Sales": 14.655261,
+//     "Price/Book": 9.48,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ISRG"
+//   },
+//   {
+//     "Symbol": "IVZ",
+//     "Name": "Invesco Ltd.",
+//     "Sector": "Financials",
+//     "Price": 31.92,
+//     "Price/Earnings": 11.87,
+//     "Dividend Yield": 3.466826,
+//     "Earnings/Share": 2.74,
+//     "52 Week Low": 38.43,
+//     "52 Week High": 29.36,
+//     "Market Cap": 13620847614,
+//     "EBITDA": 1606200000,
+//     "Price/Sales": 2.6513786,
+//     "Price/Book": 1.62,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IVZ"
+//   },
+//   {
+//     "Symbol": "IQV",
+//     "Name": "IQVIA Holdings Inc.",
+//     "Sector": "Health Care",
+//     "Price": 95.23,
+//     "Price/Earnings": 21.74,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 0.76,
+//     "52 Week Low": 110.67,
+//     "52 Week High": 75.94,
+//     "Market Cap": 20426488713,
+//     "EBITDA": 1542000000,
+//     "Price/Sales": 2.8477087,
+//     "Price/Book": 2.77,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IQV"
+//   },
+//   {
+//     "Symbol": "IRM",
+//     "Name": "Iron Mountain Incorporated",
+//     "Sector": "Real Estate",
+//     "Price": 32.07,
+//     "Price/Earnings": 15.42,
+//     "Dividend Yield": 7.08258,
+//     "Earnings/Share": 0.46,
+//     "52 Week Low": 41.53,
+//     "52 Week High": 32.05,
+//     "Market Cap": 9410249279,
+//     "EBITDA": 1116140000,
+//     "Price/Sales": 3.2898626,
+//     "Price/Book": 4.97,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IRM"
+//   },
+//   {
+//     "Symbol": "JBHT",
+//     "Name": "J. B. Hunt Transport Services",
+//     "Sector": "Industrials",
+//     "Price": 114.81,
+//     "Price/Earnings": 30.62,
+//     "Dividend Yield": 0.8139042,
+//     "Earnings/Share": 6.19,
+//     "52 Week Low": 126.49,
+//     "52 Week High": 83.35,
+//     "Market Cap": 12945366350,
+//     "EBITDA": 1007309000,
+//     "Price/Sales": 1.7697402,
+//     "Price/Book": 8.55,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=JBHT"
+//   },
+//   {
+//     "Symbol": "JEC",
+//     "Name": "Jacobs Engineering Group",
+//     "Sector": "Industrials",
+//     "Price": 62.82,
+//     "Price/Earnings": 19.45,
+//     "Dividend Yield": 0.9089532,
+//     "Earnings/Share": 2.43,
+//     "52 Week Low": 72.18,
+//     "52 Week High": 49.31,
+//     "Market Cap": 9326484316,
+//     "EBITDA": 409832000,
+//     "Price/Sales": 1.2129636,
+//     "Price/Book": 2.01,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=JEC"
+//   },
+//   {
+//     "Symbol": "SJM",
+//     "Name": "JM Smucker",
+//     "Sector": "Consumer Staples",
+//     "Price": 118.37,
+//     "Price/Earnings": 15.35,
+//     "Dividend Yield": 2.6036885,
+//     "Earnings/Share": 5.1,
+//     "52 Week Low": 143.68,
+//     "52 Week High": 99.565,
+//     "Market Cap": 13612394896,
+//     "EBITDA": 1411300000,
+//     "Price/Sales": 2.496677,
+//     "Price/Book": 1.88,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SJM"
+//   },
+//   {
+//     "Symbol": "JNJ",
+//     "Name": "Johnson & Johnson",
+//     "Sector": "Health Care",
+//     "Price": 126.36,
+//     "Price/Earnings": 17.31,
+//     "Dividend Yield": 2.5566885,
+//     "Earnings/Share": 0.39,
+//     "52 Week Low": 148.32,
+//     "52 Week High": 113.15,
+//     "Market Cap": 353062464971,
+//     "EBITDA": 22430000000,
+//     "Price/Sales": 4.6326222,
+//     "Price/Book": 4.74,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=JNJ"
+//   },
+//   {
+//     "Symbol": "JCI",
+//     "Name": "Johnson Controls International",
+//     "Sector": "Industrials",
+//     "Price": 36.55,
+//     "Price/Earnings": 14,
+//     "Dividend Yield": 2.7659574,
+//     "Earnings/Share": 1.71,
+//     "52 Week Low": 44.37,
+//     "52 Week High": 34.51,
+//     "Market Cap": 34822224800,
+//     "EBITDA": 4295000000,
+//     "Price/Sales": 1.1415336,
+//     "Price/Book": 1.69,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=JCI"
+//   },
+//   {
+//     "Symbol": "JPM",
+//     "Name": "JPMorgan Chase & Co.",
+//     "Sector": "Financials",
+//     "Price": 107.88,
+//     "Price/Earnings": 15.43,
+//     "Dividend Yield": 1.9845841,
+//     "Earnings/Share": 6.3,
+//     "52 Week Low": 117.3529,
+//     "52 Week High": 81.635,
+//     "Market Cap": 386613611000,
+//     "EBITDA": 0,
+//     "Price/Sales": 3.3714993,
+//     "Price/Book": 1.6,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=JPM"
+//   },
+//   {
+//     "Symbol": "JNPR",
+//     "Name": "Juniper Networks",
+//     "Sector": "Information Technology",
+//     "Price": 24.66,
+//     "Price/Earnings": 14.09,
+//     "Dividend Yield": 1.5754234,
+//     "Earnings/Share": 0.78,
+//     "52 Week Low": 30.96,
+//     "52 Week High": 23.87,
+//     "Market Cap": 9267350000,
+//     "EBITDA": 1115500000,
+//     "Price/Sales": 1.8543326,
+//     "Price/Book": 1.78,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=JNPR"
+//   },
+//   {
+//     "Symbol": "KSU",
+//     "Name": "Kansas City Southern",
+//     "Sector": "Industrials",
+//     "Price": 103.53,
+//     "Price/Earnings": 19.8,
+//     "Dividend Yield": 1.3445379,
+//     "Earnings/Share": 9.16,
+//     "52 Week Low": 114.85,
+//     "52 Week High": 81.54,
+//     "Market Cap": 11037040988,
+//     "EBITDA": 1295400000,
+//     "Price/Sales": 4.281897,
+//     "Price/Book": 2.39,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KSU"
+//   },
+//   {
+//     "Symbol": "K",
+//     "Name": "Kellogg Co.",
+//     "Sector": "Consumer Staples",
+//     "Price": 65.98,
+//     "Price/Earnings": 16.5,
+//     "Dividend Yield": 3.363962,
+//     "Earnings/Share": 1.95,
+//     "52 Week Low": 76.69,
+//     "52 Week High": 58.76,
+//     "Market Cap": 22182794875,
+//     "EBITDA": 1827000000,
+//     "Price/Sales": 2.3173764,
+//     "Price/Book": 11.5,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=K"
+//   },
+//   {
+//     "Symbol": "KEY",
+//     "Name": "KeyCorp",
+//     "Sector": "Financials",
+//     "Price": 20.08,
+//     "Price/Earnings": 14.66,
+//     "Dividend Yield": 1.9876952,
+//     "Earnings/Share": 1.12,
+//     "52 Week Low": 22.22,
+//     "52 Week High": 16.28,
+//     "Market Cap": 22589744920,
+//     "EBITDA": 0,
+//     "Price/Sales": 3.270451,
+//     "Price/Book": 1.55,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KEY"
+//   },
+//   {
+//     "Symbol": "KMB",
+//     "Name": "Kimberly-Clark",
+//     "Sector": "Consumer Staples",
+//     "Price": 111.69,
+//     "Price/Earnings": 17.93,
+//     "Dividend Yield": 3.5599859,
+//     "Earnings/Share": 6.41,
+//     "52 Week Low": 136.21,
+//     "52 Week High": 109.67,
+//     "Market Cap": 39449596000,
+//     "EBITDA": 4033000000,
+//     "Price/Sales": 2.1947837,
+//     "Price/Book": 151.66,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KMB"
+//   },
+//   {
+//     "Symbol": "KIM",
+//     "Name": "Kimco Realty",
+//     "Sector": "Real Estate",
+//     "Price": 14.01,
+//     "Price/Earnings": 9.28,
+//     "Dividend Yield": 7.7134986,
+//     "Earnings/Share": 0.8,
+//     "52 Week Low": 25.15,
+//     "52 Week High": 14.33,
+//     "Market Cap": 6180487499,
+//     "EBITDA": 701190000,
+//     "Price/Sales": 7.0508943,
+//     "Price/Book": 1.2,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KIM"
+//   },
+//   {
+//     "Symbol": "KMI",
+//     "Name": "Kinder Morgan",
+//     "Sector": "Energy",
+//     "Price": 16.8,
+//     "Price/Earnings": 25.07,
+//     "Dividend Yield": 2.891845,
+//     "Earnings/Share": 0.01,
+//     "52 Week Low": 22.75,
+//     "52 Week High": 16.56,
+//     "Market Cap": 38612712234,
+//     "EBITDA": 5981000000,
+//     "Price/Sales": 2.823936,
+//     "Price/Book": 1.07,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KMI"
+//   },
+//   {
+//     "Symbol": "KLAC",
+//     "Name": "KLA-Tencor Corp.",
+//     "Sector": "Information Technology",
+//     "Price": 98.54,
+//     "Price/Earnings": 16.59,
+//     "Dividend Yield": 2.2988505,
+//     "Earnings/Share": 5.88,
+//     "52 Week Low": 121.65,
+//     "52 Week High": 86.33,
+//     "Market Cap": 16078622033,
+//     "EBITDA": 1506642000,
+//     "Price/Sales": 4.3395863,
+//     "Price/Book": 12.93,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KLAC"
+//   },
+//   {
+//     "Symbol": "KSS",
+//     "Name": "Kohl's Corp.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 60.34,
+//     "Price/Earnings": 16.01,
+//     "Dividend Yield": 3.4965036,
+//     "Earnings/Share": 3.12,
+//     "52 Week Low": 69.14,
+//     "52 Week High": 35.16,
+//     "Market Cap": 10570861198,
+//     "EBITDA": 2286000000,
+//     "Price/Sales": 0.8557757,
+//     "Price/Book": 2.04,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KSS"
+//   },
+//   {
+//     "Symbol": "KHC",
+//     "Name": "Kraft Heinz Co",
+//     "Sector": "Consumer Staples",
+//     "Price": 71.58,
+//     "Price/Earnings": 20.11,
+//     "Dividend Yield": 3.3990483,
+//     "Earnings/Share": 2.81,
+//     "52 Week Low": 97.77,
+//     "52 Week High": 72.05,
+//     "Market Cap": 89618309338,
+//     "EBITDA": 7832000000,
+//     "Price/Sales": 4.6780853,
+//     "Price/Book": 1.54,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KHC"
+//   },
+//   {
+//     "Symbol": "KR",
+//     "Name": "Kroger Co.",
+//     "Sector": "Consumer Staples",
+//     "Price": 27.57,
+//     "Price/Earnings": 13.07,
+//     "Dividend Yield": 1.7301039,
+//     "Earnings/Share": 2.05,
+//     "52 Week Low": 34.75,
+//     "52 Week High": 19.69,
+//     "Market Cap": 25471355847,
+//     "EBITDA": 5342000000,
+//     "Price/Sales": 0.27961263,
+//     "Price/Book": 4.02,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KR"
+//   },
+//   {
+//     "Symbol": "LB",
+//     "Name": "L Brands Inc.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 47.77,
+//     "Price/Earnings": 12.77,
+//     "Dividend Yield": 4.886988,
+//     "Earnings/Share": 3.98,
+//     "52 Week Low": 63.1,
+//     "52 Week High": 35,
+//     "Market Cap": 13862042842,
+//     "EBITDA": 2329000000,
+//     "Price/Sales": 1.7060977,
+//     "Price/Book": 1403.38,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LB"
+//   },
+//   {
+//     "Symbol": "LLL",
+//     "Name": "L-3 Communications Holdings",
+//     "Sector": "Industrials",
+//     "Price": 198.79,
+//     "Price/Earnings": 23.14,
+//     "Dividend Yield": 1.4444605,
+//     "Earnings/Share": 8.51,
+//     "52 Week Low": 218.705,
+//     "52 Week High": 159.43,
+//     "Market Cap": 16229343134,
+//     "EBITDA": 1137000000,
+//     "Price/Sales": 1.4884604,
+//     "Price/Book": 3.12,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LLL"
+//   },
+//   {
+//     "Symbol": "LH",
+//     "Name": "Laboratory Corp. of America Holding",
+//     "Sector": "Health Care",
+//     "Price": 165.46,
+//     "Price/Earnings": 17.79,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 7.02,
+//     "52 Week Low": 181.715,
+//     "52 Week High": 130.292,
+//     "Market Cap": 17271388000,
+//     "EBITDA": 1861200000,
+//     "Price/Sales": 2.2459624,
+//     "Price/Book": 2.71,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LH"
+//   },
+//   {
+//     "Symbol": "LRCX",
+//     "Name": "Lam Research",
+//     "Sector": "Information Technology",
+//     "Price": 162.23,
+//     "Price/Earnings": 16.29,
+//     "Dividend Yield": 1.1652974,
+//     "Earnings/Share": 9.22,
+//     "52 Week Low": 219.7,
+//     "52 Week High": 113.1982,
+//     "Market Cap": 27967534829,
+//     "EBITDA": 2967218000,
+//     "Price/Sales": 3.0405293,
+//     "Price/Book": 4.52,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LRCX"
+//   },
+//   {
+//     "Symbol": "LEG",
+//     "Name": "Leggett & Platt",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 43.99,
+//     "Price/Earnings": 17.88,
+//     "Dividend Yield": 3.1454785,
+//     "Earnings/Share": 2.76,
+//     "52 Week Low": 54.97,
+//     "52 Week High": 42,
+//     "Market Cap": 6034600480,
+//     "EBITDA": 447000000,
+//     "Price/Sales": 2.0302901,
+//     "Price/Book": 4.89,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LEG"
+//   },
+//   {
+//     "Symbol": "LEN",
+//     "Name": "Lennar Corp.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 59.11,
+//     "Price/Earnings": 15.35,
+//     "Dividend Yield": 0.26268265,
+//     "Earnings/Share": 3.38,
+//     "52 Week Low": 72.17,
+//     "52 Week High": 43.647053,
+//     "Market Cap": 14615967194,
+//     "EBITDA": 1405319000,
+//     "Price/Sales": 1.1468264,
+//     "Price/Book": 1.76,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LEN"
+//   },
+//   {
+//     "Symbol": "LUK",
+//     "Name": "Leucadia National Corp.",
+//     "Sector": "Financials",
+//     "Price": 23.86,
+//     "Price/Earnings": 15.39,
+//     "Dividend Yield": 1.5993602,
+//     "Earnings/Share": 0.33,
+//     "52 Week Low": 28.3,
+//     "52 Week High": 22.23,
+//     "Market Cap": 8910389431,
+//     "EBITDA": 2201336000,
+//     "Price/Sales": 1.0410156,
+//     "Price/Book": 0.84,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LUK"
+//   },
+//   {
+//     "Symbol": "LLY",
+//     "Name": "Lilly (Eli) & Co.",
+//     "Sector": "Health Care",
+//     "Price": 74.21,
+//     "Price/Earnings": 17.34,
+//     "Dividend Yield": 2.9327424,
+//     "Earnings/Share": -0.2,
+//     "52 Week Low": 89.09,
+//     "52 Week High": 75.71,
+//     "Market Cap": 84475986228,
+//     "EBITDA": 3459800000,
+//     "Price/Sales": 3.754678,
+//     "Price/Book": 5.73,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LLY"
+//   },
+//   {
+//     "Symbol": "LNC",
+//     "Name": "Lincoln National",
+//     "Sector": "Financials",
+//     "Price": 73.86,
+//     "Price/Earnings": 9.49,
+//     "Dividend Yield": 1.6813145,
+//     "Earnings/Share": 9.24,
+//     "52 Week Low": 86.68,
+//     "52 Week High": 61.45,
+//     "Market Cap": 17123031000,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.201944,
+//     "Price/Book": 1.04,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LNC"
+//   },
+//   {
+//     "Symbol": "LKQ",
+//     "Name": "LKQ Corporation",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 38.86,
+//     "Price/Earnings": 21.35,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 1.5,
+//     "52 Week Low": 43.8599,
+//     "52 Week High": 27.85,
+//     "Market Cap": 12469931896,
+//     "EBITDA": 1065614000,
+//     "Price/Sales": 1.723609,
+//     "Price/Book": 3.02,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LKQ"
+//   },
+//   {
+//     "Symbol": "LMT",
+//     "Name": "Lockheed Martin Corp.",
+//     "Sector": "Industrials",
+//     "Price": 334.3,
+//     "Price/Earnings": 24.28,
+//     "Dividend Yield": 2.315954,
+//     "Earnings/Share": 6.83,
+//     "52 Week Low": 361.79,
+//     "52 Week High": 256.4,
+//     "Market Cap": 98102120000,
+//     "EBITDA": 7115000000,
+//     "Price/Sales": 1.8781451,
+//     "Price/Book": 45.55,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LMT"
+//   },
+//   {
+//     "Symbol": "L",
+//     "Name": "Loews Corp.",
+//     "Sector": "Financials",
+//     "Price": 46.05,
+//     "Price/Earnings": 15.99,
+//     "Dividend Yield": 4.5131636,
+//     "Earnings/Share": 1.93,
+//     "52 Week Low": 53.59,
+//     "52 Week High": 45.01,
+//     "Market Cap": 16111166935,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.5809761,
+//     "Price/Book": 0.85,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=L"
+//   },
+//   {
+//     "Symbol": "LOW",
+//     "Name": "Lowe's Cos.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 95.01,
+//     "Price/Earnings": 23.87,
+//     "Dividend Yield": 1.6413131,
+//     "Earnings/Share": 3.46,
+//     "52 Week Low": 108.98,
+//     "52 Week High": 70.76,
+//     "Market Cap": 82909678852,
+//     "EBITDA": 7858000000,
+//     "Price/Sales": 1.5653384,
+//     "Price/Book": 14.1,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LOW"
+//   },
+//   {
+//     "Symbol": "LYB",
+//     "Name": "LyondellBasell",
+//     "Sector": "Materials",
+//     "Price": 105.79,
+//     "Price/Earnings": 10.35,
+//     "Dividend Yield": 3.264714,
+//     "Earnings/Share": 12.25,
+//     "52 Week Low": 121.95,
+//     "52 Week High": 78.01,
+//     "Market Cap": 43556650000,
+//     "EBITDA": 6851000000,
+//     "Price/Sales": 1.3037612,
+//     "Price/Book": 5.86,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LYB"
+//   },
+//   {
+//     "Symbol": "MTB",
+//     "Name": "M&T Bank Corp.",
+//     "Sector": "Financials",
+//     "Price": 178.35,
+//     "Price/Earnings": 18.91,
+//     "Dividend Yield": 1.6218846,
+//     "Earnings/Share": 8.69,
+//     "52 Week Low": 193.85,
+//     "52 Week High": 141.12,
+//     "Market Cap": 27840827434,
+//     "EBITDA": 0,
+//     "Price/Sales": 4.6277885,
+//     "Price/Book": 1.79,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MTB"
+//   },
+//   {
+//     "Symbol": "MAC",
+//     "Name": "Macerich",
+//     "Sector": "Real Estate",
+//     "Price": 58.36,
+//     "Price/Earnings": 14.81,
+//     "Dividend Yield": 4.9177604,
+//     "Earnings/Share": 3.43,
+//     "52 Week Low": 69.73,
+//     "52 Week High": 52.12,
+//     "Market Cap": 8473119166,
+//     "EBITDA": 503183000,
+//     "Price/Sales": 11.394877,
+//     "Price/Book": 2.24,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MAC"
+//   },
+//   {
+//     "Symbol": "M",
+//     "Name": "Macy's Inc.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 24,
+//     "Price/Earnings": 7.67,
+//     "Dividend Yield": 6.098546,
+//     "Earnings/Share": 1.98,
+//     "52 Week Low": 33.73,
+//     "52 Week High": 17.405,
+//     "Market Cap": 7541063495,
+//     "EBITDA": 2446000000,
+//     "Price/Sales": 0.45503208,
+//     "Price/Book": 1.69,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=M"
+//   },
+//   {
+//     "Symbol": "MRO",
+//     "Name": "Marathon Oil Corp.",
+//     "Sector": "Energy",
+//     "Price": 15.68,
+//     "Price/Earnings": -32,
+//     "Dividend Yield": 1.2247398,
+//     "Earnings/Share": -2.65,
+//     "52 Week Low": 19.52,
+//     "52 Week High": 10.55,
+//     "Market Cap": 13875005314,
+//     "EBITDA": 2266000000,
+//     "Price/Sales": 4.6578755,
+//     "Price/Book": "",
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MRO"
+//   },
+//   {
+//     "Symbol": "MPC",
+//     "Name": "Marathon Petroleum",
+//     "Sector": "Energy",
+//     "Price": 62.79,
+//     "Price/Earnings": 16.06,
+//     "Dividend Yield": 2.8268552,
+//     "Earnings/Share": 6.85,
+//     "52 Week Low": 73.53,
+//     "52 Week High": 47.39,
+//     "Market Cap": 31633740000,
+//     "EBITDA": 5978000000,
+//     "Price/Sales": 0.42713487,
+//     "Price/Book": 2.43,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MPC"
+//   },
+//   {
+//     "Symbol": "MAR",
+//     "Name": "Marriott Int'l.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 133.88,
+//     "Price/Earnings": 32.73,
+//     "Dividend Yield": 0.9452879,
+//     "Earnings/Share": 2.67,
+//     "52 Week Low": 149.21,
+//     "52 Week High": 85.3725,
+//     "Market Cap": 50910130358,
+//     "EBITDA": 2620000000,
+//     "Price/Sales": 2.9997249,
+//     "Price/Book": 11.02,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MAR"
+//   },
+//   {
+//     "Symbol": "MMC",
+//     "Name": "Marsh & McLennan",
+//     "Sector": "Financials",
+//     "Price": 79.31,
+//     "Price/Earnings": 20.23,
+//     "Dividend Yield": 1.8257059,
+//     "Earnings/Share": 2.87,
+//     "52 Week Low": 86.54,
+//     "52 Week High": 69.33,
+//     "Market Cap": 41819440000,
+//     "EBITDA": 3236000000,
+//     "Price/Sales": 2.9848945,
+//     "Price/Book": 5.85,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MMC"
+//   },
+//   {
+//     "Symbol": "MLM",
+//     "Name": "Martin Marietta Materials",
+//     "Sector": "Materials",
+//     "Price": 208.42,
+//     "Price/Earnings": 30.38,
+//     "Dividend Yield": 0.8042038,
+//     "Earnings/Share": 6.63,
+//     "52 Week Low": 244.32,
+//     "52 Week High": 191.09,
+//     "Market Cap": 13756812736,
+//     "EBITDA": 975223000,
+//     "Price/Sales": 4.416998,
+//     "Price/Book": 3.03,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MLM"
+//   },
+//   {
+//     "Symbol": "MAS",
+//     "Name": "Masco Corp.",
+//     "Sector": "Industrials",
+//     "Price": 40.7,
+//     "Price/Earnings": 22.12,
+//     "Dividend Yield": 0.98383695,
+//     "Earnings/Share": 1.47,
+//     "52 Week Low": 46.445,
+//     "52 Week High": 31.29,
+//     "Market Cap": 13428792315,
+//     "EBITDA": 1179000000,
+//     "Price/Sales": 2.308266,
+//     "Price/Book": 11.93,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MAS"
+//   },
+//   {
+//     "Symbol": "MA",
+//     "Name": "Mastercard Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 160.62,
+//     "Price/Earnings": 34.99,
+//     "Dividend Yield": 0.5926628,
+//     "Earnings/Share": 3.65,
+//     "52 Week Low": 177.11,
+//     "52 Week High": 105.8,
+//     "Market Cap": 187102014193,
+//     "EBITDA": 7113000000,
+//     "Price/Sales": 15.020556,
+//     "Price/Book": 26.93,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MA"
+//   },
+//   {
+//     "Symbol": "MAT",
+//     "Name": "Mattel Inc.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 16,
+//     "Price/Earnings": -14.68,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": -3.06,
+//     "52 Week Low": 26.3,
+//     "52 Week High": 12.71,
+//     "Market Cap": 5843402350,
+//     "EBITDA": -203599000,
+//     "Price/Sales": 1.1863722,
+//     "Price/Book": 3.87,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MAT"
+//   },
+//   {
+//     "Symbol": "MKC",
+//     "Name": "McCormick & Co.",
+//     "Sector": "Consumer Staples",
+//     "Price": 101.36,
+//     "Price/Earnings": 23.91,
+//     "Dividend Yield": 2.0261056,
+//     "Earnings/Share": 3.73,
+//     "52 Week Low": 109.67,
+//     "52 Week High": 90.25,
+//     "Market Cap": 13459353253,
+//     "EBITDA": 815700000,
+//     "Price/Sales": 2.7788277,
+//     "Price/Book": 5.2,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MKC"
+//   },
+//   {
+//     "Symbol": "MCD",
+//     "Name": "McDonald's Corp.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 158.97,
+//     "Price/Earnings": 23.83,
+//     "Dividend Yield": 2.437994,
+//     "Earnings/Share": 6.36,
+//     "52 Week Low": 178.7,
+//     "52 Week High": 124.36,
+//     "Market Cap": 132101623787,
+//     "EBITDA": 10515400000,
+//     "Price/Sales": 5.770237,
+//     "Price/Book": 146.07,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MCD"
+//   },
+//   {
+//     "Symbol": "MCK",
+//     "Name": "McKesson Corp.",
+//     "Sector": "Health Care",
+//     "Price": 150.23,
+//     "Price/Earnings": 11.68,
+//     "Dividend Yield": 0.8898776,
+//     "Earnings/Share": 22.74,
+//     "52 Week Low": 178.86,
+//     "52 Week High": 133.82,
+//     "Market Cap": 31534840262,
+//     "EBITDA": 7232000000,
+//     "Price/Sales": 0.15318617,
+//     "Price/Book": 2.68,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MCK"
+//   },
+//   {
+//     "Symbol": "MDT",
+//     "Name": "Medtronic plc",
+//     "Sector": "Health Care",
+//     "Price": 78.38,
+//     "Price/Earnings": 17.04,
+//     "Dividend Yield": 2.2618315,
+//     "Earnings/Share": 2.89,
+//     "52 Week Low": 89.72,
+//     "52 Week High": 75.44,
+//     "Market Cap": 110107062300,
+//     "EBITDA": 9204000000,
+//     "Price/Sales": 4.944542,
+//     "Price/Book": 2.14,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MDT"
+//   },
+//   {
+//     "Symbol": "MRK",
+//     "Name": "Merck & Co.",
+//     "Sector": "Health Care",
+//     "Price": 54.73,
+//     "Price/Earnings": 13.75,
+//     "Dividend Yield": 3.435934,
+//     "Earnings/Share": 1.4,
+//     "52 Week Low": 66.8,
+//     "52 Week High": 53.63,
+//     "Market Cap": 152241530340,
+//     "EBITDA": 8715000000,
+//     "Price/Sales": 5.0893345,
+//     "Price/Book": 4.02,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MRK"
+//   },
+//   {
+//     "Symbol": "MET",
+//     "Name": "MetLife Inc.",
+//     "Sector": "Financials",
+//     "Price": 44.28,
+//     "Price/Earnings": 8.52,
+//     "Dividend Yield": 3.4587116,
+//     "Earnings/Share": 0.63,
+//     "52 Week Low": 56.58,
+//     "52 Week High": 44.58,
+//     "Market Cap": 48679364276,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.0496864,
+//     "Price/Book": 0.85,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MET"
+//   },
+//   {
+//     "Symbol": "MTD",
+//     "Name": "Mettler Toledo",
+//     "Sector": "Health Care",
+//     "Price": 601,
+//     "Price/Earnings": 35.56,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 14.24,
+//     "52 Week Low": 697.26,
+//     "52 Week High": 459.34,
+//     "Market Cap": 16420774443,
+//     "EBITDA": 666706000,
+//     "Price/Sales": 8.372307,
+//     "Price/Book": 31.69,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MTD"
+//   },
+//   {
+//     "Symbol": "MGM",
+//     "Name": "MGM Resorts International",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 33.5,
+//     "Price/Earnings": 29.65,
+//     "Dividend Yield": 1.2687428,
+//     "Earnings/Share": 1.92,
+//     "52 Week Low": 38.41,
+//     "52 Week High": 25.15,
+//     "Market Cap": 19633674337,
+//     "EBITDA": 2680385000,
+//     "Price/Sales": 2.2276719,
+//     "Price/Book": 3.09,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MGM"
+//   },
+//   {
+//     "Symbol": "KORS",
+//     "Name": "Michael Kors Holdings",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 60.03,
+//     "Price/Earnings": 14.29,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 3.31,
+//     "52 Week Low": 69.95,
+//     "52 Week High": 32.38,
+//     "Market Cap": 10053919023,
+//     "EBITDA": 456600000,
+//     "Price/Sales": 3.1455927,
+//     "Price/Book": 5.4,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=KORS"
+//   },
+//   {
+//     "Symbol": "MCHP",
+//     "Name": "Microchip Technology",
+//     "Sector": "Information Technology",
+//     "Price": 79.9,
+//     "Price/Earnings": 21.77,
+//     "Dividend Yield": 1.7512966,
+//     "Earnings/Share": 0.66,
+//     "52 Week Low": 99.17,
+//     "52 Week High": 69.76,
+//     "Market Cap": 19393095636,
+//     "EBITDA": 997492000,
+//     "Price/Sales": 7.4475183,
+//     "Price/Book": 5.9,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MCHP"
+//   },
+//   {
+//     "Symbol": "MU",
+//     "Name": "Micron Technology",
+//     "Sector": "Information Technology",
+//     "Price": 40,
+//     "Price/Earnings": 9.01,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 4.36,
+//     "52 Week Low": 49.89,
+//     "52 Week High": 22.64,
+//     "Market Cap": 48576791974,
+//     "EBITDA": 12541000000,
+//     "Price/Sales": 2.1912806,
+//     "Price/Book": 2.02,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MU"
+//   },
+//   {
+//     "Symbol": "MSFT",
+//     "Name": "Microsoft Corp.",
+//     "Sector": "Information Technology",
+//     "Price": 85.01,
+//     "Price/Earnings": 25.76,
+//     "Dividend Yield": 1.8747908,
+//     "Earnings/Share": 2.97,
+//     "52 Week Low": 96.07,
+//     "52 Week High": 63.22,
+//     "Market Cap": 689978437468,
+//     "EBITDA": 41079000000,
+//     "Price/Sales": 7.1130967,
+//     "Price/Book": 9.49,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MSFT"
+//   },
+//   {
+//     "Symbol": "MAA",
+//     "Name": "Mid-America Apartments",
+//     "Sector": "Real Estate",
+//     "Price": 85.39,
+//     "Price/Earnings": 14.38,
+//     "Dividend Yield": 4.19652,
+//     "Earnings/Share": 2.86,
+//     "52 Week Low": 110.95,
+//     "52 Week High": 86.95,
+//     "Market Cap": 9992628990,
+//     "EBITDA": 871483000,
+//     "Price/Sales": 6.6291075,
+//     "Price/Book": 1.6,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MAA"
+//   },
+//   {
+//     "Symbol": "MHK",
+//     "Name": "Mohawk Industries",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 256.57,
+//     "Price/Earnings": 19.08,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 12.48,
+//     "52 Week Low": 286.85,
+//     "52 Week High": 209.9,
+//     "Market Cap": 19897356456,
+//     "EBITDA": 1750393000,
+//     "Price/Sales": 2.7977824,
+//     "Price/Book": 2.88,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MHK"
+//   },
+//   {
+//     "Symbol": "TAP",
+//     "Name": "Molson Coors Brewing Company",
+//     "Sector": "Consumer Staples",
+//     "Price": 74.51,
+//     "Price/Earnings": 17.66,
+//     "Dividend Yield": 2.1533613,
+//     "Earnings/Share": 9.27,
+//     "52 Week Low": 102.14,
+//     "52 Week High": 75.79,
+//     "Market Cap": 12396862128,
+//     "EBITDA": 4708400000,
+//     "Price/Sales": 1.2371694,
+//     "Price/Book": 1.34,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TAP"
+//   },
+//   {
+//     "Symbol": "MDLZ",
+//     "Name": "Mondelez International",
+//     "Sector": "Consumer Staples",
+//     "Price": 42.68,
+//     "Price/Earnings": 19.85,
+//     "Dividend Yield": 1.9977299,
+//     "Earnings/Share": 1.91,
+//     "52 Week Low": 47.23,
+//     "52 Week High": 39.19,
+//     "Market Cap": 65827817742,
+//     "EBITDA": 4355000000,
+//     "Price/Sales": 2.5708609,
+//     "Price/Book": 2.52,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MDLZ"
+//   },
+//   {
+//     "Symbol": "MON",
+//     "Name": "Monsanto Co.",
+//     "Sector": "Materials",
+//     "Price": 119.08,
+//     "Price/Earnings": 21.53,
+//     "Dividend Yield": 1.7938709,
+//     "Earnings/Share": 5.09,
+//     "52 Week Low": 123.15,
+//     "52 Week High": 106.97,
+//     "Market Cap": 53076824328,
+//     "EBITDA": 4217000000,
+//     "Price/Sales": 3.589782,
+//     "Price/Book": 7.96,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MON"
+//   },
+//   {
+//     "Symbol": "MNST",
+//     "Name": "Monster Beverage",
+//     "Sector": "Consumer Staples",
+//     "Price": 61.99,
+//     "Price/Earnings": 42.17,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 1.19,
+//     "52 Week Low": 70.215,
+//     "52 Week High": 41.02,
+//     "Market Cap": 36403831015,
+//     "EBITDA": 1229478000,
+//     "Price/Sales": 14.152587,
+//     "Price/Book": 9.56,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MNST"
+//   },
+//   {
+//     "Symbol": "MCO",
+//     "Name": "Moody's Corp",
+//     "Sector": "Financials",
+//     "Price": 152.14,
+//     "Price/Earnings": 26.55,
+//     "Dividend Yield": 1.114065,
+//     "Earnings/Share": 1.35,
+//     "52 Week Low": 167.23,
+//     "52 Week High": 106.48,
+//     "Market Cap": 30189978000,
+//     "EBITDA": 1238000000,
+//     "Price/Sales": 9.932974,
+//     "Price/Book": 73.84,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MCO"
+//   },
+//   {
+//     "Symbol": "MS",
+//     "Name": "Morgan Stanley",
+//     "Sector": "Financials",
+//     "Price": 51.79,
+//     "Price/Earnings": 14.23,
+//     "Dividend Yield": 1.8331805,
+//     "Earnings/Share": 3.09,
+//     "52 Week Low": 58.05,
+//     "52 Week High": 40.06,
+//     "Market Cap": 97535400000,
+//     "EBITDA": 0,
+//     "Price/Sales": 2.2258842,
+//     "Price/Book": 1.33,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MS"
+//   },
+//   {
+//     "Symbol": "MSI",
+//     "Name": "Motorola Solutions Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 98.74,
+//     "Price/Earnings": 19.03,
+//     "Dividend Yield": 2.0266979,
+//     "Earnings/Share": -1.08,
+//     "52 Week Low": 107.78,
+//     "52 Week High": 77.23,
+//     "Market Cap": 16626039679,
+//     "EBITDA": 1629000000,
+//     "Price/Sales": 2.6092634,
+//     "Price/Book": 6.81,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MSI"
+//   },
+//   {
+//     "Symbol": "MYL",
+//     "Name": "Mylan N.V.",
+//     "Sector": "Health Care",
+//     "Price": 39.25,
+//     "Price/Earnings": 8.35,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 0.93,
+//     "52 Week Low": 47.82,
+//     "52 Week High": 29.39,
+//     "Market Cap": 21698849265,
+//     "EBITDA": 3113300000,
+//     "Price/Sales": 2.5358944,
+//     "Price/Book": 1.63,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MYL"
+//   },
+//   {
+//     "Symbol": "NDAQ",
+//     "Name": "Nasdaq, Inc.",
+//     "Sector": "Financials",
+//     "Price": 75.21,
+//     "Price/Earnings": 17.78,
+//     "Dividend Yield": 1.9671283,
+//     "Earnings/Share": 4.32,
+//     "52 Week Low": 83.29,
+//     "52 Week High": 65.98,
+//     "Market Cap": 12844304115,
+//     "EBITDA": 1212000000,
+//     "Price/Sales": 3.2591083,
+//     "Price/Book": 2.25,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NDAQ"
+//   },
+//   {
+//     "Symbol": "NOV",
+//     "Name": "National Oilwell Varco Inc.",
+//     "Sector": "Energy",
+//     "Price": 32.64,
+//     "Price/Earnings": -77.71,
+//     "Dividend Yield": 0.5873715,
+//     "Earnings/Share": -6.4,
+//     "52 Week Low": 41.895,
+//     "52 Week High": 29.9,
+//     "Market Cap": 12940096785,
+//     "EBITDA": 353000000,
+//     "Price/Sales": 2.5209634,
+//     "Price/Book": 0.91,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NOV"
+//   },
+//   {
+//     "Symbol": "NAVI",
+//     "Name": "Navient",
+//     "Sector": "Financials",
+//     "Price": 13.38,
+//     "Price/Earnings": 7.56,
+//     "Dividend Yield": 4.5584044,
+//     "Earnings/Share": 1.01,
+//     "52 Week Low": 16.97,
+//     "52 Week High": 11.481,
+//     "Market Cap": 3692691330,
+//     "EBITDA": 0,
+//     "Price/Sales": 0.6986579,
+//     "Price/Book": 1.02,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NAVI"
+//   },
+//   {
+//     "Symbol": "NTAP",
+//     "Name": "NetApp",
+//     "Sector": "Information Technology",
+//     "Price": 55.85,
+//     "Price/Earnings": 26.1,
+//     "Dividend Yield": 1.3881658,
+//     "Earnings/Share": 1.81,
+//     "52 Week Low": 64.0599,
+//     "52 Week High": 37.43,
+//     "Market Cap": 15375210915,
+//     "EBITDA": 1075000000,
+//     "Price/Sales": 3.6687026,
+//     "Price/Book": 5.46,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NTAP"
+//   },
+//   {
+//     "Symbol": "NFLX",
+//     "Name": "Netflix Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 250.1,
+//     "Price/Earnings": 200.08,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 1.25,
+//     "52 Week Low": 286.81,
+//     "52 Week High": 138.26,
+//     "Market Cap": 114805404842,
+//     "EBITDA": 809028000,
+//     "Price/Sales": 9.861594,
+//     "Price/Book": 30.8,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NFLX"
+//   },
+//   {
+//     "Symbol": "NWL",
+//     "Name": "Newell Brands",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 27.91,
+//     "Price/Earnings": 9.72,
+//     "Dividend Yield": 3.1228786,
+//     "Earnings/Share": 1.17,
+//     "52 Week Low": 55.08,
+//     "52 Week High": 23.85,
+//     "Market Cap": 14438346000,
+//     "EBITDA": 2021400000,
+//     "Price/Sales": 1.2810479,
+//     "Price/Book": 1.01,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NWL"
+//   },
+//   {
+//     "Symbol": "NFX",
+//     "Name": "Newfield Exploration Co",
+//     "Sector": "Energy",
+//     "Price": 26.38,
+//     "Price/Earnings": 13.12,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": -6.5,
+//     "52 Week Low": 43.74,
+//     "52 Week High": 24.41,
+//     "Market Cap": 5695123080,
+//     "EBITDA": 896000000,
+//     "Price/Sales": 4.703259,
+//     "Price/Book": 4.51,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NFX"
+//   },
+//   {
+//     "Symbol": "NEM",
+//     "Name": "Newmont Mining Corporation",
+//     "Sector": "Materials",
+//     "Price": 36.61,
+//     "Price/Earnings": 26.34,
+//     "Dividend Yield": 0.8101539,
+//     "Earnings/Share": -1.18,
+//     "52 Week Low": 42.04,
+//     "52 Week High": 31.42,
+//     "Market Cap": 19749449484,
+//     "EBITDA": 1509000000,
+//     "Price/Sales": 3.7076392,
+//     "Price/Book": 1.81,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NEM"
+//   },
+//   {
+//     "Symbol": "NWSA",
+//     "Name": "News Corp. Class A",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 15.65,
+//     "Price/Earnings": 43.47,
+//     "Dividend Yield": 1.24533,
+//     "Earnings/Share": -1.28,
+//     "52 Week Low": 17.29,
+//     "52 Week High": 12,
+//     "Market Cap": 9356906461,
+//     "EBITDA": 679000000,
+//     "Price/Sales": 1.5518167,
+//     "Price/Book": 0.85,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NWSA"
+//   },
+//   {
+//     "Symbol": "NWS",
+//     "Name": "News Corp. Class B",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 15.85,
+//     "Price/Earnings": 44.03,
+//     "Dividend Yield": 1.2269939,
+//     "Earnings/Share": -1.28,
+//     "52 Week Low": 17.7,
+//     "52 Week High": 12.35,
+//     "Market Cap": 9496735699,
+//     "EBITDA": 679000000,
+//     "Price/Sales": 1.5718216,
+//     "Price/Book": 0.86,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NWS"
+//   },
+//   {
+//     "Symbol": "NEE",
+//     "Name": "NextEra Energy",
+//     "Sector": "Utilities",
+//     "Price": 145.29,
+//     "Price/Earnings": 21.65,
+//     "Dividend Yield": 2.6537917,
+//     "Earnings/Share": 11.39,
+//     "52 Week Low": 159.64,
+//     "52 Week High": 124.18,
+//     "Market Cap": 69661177770,
+//     "EBITDA": 9018000000,
+//     "Price/Sales": 4.091698,
+//     "Price/Book": 2.75,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NEE"
+//   },
+//   {
+//     "Symbol": "NLSN",
+//     "Name": "Nielsen Holdings",
+//     "Sector": "Industrials",
+//     "Price": 33.9,
+//     "Price/Earnings": 18.73,
+//     "Dividend Yield": 3.6208732,
+//     "Earnings/Share": 1.39,
+//     "52 Week Low": 45.73,
+//     "52 Week High": 34.22,
+//     "Market Cap": 13377670080,
+//     "EBITDA": 1836000000,
+//     "Price/Sales": 2.7288198,
+//     "Price/Book": 3.02,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NLSN"
+//   },
+//   {
+//     "Symbol": "NKE",
+//     "Name": "Nike",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 62.49,
+//     "Price/Earnings": 24.9,
+//     "Dividend Yield": 1.2189548,
+//     "Earnings/Share": 2.51,
+//     "52 Week Low": 68.83,
+//     "52 Week High": 50.35,
+//     "Market Cap": 106776113744,
+//     "EBITDA": 5162000000,
+//     "Price/Sales": 3.0549932,
+//     "Price/Book": 8.91,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NKE"
+//   },
+//   {
+//     "Symbol": "NI",
+//     "Name": "NiSource Inc.",
+//     "Sector": "Utilities",
+//     "Price": 22.51,
+//     "Price/Earnings": 19.57,
+//     "Dividend Yield": 3.3780859,
+//     "Earnings/Share": 1.02,
+//     "52 Week Low": 27.76,
+//     "52 Week High": 21.93,
+//     "Market Cap": 7776566371,
+//     "EBITDA": 1448600000,
+//     "Price/Sales": 2.2361343,
+//     "Price/Book": 1.82,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NI"
+//   },
+//   {
+//     "Symbol": "NBL",
+//     "Name": "Noble Energy Inc",
+//     "Sector": "Energy",
+//     "Price": 25.43,
+//     "Price/Earnings": 105.96,
+//     "Dividend Yield": 1.4771049,
+//     "Earnings/Share": -2.32,
+//     "52 Week Low": 39.6,
+//     "52 Week High": 22.985,
+//     "Market Cap": 13177325251,
+//     "EBITDA": -518000000,
+//     "Price/Sales": 4.6976447,
+//     "Price/Book": 1.44,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NBL"
+//   },
+//   {
+//     "Symbol": "JWN",
+//     "Name": "Nordstrom",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 47.23,
+//     "Price/Earnings": 15.04,
+//     "Dividend Yield": 3.0020285,
+//     "Earnings/Share": 2.02,
+//     "52 Week Low": 53,
+//     "52 Week High": 37.7924,
+//     "Market Cap": 8212509855,
+//     "EBITDA": 1448000000,
+//     "Price/Sales": 0.74603415,
+//     "Price/Book": 9.1,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=JWN"
+//   },
+//   {
+//     "Symbol": "NSC",
+//     "Name": "Norfolk Southern Corp.",
+//     "Sector": "Industrials",
+//     "Price": 136.89,
+//     "Price/Earnings": 20.65,
+//     "Dividend Yield": 2.018503,
+//     "Earnings/Share": 18.73,
+//     "52 Week Low": 157.1499,
+//     "52 Week High": 109.27,
+//     "Market Cap": 40543547441,
+//     "EBITDA": 4737000000,
+//     "Price/Sales": 3.8525908,
+//     "Price/Book": 3.09,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NSC"
+//   },
+//   {
+//     "Symbol": "NTRS",
+//     "Name": "Northern Trust Corp.",
+//     "Sector": "Financials",
+//     "Price": 96.2,
+//     "Price/Earnings": 19.96,
+//     "Dividend Yield": 1.6678249,
+//     "Earnings/Share": 4.92,
+//     "52 Week Low": 108.91,
+//     "52 Week High": 83.17,
+//     "Market Cap": 22908130223,
+//     "EBITDA": 0,
+//     "Price/Sales": 4.031728,
+//     "Price/Book": 2.44,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NTRS"
+//   },
+//   {
+//     "Symbol": "NOC",
+//     "Name": "Northrop Grumman Corp.",
+//     "Sector": "Industrials",
+//     "Price": 324.01,
+//     "Price/Earnings": 24.4,
+//     "Dividend Yield": 1.3030859,
+//     "Earnings/Share": 11.47,
+//     "52 Week Low": 349.18,
+//     "52 Week High": 231.98,
+//     "Market Cap": 58782413951,
+//     "EBITDA": 3884000000,
+//     "Price/Sales": 2.209576,
+//     "Price/Book": 7.96,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NOC"
+//   },
+//   {
+//     "Symbol": "NCLH",
+//     "Name": "Norwegian Cruise Line",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 56.01,
+//     "Price/Earnings": 15.35,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 2.78,
+//     "52 Week Low": 61.48,
+//     "52 Week High": 46.96,
+//     "Market Cap": 13191507318,
+//     "EBITDA": 1529401000,
+//     "Price/Sales": 3.2066104,
+//     "Price/Book": 2.35,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NCLH"
+//   },
+//   {
+//     "Symbol": "NRG",
+//     "Name": "NRG Energy",
+//     "Sector": "Utilities",
+//     "Price": 24,
+//     "Price/Earnings": 17.78,
+//     "Dividend Yield": 1.4195584,
+//     "Earnings/Share": -2.23,
+//     "52 Week Low": 29.78,
+//     "52 Week High": 14.52,
+//     "Market Cap": 8030036023,
+//     "EBITDA": 1774000000,
+//     "Price/Sales": 0.9933021,
+//     "Price/Book": 6.73,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NRG"
+//   },
+//   {
+//     "Symbol": "NUE",
+//     "Name": "Nucor Corp.",
+//     "Sector": "Materials",
+//     "Price": 60.38,
+//     "Price/Earnings": 17.01,
+//     "Dividend Yield": 2.415766,
+//     "Earnings/Share": 4.1,
+//     "52 Week Low": 70.48,
+//     "52 Week High": 51.67,
+//     "Market Cap": 20003317128,
+//     "EBITDA": 2648729000,
+//     "Price/Sales": 0.99837583,
+//     "Price/Book": 2.34,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NUE"
+//   },
+//   {
+//     "Symbol": "NVDA",
+//     "Name": "Nvidia Corporation",
+//     "Sector": "Information Technology",
+//     "Price": 217.52,
+//     "Price/Earnings": 82.08,
+//     "Dividend Yield": 0.26223776,
+//     "Earnings/Share": 2.57,
+//     "52 Week Low": 249.27,
+//     "52 Week High": 95.17,
+//     "Market Cap": 138652800000,
+//     "EBITDA": 3098000000,
+//     "Price/Sales": 20.094294,
+//     "Price/Book": 20.39,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NVDA"
+//   },
+//   {
+//     "Symbol": "ORLY",
+//     "Name": "O'Reilly Automotive",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 252.22,
+//     "Price/Earnings": 21.91,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 10.73,
+//     "52 Week Low": 279.23,
+//     "52 Week High": 169.43,
+//     "Market Cap": 21433781860,
+//     "EBITDA": 1965187000,
+//     "Price/Sales": 3.1934319,
+//     "Price/Book": 34.12,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ORLY"
+//   },
+//   {
+//     "Symbol": "OXY",
+//     "Name": "Occidental Petroleum",
+//     "Sector": "Energy",
+//     "Price": 68.47,
+//     "Price/Earnings": 195.63,
+//     "Dividend Yield": 4.4081864,
+//     "Earnings/Share": -0.75,
+//     "52 Week Low": 78.09,
+//     "52 Week High": 57.2,
+//     "Market Cap": 53467692395,
+//     "EBITDA": 5205000000,
+//     "Price/Sales": 6.044895,
+//     "Price/Book": "",
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=OXY"
+//   },
+//   {
+//     "Symbol": "OMC",
+//     "Name": "Omnicom Group",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 75.91,
+//     "Price/Earnings": 15.27,
+//     "Dividend Yield": 3.1838684,
+//     "Earnings/Share": 4.79,
+//     "52 Week Low": 86.71,
+//     "52 Week High": 65.32,
+//     "Market Cap": 17377551986,
+//     "EBITDA": 2366000000,
+//     "Price/Sales": 1.5327156,
+//     "Price/Book": 6.66,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=OMC"
+//   },
+//   {
+//     "Symbol": "OKE",
+//     "Name": "ONEOK",
+//     "Sector": "Energy",
+//     "Price": 54.4,
+//     "Price/Earnings": 34,
+//     "Dividend Yield": 5.4436197,
+//     "Earnings/Share": 1.66,
+//     "52 Week Low": 61.36,
+//     "52 Week High": 47.14,
+//     "Market Cap": 21988472489,
+//     "EBITDA": 1851783000,
+//     "Price/Sales": 2.6159565,
+//     "Price/Book": 4.03,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=OKE"
+//   },
+//   {
+//     "Symbol": "ORCL",
+//     "Name": "Oracle Corp.",
+//     "Sector": "Information Technology",
+//     "Price": 46.84,
+//     "Price/Earnings": 18.81,
+//     "Dividend Yield": 1.5551463,
+//     "Earnings/Share": 2.2,
+//     "52 Week Low": 53.14,
+//     "52 Week High": 40.01,
+//     "Market Cap": 202302349740,
+//     "EBITDA": 16545000000,
+//     "Price/Sales": 5.2561646,
+//     "Price/Book": 3.56,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ORCL"
+//   },
+//   {
+//     "Symbol": "PCAR",
+//     "Name": "PACCAR Inc.",
+//     "Sector": "Industrials",
+//     "Price": 66.98,
+//     "Price/Earnings": 15.72,
+//     "Dividend Yield": 1.455816,
+//     "Earnings/Share": 4.75,
+//     "52 Week Low": 79.69,
+//     "52 Week High": 61.93,
+//     "Market Cap": 24152102921,
+//     "EBITDA": 3619200000,
+//     "Price/Sales": 1.28693,
+//     "Price/Book": 3.07,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PCAR"
+//   },
+//   {
+//     "Symbol": "PKG",
+//     "Name": "Packaging Corporation of America",
+//     "Sector": "Materials",
+//     "Price": 111.95,
+//     "Price/Earnings": 18.57,
+//     "Dividend Yield": 2.1514556,
+//     "Earnings/Share": 7.07,
+//     "52 Week Low": 131.1316,
+//     "52 Week High": 88.47,
+//     "Market Cap": 11051273948,
+//     "EBITDA": 1214900000,
+//     "Price/Sales": 1.741522,
+//     "Price/Book": 5.54,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PKG"
+//   },
+//   {
+//     "Symbol": "PH",
+//     "Name": "Parker-Hannifin",
+//     "Sector": "Industrials",
+//     "Price": 174.51,
+//     "Price/Earnings": 21.6,
+//     "Dividend Yield": 1.4401833,
+//     "Earnings/Share": 7.24,
+//     "52 Week Low": 212.8,
+//     "52 Week High": 145.38,
+//     "Market Cap": 24421668509,
+//     "EBITDA": 2092089000,
+//     "Price/Sales": 1.8652664,
+//     "Price/Book": 4.39,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PH"
+//   },
+//   {
+//     "Symbol": "PDCO",
+//     "Name": "Patterson Companies",
+//     "Sector": "Health Care",
+//     "Price": 32.88,
+//     "Price/Earnings": 14.05,
+//     "Dividend Yield": 3.0723782,
+//     "Earnings/Share": 1.79,
+//     "52 Week Low": 48.295,
+//     "52 Week High": 32.07,
+//     "Market Cap": 3209792400,
+//     "EBITDA": 359644000,
+//     "Price/Sales": 0.7872792,
+//     "Price/Book": 2.34,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PDCO"
+//   },
+//   {
+//     "Symbol": "PAYX",
+//     "Name": "Paychex Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 61.86,
+//     "Price/Earnings": 27.49,
+//     "Dividend Yield": 3.0892801,
+//     "Earnings/Share": 2.26,
+//     "52 Week Low": 73.1,
+//     "52 Week High": 54.2,
+//     "Market Cap": 23253666810,
+//     "EBITDA": 1414900000,
+//     "Price/Sales": 7.248487,
+//     "Price/Book": 11.77,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PAYX"
+//   },
+//   {
+//     "Symbol": "PYPL",
+//     "Name": "PayPal",
+//     "Sector": "Information Technology",
+//     "Price": 72.32,
+//     "Price/Earnings": 49.53,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 1.47,
+//     "52 Week Low": 86.32,
+//     "52 Week High": 39.92,
+//     "Market Cap": 90708000000,
+//     "EBITDA": 2932000000,
+//     "Price/Sales": 6.935696,
+//     "Price/Book": 5.81,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PYPL"
+//   },
+//   {
+//     "Symbol": "PNR",
+//     "Name": "Pentair Ltd.",
+//     "Sector": "Industrials",
+//     "Price": 66.67,
+//     "Price/Earnings": 18.89,
+//     "Dividend Yield": 2.03933,
+//     "Earnings/Share": 3.63,
+//     "52 Week Low": 74.84,
+//     "52 Week High": 57.63,
+//     "Market Cap": 12466660892,
+//     "EBITDA": 863700000,
+//     "Price/Sales": 2.5191512,
+//     "Price/Book": 2.48,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PNR"
+//   },
+//   {
+//     "Symbol": "PBCT",
+//     "Name": "People's United Financial",
+//     "Sector": "Financials",
+//     "Price": 18.56,
+//     "Price/Earnings": 18.02,
+//     "Dividend Yield": 3.59375,
+//     "Earnings/Share": 0.97,
+//     "52 Week Low": 20.14,
+//     "52 Week High": 15.965,
+//     "Market Cap": 6527616000,
+//     "EBITDA": 0,
+//     "Price/Sales": 3.9272704,
+//     "Price/Book": 1.17,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PBCT"
+//   },
+//   {
+//     "Symbol": "PEP",
+//     "Name": "PepsiCo Inc.",
+//     "Sector": "Consumer Staples",
+//     "Price": 110.15,
+//     "Price/Earnings": 21.51,
+//     "Dividend Yield": 2.8370044,
+//     "Earnings/Share": 4.36,
+//     "52 Week Low": 122.51,
+//     "52 Week High": 104.77,
+//     "Market Cap": 161413271020,
+//     "EBITDA": 12843000000,
+//     "Price/Sales": 3.6705062,
+//     "Price/Book": "",
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PEP"
+//   },
+//   {
+//     "Symbol": "PKI",
+//     "Name": "PerkinElmer",
+//     "Sector": "Health Care",
+//     "Price": 72.06,
+//     "Price/Earnings": 24.68,
+//     "Dividend Yield": 0.3695394,
+//     "Earnings/Share": 2.64,
+//     "52 Week Low": 84.49,
+//     "52 Week High": 52.63,
+//     "Market Cap": 8351767268,
+//     "EBITDA": 445658000,
+//     "Price/Sales": 3.7116463,
+//     "Price/Book": 3.25,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PKI"
+//   },
+//   {
+//     "Symbol": "PRGO",
+//     "Name": "Perrigo",
+//     "Sector": "Health Care",
+//     "Price": 84.44,
+//     "Price/Earnings": "",
+//     "Dividend Yield": 0.73126143,
+//     "Earnings/Share": -28.01,
+//     "52 Week Low": 95.93,
+//     "52 Week High": 63.68,
+//     "Market Cap": 12326379902,
+//     "EBITDA": 0,
+//     "Price/Sales": 3.3850067,
+//     "Price/Book": 2.03,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PRGO"
+//   },
+//   {
+//     "Symbol": "PFE",
+//     "Name": "Pfizer Inc.",
+//     "Sector": "Health Care",
+//     "Price": 33.63,
+//     "Price/Earnings": 12.69,
+//     "Dividend Yield": 3.8879359,
+//     "Earnings/Share": 3.51,
+//     "52 Week Low": 39.43,
+//     "52 Week High": 31.67,
+//     "Market Cap": 208505541949,
+//     "EBITDA": 20569000000,
+//     "Price/Sales": 4.0020885,
+//     "Price/Book": 3.4,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PFE"
+//   },
+//   {
+//     "Symbol": "PCG",
+//     "Name": "PG&E Corp.",
+//     "Sector": "Utilities",
+//     "Price": 38.24,
+//     "Price/Earnings": 8.75,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 2.78,
+//     "52 Week Low": 71.57,
+//     "52 Week High": 38.45,
+//     "Market Cap": 20309412381,
+//     "EBITDA": 6471000000,
+//     "Price/Sales": 1.5730644,
+//     "Price/Book": 1.09,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PCG"
+//   },
+//   {
+//     "Symbol": "PM",
+//     "Name": "Philip Morris International",
+//     "Sector": "Consumer Staples",
+//     "Price": 100.39,
+//     "Price/Earnings": 22.36,
+//     "Dividend Yield": 4.328479,
+//     "Earnings/Share": 4.48,
+//     "52 Week Low": 123.55,
+//     "52 Week High": 96.66,
+//     "Market Cap": 153580671803,
+//     "EBITDA": 11802000000,
+//     "Price/Sales": 2.7574685,
+//     "Price/Book": 1318.7,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PM"
+//   },
+//   {
+//     "Symbol": "PSX",
+//     "Name": "Phillips 66",
+//     "Sector": "Energy",
+//     "Price": 92.44,
+//     "Price/Earnings": 21.11,
+//     "Dividend Yield": 2.928564,
+//     "Earnings/Share": 9.93,
+//     "52 Week Low": 107.47,
+//     "52 Week High": 75.135,
+//     "Market Cap": 47996220000,
+//     "EBITDA": 5311000000,
+//     "Price/Sales": 0.47499472,
+//     "Price/Book": 2.12,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PSX"
+//   },
+//   {
+//     "Symbol": "PNW",
+//     "Name": "Pinnacle West Capital",
+//     "Sector": "Utilities",
+//     "Price": 74.34,
+//     "Price/Earnings": 16.06,
+//     "Dividend Yield": 3.698776,
+//     "Earnings/Share": 3.95,
+//     "52 Week Low": 92.48,
+//     "52 Week High": 73.81,
+//     "Market Cap": 8397609889,
+//     "EBITDA": 1614399000,
+//     "Price/Sales": 2.9931207,
+//     "Price/Book": 1.65,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PNW"
+//   },
+//   {
+//     "Symbol": "PXD",
+//     "Name": "Pioneer Natural Resources",
+//     "Sector": "Energy",
+//     "Price": 169.16,
+//     "Price/Earnings": 118.29,
+//     "Dividend Yield": 0.1816118,
+//     "Earnings/Share": -3.39,
+//     "52 Week Low": 199.83,
+//     "52 Week High": 125.46,
+//     "Market Cap": 29983119693,
+//     "EBITDA": 1717000000,
+//     "Price/Sales": 6.7890477,
+//     "Price/Book": 2.76,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PXD"
+//   },
+//   {
+//     "Symbol": "PNC",
+//     "Name": "PNC Financial Services",
+//     "Sector": "Financials",
+//     "Price": 149.38,
+//     "Price/Earnings": 17.55,
+//     "Dividend Yield": 1.9354838,
+//     "Earnings/Share": 10.4,
+//     "52 Week Low": 160.07,
+//     "52 Week High": 115.25,
+//     "Market Cap": 73315000000,
+//     "EBITDA": 0,
+//     "Price/Sales": 4.04653,
+//     "Price/Book": 1.53,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PNC"
+//   },
+//   {
+//     "Symbol": "RL",
+//     "Name": "Polo Ralph Lauren Corp.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 101.32,
+//     "Price/Earnings": 17.74,
+//     "Dividend Yield": 1.8570102,
+//     "Earnings/Share": -1.19,
+//     "52 Week Low": 119.33,
+//     "52 Week High": 66.06,
+//     "Market Cap": 8753430477,
+//     "EBITDA": 506100000,
+//     "Price/Sales": 1.3948758,
+//     "Price/Book": 2.44,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RL"
+//   },
+//   {
+//     "Symbol": "PPG",
+//     "Name": "PPG Industries",
+//     "Sector": "Materials",
+//     "Price": 110.3,
+//     "Price/Earnings": 18.73,
+//     "Dividend Yield": 1.5771489,
+//     "Earnings/Share": 6.31,
+//     "52 Week Low": 122.0697,
+//     "52 Week High": 99.57,
+//     "Market Cap": 29043337549,
+//     "EBITDA": 2585000000,
+//     "Price/Sales": 1.9551051,
+//     "Price/Book": 4.83,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PPG"
+//   },
+//   {
+//     "Symbol": "PPL",
+//     "Name": "PPL Corp.",
+//     "Sector": "Utilities",
+//     "Price": 29.52,
+//     "Price/Earnings": 12.83,
+//     "Dividend Yield": 5.2196894,
+//     "Earnings/Share": 2.79,
+//     "52 Week Low": 40.2,
+//     "52 Week High": 29.205,
+//     "Market Cap": 20839814845,
+//     "EBITDA": 3937000000,
+//     "Price/Sales": 3.7497053,
+//     "Price/Book": 1.95,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PPL"
+//   },
+//   {
+//     "Symbol": "PX",
+//     "Name": "Praxair Inc.",
+//     "Sector": "Materials",
+//     "Price": 144.07,
+//     "Price/Earnings": 24.63,
+//     "Dividend Yield": 2.1998534,
+//     "Earnings/Share": 4.32,
+//     "52 Week Low": 166.95,
+//     "52 Week High": 115.53,
+//     "Market Cap": 42948664203,
+//     "EBITDA": 3632000000,
+//     "Price/Sales": 3.887915,
+//     "Price/Book": 6.88,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PX"
+//   },
+//   {
+//     "Symbol": "PCLN",
+//     "Name": "Priceline.com Inc",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 1806.06,
+//     "Price/Earnings": 24.26,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 42.66,
+//     "52 Week Low": 2067.99,
+//     "52 Week High": 1589,
+//     "Market Cap": 91817448863,
+//     "EBITDA": 4803487000,
+//     "Price/Sales": 9.176564,
+//     "Price/Book": 6.92,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PCLN"
+//   },
+//   {
+//     "Symbol": "PFG",
+//     "Name": "Principal Financial Group",
+//     "Sector": "Financials",
+//     "Price": 60.38,
+//     "Price/Earnings": 11.96,
+//     "Dividend Yield": 3.1914895,
+//     "Earnings/Share": 4.5,
+//     "52 Week Low": 75.585,
+//     "52 Week High": 58.9401,
+//     "Market Cap": 18457199721,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.7167546,
+//     "Price/Book": 1.53,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PFG"
+//   },
+//   {
+//     "Symbol": "PG",
+//     "Name": "Procter & Gamble",
+//     "Sector": "Consumer Staples",
+//     "Price": 80.22,
+//     "Price/Earnings": 20.46,
+//     "Dividend Yield": 3.3704789,
+//     "Earnings/Share": 5.6,
+//     "52 Week Low": 94.67,
+//     "52 Week High": 80.1,
+//     "Market Cap": 206318943299,
+//     "EBITDA": 17249000000,
+//     "Price/Sales": 3.1595004,
+//     "Price/Book": 3.85,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PG"
+//   },
+//   {
+//     "Symbol": "PGR",
+//     "Name": "Progressive Corp.",
+//     "Sector": "Financials",
+//     "Price": 51.07,
+//     "Price/Earnings": 20.76,
+//     "Dividend Yield": 2.1061797,
+//     "Earnings/Share": 2.73,
+//     "52 Week Low": 58.25,
+//     "52 Week High": 36.84,
+//     "Market Cap": 31062780000,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.1458876,
+//     "Price/Book": 3.25,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PGR"
+//   },
+//   {
+//     "Symbol": "PLD",
+//     "Name": "Prologis",
+//     "Sector": "Real Estate",
+//     "Price": 58.33,
+//     "Price/Earnings": 20.76,
+//     "Dividend Yield": 2.931379,
+//     "Earnings/Share": 3.06,
+//     "52 Week Low": 67.53,
+//     "52 Week High": 48.69,
+//     "Market Cap": 31953288000,
+//     "EBITDA": 2969194000,
+//     "Price/Sales": 14.380373,
+//     "Price/Book": 2.11,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PLD"
+//   },
+//   {
+//     "Symbol": "PRU",
+//     "Name": "Prudential Financial",
+//     "Sector": "Financials",
+//     "Price": 103.38,
+//     "Price/Earnings": 9.99,
+//     "Dividend Yield": 2.6985698,
+//     "Earnings/Share": 9.73,
+//     "52 Week Low": 127.14,
+//     "52 Week High": 97.88,
+//     "Market Cap": 47136080000,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.083727,
+//     "Price/Book": 0.93,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PRU"
+//   },
+//   {
+//     "Symbol": "PEG",
+//     "Name": "Public Serv. Enterprise Inc.",
+//     "Sector": "Utilities",
+//     "Price": 46.73,
+//     "Price/Earnings": 16.11,
+//     "Dividend Yield": 3.60587,
+//     "Earnings/Share": 1.75,
+//     "52 Week Low": 53.28,
+//     "52 Week High": 41.67,
+//     "Market Cap": 24138050331,
+//     "EBITDA": 3613000000,
+//     "Price/Sales": 3.4491453,
+//     "Price/Book": 1.88,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PEG"
+//   },
+//   {
+//     "Symbol": "PSA",
+//     "Name": "Public Storage",
+//     "Sector": "Real Estate",
+//     "Price": 180.49,
+//     "Price/Earnings": 18.21,
+//     "Dividend Yield": 4.316159,
+//     "Earnings/Share": 6.81,
+//     "52 Week Low": 232.21,
+//     "52 Week High": 180.9254,
+//     "Market Cap": 32258539942,
+//     "EBITDA": 1924803000,
+//     "Price/Sales": 16.16417,
+//     "Price/Book": 6.56,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PSA"
+//   },
+//   {
+//     "Symbol": "PHM",
+//     "Name": "Pulte Homes Inc.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 28.67,
+//     "Price/Earnings": 12.86,
+//     "Dividend Yield": 1.2036108,
+//     "Earnings/Share": 1.44,
+//     "52 Week Low": 35.21,
+//     "52 Week High": 21.06,
+//     "Market Cap": 8792572352,
+//     "EBITDA": 992811000,
+//     "Price/Sales": 1.0341544,
+//     "Price/Book": 1.99,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PHM"
+//   },
+//   {
+//     "Symbol": "PVH",
+//     "Name": "PVH Corp.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 142.68,
+//     "Price/Earnings": 20.98,
+//     "Dividend Yield": 0.100529455,
+//     "Earnings/Share": 6.77,
+//     "52 Week Low": 157.96,
+//     "52 Week High": 84.53,
+//     "Market Cap": 11478625926,
+//     "EBITDA": 1057500000,
+//     "Price/Sales": 1.7617522,
+//     "Price/Book": 2.14,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PVH"
+//   },
+//   {
+//     "Symbol": "QRVO",
+//     "Name": "Qorvo",
+//     "Sector": "Information Technology",
+//     "Price": 76.85,
+//     "Price/Earnings": 19.71,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": -0.13,
+//     "52 Week Low": 85.24,
+//     "52 Week High": 62.68,
+//     "Market Cap": 9877885146,
+//     "EBITDA": 806875000,
+//     "Price/Sales": 3.389142,
+//     "Price/Book": 1.98,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=QRVO"
+//   },
+//   {
+//     "Symbol": "QCOM",
+//     "Name": "QUALCOMM Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 62.42,
+//     "Price/Earnings": 16.51,
+//     "Dividend Yield": 3.5055351,
+//     "Earnings/Share": 1.65,
+//     "52 Week Low": 69.28,
+//     "52 Week High": 48.92,
+//     "Market Cap": 96282828902,
+//     "EBITDA": 4191000000,
+//     "Price/Sales": 4.263658,
+//     "Price/Book": 3.82,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=QCOM"
+//   },
+//   {
+//     "Symbol": "PWR",
+//     "Name": "Quanta Services Inc.",
+//     "Sector": "Industrials",
+//     "Price": 33.51,
+//     "Price/Earnings": 17.54,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 1.28,
+//     "52 Week Low": 40.105,
+//     "52 Week High": 30.23,
+//     "Market Cap": 5330131216,
+//     "EBITDA": 649404000,
+//     "Price/Sales": 0.77893436,
+//     "Price/Book": 1.43,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PWR"
+//   },
+//   {
+//     "Symbol": "DGX",
+//     "Name": "Quest Diagnostics",
+//     "Sector": "Health Care",
+//     "Price": 96.42,
+//     "Price/Earnings": 17.07,
+//     "Dividend Yield": 1.9884669,
+//     "Earnings/Share": 5.5,
+//     "52 Week Low": 112.965,
+//     "52 Week High": 90.1,
+//     "Market Cap": 13578300000,
+//     "EBITDA": 1453000000,
+//     "Price/Sales": 1.7709883,
+//     "Price/Book": 2.82,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DGX"
+//   },
+//   {
+//     "Symbol": "RRC",
+//     "Name": "Range Resources Corp.",
+//     "Sector": "Energy",
+//     "Price": 12.82,
+//     "Price/Earnings": 35.61,
+//     "Dividend Yield": 0.6097561,
+//     "Earnings/Share": -2.79,
+//     "52 Week Low": 34.09,
+//     "52 Week High": 12.7,
+//     "Market Cap": 3255587970,
+//     "EBITDA": 820095000,
+//     "Price/Sales": 1.9624339,
+//     "Price/Book": 0.59,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RRC"
+//   },
+//   {
+//     "Symbol": "RJF",
+//     "Name": "Raymond James Financial Inc.",
+//     "Sector": "Financials",
+//     "Price": 86.06,
+//     "Price/Earnings": 16.94,
+//     "Dividend Yield": 1.0982976,
+//     "Earnings/Share": 4.12,
+//     "52 Week Low": 99.1,
+//     "52 Week High": 71.35,
+//     "Market Cap": 13216271700,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.9734555,
+//     "Price/Book": 2.34,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RJF"
+//   },
+//   {
+//     "Symbol": "RTN",
+//     "Name": "Raytheon Co.",
+//     "Sector": "Industrials",
+//     "Price": 198.74,
+//     "Price/Earnings": 25.78,
+//     "Dividend Yield": 1.5612764,
+//     "Earnings/Share": 6.95,
+//     "52 Week Low": 213.45,
+//     "52 Week High": 147.86,
+//     "Market Cap": 59066255840,
+//     "EBITDA": 3868000000,
+//     "Price/Sales": 2.2938328,
+//     "Price/Book": 5.28,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RTN"
+//   },
+//   {
+//     "Symbol": "O",
+//     "Name": "Realty Income Corporation",
+//     "Sector": "Real Estate",
+//     "Price": 47.56,
+//     "Price/Earnings": 15.54,
+//     "Dividend Yield": 5.372036,
+//     "Earnings/Share": 1.12,
+//     "52 Week Low": 63.6,
+//     "52 Week High": 48.89,
+//     "Market Cap": 13784942453,
+//     "EBITDA": 1075568000,
+//     "Price/Sales": 15.588069,
+//     "Price/Book": 1.92,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=O"
+//   },
+//   {
+//     "Symbol": "RHT",
+//     "Name": "Red Hat Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 124.65,
+//     "Price/Earnings": 79.9,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 1.68,
+//     "52 Week Low": 135.77,
+//     "52 Week High": 78.48,
+//     "Market Cap": 22799923883,
+//     "EBITDA": 541809000,
+//     "Price/Sales": 8.202077,
+//     "Price/Book": 15.69,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RHT"
+//   },
+//   {
+//     "Symbol": "REG",
+//     "Name": "Regency Centers Corporation",
+//     "Sector": "Real Estate",
+//     "Price": 55.58,
+//     "Price/Earnings": 15.27,
+//     "Dividend Yield": 3.6850338,
+//     "Earnings/Share": 1.43,
+//     "52 Week Low": 72.05,
+//     "52 Week High": 56.66,
+//     "Market Cap": 9858367494,
+//     "EBITDA": 487636000,
+//     "Price/Sales": 13.762162,
+//     "Price/Book": 1.51,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=REG"
+//   },
+//   {
+//     "Symbol": "REGN",
+//     "Name": "Regeneron",
+//     "Sector": "Health Care",
+//     "Price": 322.62,
+//     "Price/Earnings": 27.93,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 7.74,
+//     "52 Week Low": 543.5518,
+//     "52 Week High": 319.5,
+//     "Market Cap": 35950369241,
+//     "EBITDA": 2043160000,
+//     "Price/Sales": 8.48541,
+//     "Price/Book": 5.89,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=REGN"
+//   },
+//   {
+//     "Symbol": "RF",
+//     "Name": "Regions Financial Corp.",
+//     "Sector": "Financials",
+//     "Price": 17.9,
+//     "Price/Earnings": 17.9,
+//     "Dividend Yield": 1.8987342,
+//     "Earnings/Share": 1,
+//     "52 Week Low": 19.9,
+//     "52 Week High": 13,
+//     "Market Cap": 21500640000,
+//     "EBITDA": 0,
+//     "Price/Sales": 3.474771,
+//     "Price/Book": 1.32,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RF"
+//   },
+//   {
+//     "Symbol": "RSG",
+//     "Name": "Republic Services Inc",
+//     "Sector": "Industrials",
+//     "Price": 62.72,
+//     "Price/Earnings": 26.13,
+//     "Dividend Yield": 2.1362228,
+//     "Earnings/Share": 1.77,
+//     "52 Week Low": 69.4,
+//     "52 Week High": 57.53,
+//     "Market Cap": 21590903863,
+//     "EBITDA": 2734000000,
+//     "Price/Sales": 2.8841186,
+//     "Price/Book": 2.83,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RSG"
+//   },
+//   {
+//     "Symbol": "RMD",
+//     "Name": "ResMed",
+//     "Sector": "Health Care",
+//     "Price": 89.26,
+//     "Price/Earnings": 31.54,
+//     "Dividend Yield": 1.5120423,
+//     "Earnings/Share": 2.41,
+//     "52 Week Low": 104.78,
+//     "52 Week High": 67.04,
+//     "Market Cap": 13233622689,
+//     "EBITDA": 636942000,
+//     "Price/Sales": 6.1640687,
+//     "Price/Book": 6.61,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RMD"
+//   },
+//   {
+//     "Symbol": "RHI",
+//     "Name": "Robert Half International",
+//     "Sector": "Industrials",
+//     "Price": 52.26,
+//     "Price/Earnings": 20.18,
+//     "Dividend Yield": 1.7075773,
+//     "Earnings/Share": 2.32,
+//     "52 Week Low": 60.59,
+//     "52 Week High": 42.92,
+//     "Market Cap": 7047165475,
+//     "EBITDA": 565196000,
+//     "Price/Sales": 1.3330402,
+//     "Price/Book": 5.98,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RHI"
+//   },
+//   {
+//     "Symbol": "ROK",
+//     "Name": "Rockwell Automation Inc.",
+//     "Sector": "Industrials",
+//     "Price": 178.73,
+//     "Price/Earnings": 26.48,
+//     "Dividend Yield": 1.7692552,
+//     "Earnings/Share": 6.35,
+//     "52 Week Low": 210.72,
+//     "52 Week High": 147.67,
+//     "Market Cap": 24123216432,
+//     "EBITDA": 1323200000,
+//     "Price/Sales": 3.760594,
+//     "Price/Book": 10.94,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ROK"
+//   },
+//   {
+//     "Symbol": "COL",
+//     "Name": "Rockwell Collins",
+//     "Sector": "Industrials",
+//     "Price": 133.31,
+//     "Price/Earnings": 22.29,
+//     "Dividend Yield": 0.9748892,
+//     "Earnings/Share": 4.8,
+//     "52 Week Low": 139.63,
+//     "52 Week High": 89.9,
+//     "Market Cap": 22197870556,
+//     "EBITDA": 1696000000,
+//     "Price/Sales": 3.781273,
+//     "Price/Book": 3.46,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=COL"
+//   },
+//   {
+//     "Symbol": "ROP",
+//     "Name": "Roper Technologies",
+//     "Sector": "Industrials",
+//     "Price": 259.4,
+//     "Price/Earnings": 27.57,
+//     "Dividend Yield": 0.61985797,
+//     "Earnings/Share": 9.38,
+//     "52 Week Low": 290.415,
+//     "52 Week High": 191.22,
+//     "Market Cap": 27247789759,
+//     "EBITDA": 1555209000,
+//     "Price/Sales": 5.9715905,
+//     "Price/Book": 4.23,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ROP"
+//   },
+//   {
+//     "Symbol": "ROST",
+//     "Name": "Ross Stores",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 75.06,
+//     "Price/Earnings": 26.52,
+//     "Dividend Yield": 0.82061803,
+//     "Earnings/Share": 2.83,
+//     "52 Week Low": 85.66,
+//     "52 Week High": 52.85,
+//     "Market Cap": 29803566306,
+//     "EBITDA": 2247009000,
+//     "Price/Sales": 2.9734495,
+//     "Price/Book": 10.28,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ROST"
+//   },
+//   {
+//     "Symbol": "RCL",
+//     "Name": "Royal Caribbean Cruises Ltd",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 122.45,
+//     "Price/Earnings": 16.26,
+//     "Dividend Yield": 1.8674136,
+//     "Earnings/Share": 7.53,
+//     "52 Week Low": 135.65,
+//     "52 Week High": 93.4,
+//     "Market Cap": 27418147452,
+//     "EBITDA": 2876309000,
+//     "Price/Sales": 3.1026611,
+//     "Price/Book": 2.56,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RCL"
+//   },
+//   {
+//     "Symbol": "SPGI",
+//     "Name": "S&P Global, Inc.",
+//     "Sector": "Financials",
+//     "Price": 173.31,
+//     "Price/Earnings": 27.38,
+//     "Dividend Yield": 1.0947506,
+//     "Earnings/Share": 7.95,
+//     "52 Week Low": 185.38,
+//     "52 Week High": 124.64,
+//     "Market Cap": 46585950000,
+//     "EBITDA": 3021000000,
+//     "Price/Sales": 10.254704,
+//     "Price/Book": 50.56,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SPGI"
+//   },
+//   {
+//     "Symbol": "CRM",
+//     "Name": "Salesforce.com",
+//     "Sector": "Information Technology",
+//     "Price": 104.03,
+//     "Price/Earnings": 520.15,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 0.27,
+//     "52 Week Low": 114.52,
+//     "52 Week High": 79.63,
+//     "Market Cap": 79489115000,
+//     "EBITDA": 925804000,
+//     "Price/Sales": 10.3738785,
+//     "Price/Book": 8.81,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CRM"
+//   },
+//   {
+//     "Symbol": "SBAC",
+//     "Name": "SBA Communications",
+//     "Sector": "Real Estate",
+//     "Price": 159.85,
+//     "Price/Earnings": 199.81,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 0.62,
+//     "52 Week Low": 177.67,
+//     "52 Week High": 103.51,
+//     "Market Cap": 19572031314,
+//     "EBITDA": 1074240000,
+//     "Price/Sales": 15.189207,
+//     "Price/Book": 91.04,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SBAC"
+//   },
+//   {
+//     "Symbol": "SCG",
+//     "Name": "SCANA Corp",
+//     "Sector": "Utilities",
+//     "Price": 35.6,
+//     "Price/Earnings": 8.75,
+//     "Dividend Yield": 6.6830335,
+//     "Earnings/Share": 4.16,
+//     "52 Week Low": 71.28,
+//     "52 Week High": 35.31,
+//     "Market Cap": 5229448882,
+//     "EBITDA": 1459000000,
+//     "Price/Sales": 1.651705,
+//     "Price/Book": 0.92,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SCG"
+//   },
+//   {
+//     "Symbol": "SLB",
+//     "Name": "Schlumberger Ltd.",
+//     "Sector": "Energy",
+//     "Price": 67.4,
+//     "Price/Earnings": 44.93,
+//     "Dividend Yield": 2.8673835,
+//     "Earnings/Share": -1.08,
+//     "52 Week Low": 82.71,
+//     "52 Week High": 61.02,
+//     "Market Cap": 96529311126,
+//     "EBITDA": 3222000000,
+//     "Price/Sales": 3.2297828,
+//     "Price/Book": 2.64,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SLB"
+//   },
+//   {
+//     "Symbol": "SNI",
+//     "Name": "Scripps Networks Interactive Inc.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 86.46,
+//     "Price/Earnings": 16.04,
+//     "Dividend Yield": 1.3761468,
+//     "Earnings/Share": 5.18,
+//     "52 Week Low": 88.87,
+//     "52 Week High": 64.87,
+//     "Market Cap": 11328642413,
+//     "EBITDA": 1351059000,
+//     "Price/Sales": 4.374079,
+//     "Price/Book": 4.22,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SNI"
+//   },
+//   {
+//     "Symbol": "STX",
+//     "Name": "Seagate Technology",
+//     "Sector": "Information Technology",
+//     "Price": 47.44,
+//     "Price/Earnings": 11.51,
+//     "Dividend Yield": 5.085772,
+//     "Earnings/Share": 2.58,
+//     "52 Week Low": 56.45,
+//     "52 Week High": 30.6,
+//     "Market Cap": 14113197720,
+//     "EBITDA": 1811000000,
+//     "Price/Sales": 1.3048558,
+//     "Price/Book": 13.33,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=STX"
+//   },
+//   {
+//     "Symbol": "SEE",
+//     "Name": "Sealed Air",
+//     "Sector": "Materials",
+//     "Price": 42.62,
+//     "Price/Earnings": 21.31,
+//     "Dividend Yield": 1.4427412,
+//     "Earnings/Share": 2.46,
+//     "52 Week Low": 50.62,
+//     "52 Week High": 41.22,
+//     "Market Cap": 8001938397,
+//     "EBITDA": 969700000,
+//     "Price/Sales": 2.4700067,
+//     "Price/Book": 10.55,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SEE"
+//   },
+//   {
+//     "Symbol": "SRE",
+//     "Name": "Sempra Energy",
+//     "Sector": "Utilities",
+//     "Price": 103.36,
+//     "Price/Earnings": 19.14,
+//     "Dividend Yield": 3.1607263,
+//     "Earnings/Share": 5.45,
+//     "52 Week Low": 122.975,
+//     "52 Week High": 100.63,
+//     "Market Cap": 26163862235,
+//     "EBITDA": 3763000000,
+//     "Price/Sales": 3.15303,
+//     "Price/Book": 1.98,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SRE"
+//   },
+//   {
+//     "Symbol": "SHW",
+//     "Name": "Sherwin-Williams",
+//     "Sector": "Materials",
+//     "Price": 387.65,
+//     "Price/Earnings": 26.75,
+//     "Dividend Yield": 0.8426688,
+//     "Earnings/Share": 18.61,
+//     "52 Week Low": 435.15,
+//     "52 Week High": 302.0101,
+//     "Market Cap": 37730994828,
+//     "EBITDA": 2160668000,
+//     "Price/Sales": 2.5276077,
+//     "Price/Book": 13.42,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SHW"
+//   },
+//   {
+//     "Symbol": "SIG",
+//     "Name": "Signet Jewelers",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 49.38,
+//     "Price/Earnings": 6.65,
+//     "Dividend Yield": 2.4730754,
+//     "Earnings/Share": 7.03,
+//     "52 Week Low": 77.94,
+//     "52 Week High": 46.09,
+//     "Market Cap": 3034275549,
+//     "EBITDA": 852700000,
+//     "Price/Sales": 0.7564699,
+//     "Price/Book": 1.38,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SIG"
+//   },
+//   {
+//     "Symbol": "SPG",
+//     "Name": "Simon Property Group Inc",
+//     "Sector": "Real Estate",
+//     "Price": 152.18,
+//     "Price/Earnings": 13.56,
+//     "Dividend Yield": 5.0368075,
+//     "Earnings/Share": 6.25,
+//     "52 Week Low": 187.35,
+//     "52 Week High": 150.15,
+//     "Market Cap": 48139839531,
+//     "EBITDA": 4411515000,
+//     "Price/Sales": 8.754495,
+//     "Price/Book": 13.24,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SPG"
+//   },
+//   {
+//     "Symbol": "SWKS",
+//     "Name": "Skyworks Solutions",
+//     "Sector": "Information Technology",
+//     "Price": 99.04,
+//     "Price/Earnings": 16.45,
+//     "Dividend Yield": 1.2629502,
+//     "Earnings/Share": 5.41,
+//     "52 Week Low": 117.65,
+//     "52 Week High": 90.53,
+//     "Market Cap": 18493080922,
+//     "EBITDA": 1122900000,
+//     "Price/Sales": 6.9704437,
+//     "Price/Book": 4.25,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SWKS"
+//   },
+//   {
+//     "Symbol": "SLG",
+//     "Name": "SL Green Realty",
+//     "Sector": "Real Estate",
+//     "Price": 90.61,
+//     "Price/Earnings": 14.07,
+//     "Dividend Yield": 3.4998922,
+//     "Earnings/Share": 0.88,
+//     "52 Week Low": 115.34,
+//     "52 Week High": 91.2,
+//     "Market Cap": 8617714345,
+//     "EBITDA": 795889000,
+//     "Price/Sales": 6.5820084,
+//     "Price/Book": 1.32,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SLG"
+//   },
+//   {
+//     "Symbol": "SNA",
+//     "Name": "Snap-On Inc.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 156.72,
+//     "Price/Earnings": 15.81,
+//     "Dividend Yield": 1.968433,
+//     "Earnings/Share": 9.2,
+//     "52 Week Low": 185.47,
+//     "52 Week High": 140.83,
+//     "Market Cap": 9499107736,
+//     "EBITDA": 982200000,
+//     "Price/Sales": 3.5114813,
+//     "Price/Book": 3.21,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SNA"
+//   },
+//   {
+//     "Symbol": "SO",
+//     "Name": "Southern Co.",
+//     "Sector": "Utilities",
+//     "Price": 43.4,
+//     "Price/Earnings": 15.78,
+//     "Dividend Yield": 5.3530226,
+//     "Earnings/Share": 2.53,
+//     "52 Week Low": 53.51,
+//     "52 Week High": 42.63,
+//     "Market Cap": 43497224128,
+//     "EBITDA": 6012000000,
+//     "Price/Sales": 2.5080602,
+//     "Price/Book": 1.82,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SO"
+//   },
+//   {
+//     "Symbol": "LUV",
+//     "Name": "Southwest Airlines",
+//     "Sector": "Industrials",
+//     "Price": 55.63,
+//     "Price/Earnings": 15.89,
+//     "Dividend Yield": 0.863707,
+//     "Earnings/Share": 5.82,
+//     "52 Week Low": 66.985,
+//     "52 Week High": 49.76,
+//     "Market Cap": 34351211637,
+//     "EBITDA": 4533000000,
+//     "Price/Sales": 1.6294897,
+//     "Price/Book": 3.84,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LUV"
+//   },
+//   {
+//     "Symbol": "SWK",
+//     "Name": "Stanley Black & Decker",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 152.86,
+//     "Price/Earnings": 20.57,
+//     "Dividend Yield": 1.5775635,
+//     "Earnings/Share": 8.05,
+//     "52 Week Low": 176.62,
+//     "52 Week High": 121.09,
+//     "Market Cap": 24496399600,
+//     "EBITDA": 2264600000,
+//     "Price/Sales": 1.944325,
+//     "Price/Book": 3.34,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SWK"
+//   },
+//   {
+//     "Symbol": "SBUX",
+//     "Name": "Starbucks Corp.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 53.77,
+//     "Price/Earnings": 25.98,
+//     "Dividend Yield": 2.203452,
+//     "Earnings/Share": 1.97,
+//     "52 Week Low": 64.87,
+//     "52 Week High": 52.58,
+//     "Market Cap": 76548976000,
+//     "EBITDA": 7361500000,
+//     "Price/Sales": 3.4392443,
+//     "Price/Book": 13.36,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SBUX"
+//   },
+//   {
+//     "Symbol": "STT",
+//     "Name": "State Street Corp.",
+//     "Sector": "Financials",
+//     "Price": 98.54,
+//     "Price/Earnings": 15.35,
+//     "Dividend Yield": 1.6228749,
+//     "Earnings/Share": 5.23,
+//     "52 Week Low": 114.27,
+//     "52 Week High": 75.27,
+//     "Market Cap": 38059113300,
+//     "EBITDA": 0,
+//     "Price/Sales": 3.263072,
+//     "Price/Book": 1.95,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=STT"
+//   },
+//   {
+//     "Symbol": "SRCL",
+//     "Name": "Stericycle Inc",
+//     "Sector": "Industrials",
+//     "Price": 70.55,
+//     "Price/Earnings": 16.26,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 2.08,
+//     "52 Week Low": 88,
+//     "52 Week High": 61.25,
+//     "Market Cap": 6218560288,
+//     "EBITDA": 305085000,
+//     "Price/Sales": 2.2607324,
+//     "Price/Book": 2.15,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SRCL"
+//   },
+//   {
+//     "Symbol": "SYK",
+//     "Name": "Stryker Corp.",
+//     "Sector": "Health Care",
+//     "Price": 148.01,
+//     "Price/Earnings": 23.46,
+//     "Dividend Yield": 1.2234008,
+//     "Earnings/Share": 2.68,
+//     "52 Week Low": 170,
+//     "52 Week High": 122.01,
+//     "Market Cap": 57509096756,
+//     "EBITDA": 2863000000,
+//     "Price/Sales": 4.635566,
+//     "Price/Book": 5.54,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SYK"
+//   },
+//   {
+//     "Symbol": "STI",
+//     "Name": "SunTrust Banks",
+//     "Sector": "Financials",
+//     "Price": 65.8,
+//     "Price/Earnings": 16.25,
+//     "Dividend Yield": 2.3185046,
+//     "Earnings/Share": 4.48,
+//     "52 Week Low": 72.06,
+//     "52 Week High": 51.96,
+//     "Market Cap": 32498948310,
+//     "EBITDA": 0,
+//     "Price/Sales": 3.3089445,
+//     "Price/Book": 1.38,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=STI"
+//   },
+//   {
+//     "Symbol": "SYMC",
+//     "Name": "Symantec Corp.",
+//     "Sector": "Information Technology",
+//     "Price": 25.59,
+//     "Price/Earnings": 39.37,
+//     "Dividend Yield": 1.1286682,
+//     "Earnings/Share": -0.17,
+//     "52 Week Low": 34.2,
+//     "52 Week High": 25.65,
+//     "Market Cap": 16520497264,
+//     "EBITDA": 1227000000,
+//     "Price/Sales": 3.5516493,
+//     "Price/Book": 3.36,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SYMC"
+//   },
+//   {
+//     "Symbol": "SYF",
+//     "Name": "Synchrony Financial",
+//     "Sector": "Financials",
+//     "Price": 34.98,
+//     "Price/Earnings": 13.35,
+//     "Dividend Yield": 1.6,
+//     "Earnings/Share": 2.41,
+//     "52 Week Low": 40.59,
+//     "52 Week High": 26.01,
+//     "Market Cap": 28893750000,
+//     "EBITDA": 0,
+//     "Price/Sales": 2.1096623,
+//     "Price/Book": 1.97,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SYF"
+//   },
+//   {
+//     "Symbol": "SNPS",
+//     "Name": "Synopsys Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 82.62,
+//     "Price/Earnings": 67.72,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 0.87,
+//     "52 Week Low": 94.8,
+//     "52 Week High": 64.75,
+//     "Market Cap": 12767067883,
+//     "EBITDA": 579844000,
+//     "Price/Sales": 6.276264,
+//     "Price/Book": 3.98,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SNPS"
+//   },
+//   {
+//     "Symbol": "SYY",
+//     "Name": "Sysco Corp.",
+//     "Sector": "Consumer Staples",
+//     "Price": 57,
+//     "Price/Earnings": 22.98,
+//     "Dividend Yield": 2.4644873,
+//     "Earnings/Share": 2.08,
+//     "52 Week Low": 64.27,
+//     "52 Week High": 48.85,
+//     "Market Cap": 30445320778,
+//     "EBITDA": 2988725000,
+//     "Price/Sales": 0.7295535,
+//     "Price/Book": 13.4,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SYY"
+//   },
+//   {
+//     "Symbol": "TROW",
+//     "Name": "T. Rowe Price Group",
+//     "Sector": "Financials",
+//     "Price": 101.99,
+//     "Price/Earnings": 19.92,
+//     "Dividend Yield": 2.140443,
+//     "Earnings/Share": 4.75,
+//     "52 Week Low": 120.07,
+//     "52 Week High": 66.7,
+//     "Market Cap": 25810865035,
+//     "EBITDA": 2281400000,
+//     "Price/Sales": 7.3911157,
+//     "Price/Book": 4.61,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TROW"
+//   },
+//   {
+//     "Symbol": "TPR",
+//     "Name": "Tapestry, Inc.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 48.85,
+//     "Price/Earnings": "",
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 2.09,
+//     "52 Week Low": 50.71,
+//     "52 Week High": 36.69,
+//     "Market Cap": 14247199374,
+//     "EBITDA": 0,
+//     "Price/Sales": 4.0785494,
+//     "Price/Book": 4.35,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TPR"
+//   },
+//   {
+//     "Symbol": "TGT",
+//     "Name": "Target Corp.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 71.11,
+//     "Price/Earnings": 14.19,
+//     "Dividend Yield": 3.3856654,
+//     "Earnings/Share": 4.71,
+//     "52 Week Low": 78.7,
+//     "52 Week High": 48.56,
+//     "Market Cap": 39816696539,
+//     "EBITDA": 7105000000,
+//     "Price/Sales": 0.8047394,
+//     "Price/Book": 3.45,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TGT"
+//   },
+//   {
+//     "Symbol": "TEL",
+//     "Name": "TE Connectivity Ltd.",
+//     "Sector": "Information Technology",
+//     "Price": 95.27,
+//     "Price/Earnings": 19.72,
+//     "Dividend Yield": 1.6062645,
+//     "Earnings/Share": 4.71,
+//     "52 Week Low": 108.23,
+//     "52 Week High": 71.93,
+//     "Market Cap": 34983666316,
+//     "EBITDA": 2797000000,
+//     "Price/Sales": 2.5734365,
+//     "Price/Book": 3.6,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TEL"
+//   },
+//   {
+//     "Symbol": "FTI",
+//     "Name": "TechnipFMC",
+//     "Sector": "Energy",
+//     "Price": 29.1,
+//     "Price/Earnings": 18.77,
+//     "Dividend Yield": 1.7060367,
+//     "Earnings/Share": 0,
+//     "52 Week Low": 35,
+//     "52 Week High": 24.53,
+//     "Market Cap": 14163064455,
+//     "EBITDA": 540167833.423084,
+//     "Price/Sales": 1.561575,
+//     "Price/Book": 1.06,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FTI"
+//   },
+//   {
+//     "Symbol": "TXN",
+//     "Name": "Texas Instruments",
+//     "Sector": "Information Technology",
+//     "Price": 97.66,
+//     "Price/Earnings": 24.05,
+//     "Dividend Yield": 2.4318495,
+//     "Earnings/Share": 3.6,
+//     "52 Week Low": 120.75,
+//     "52 Week High": 74.52,
+//     "Market Cap": 100262526470,
+//     "EBITDA": 7013000000,
+//     "Price/Sales": 6.9572234,
+//     "Price/Book": 9.32,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TXN"
+//   },
+//   {
+//     "Symbol": "TXT",
+//     "Name": "Textron Inc.",
+//     "Sector": "Industrials",
+//     "Price": 55.54,
+//     "Price/Earnings": 22.13,
+//     "Dividend Yield": 0.1381454,
+//     "Earnings/Share": 1.14,
+//     "52 Week Low": 62.19,
+//     "52 Week High": 45,
+//     "Market Cap": 15254672353,
+//     "EBITDA": 1454000000,
+//     "Price/Sales": 1.0645695,
+//     "Price/Book": 2.57,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TXT"
+//   },
+//   {
+//     "Symbol": "BK",
+//     "Name": "The Bank of New York Mellon Corp.",
+//     "Sector": "Financials",
+//     "Price": 53.29,
+//     "Price/Earnings": 14.76,
+//     "Dividend Yield": 1.7347307,
+//     "Earnings/Share": 3.73,
+//     "52 Week Low": 58.99,
+//     "52 Week High": 44.91,
+//     "Market Cap": 56083904906,
+//     "EBITDA": 0,
+//     "Price/Sales": 3.3834257,
+//     "Price/Book": 1.49,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BK"
+//   },
+//   {
+//     "Symbol": "CLX",
+//     "Name": "The Clorox Company",
+//     "Sector": "Consumer Staples",
+//     "Price": 127.76,
+//     "Price/Earnings": 23.44,
+//     "Dividend Yield": 2.6286967,
+//     "Earnings/Share": 5.33,
+//     "52 Week Low": 150.4,
+//     "52 Week High": 124.09,
+//     "Market Cap": 16540418002,
+//     "EBITDA": 1295000000,
+//     "Price/Sales": 2.798683,
+//     "Price/Book": 21.62,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=CLX"
+//   },
+//   {
+//     "Symbol": "COO",
+//     "Name": "The Cooper Companies",
+//     "Sector": "Health Care",
+//     "Price": 223.17,
+//     "Price/Earnings": 22.96,
+//     "Dividend Yield": 0.026033757,
+//     "Earnings/Share": 7.52,
+//     "52 Week Low": 256.39,
+//     "52 Week High": 187.02,
+//     "Market Cap": 11297958140,
+//     "EBITDA": 615700000,
+//     "Price/Sales": 6.8538465,
+//     "Price/Book": 3.57,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=COO"
+//   },
+//   {
+//     "Symbol": "HSY",
+//     "Name": "The Hershey Company",
+//     "Sector": "Consumer Staples",
+//     "Price": 97.65,
+//     "Price/Earnings": 20.51,
+//     "Dividend Yield": 2.6494346,
+//     "Earnings/Share": 3.66,
+//     "52 Week Low": 116.49,
+//     "52 Week High": 98.851,
+//     "Market Cap": 20867272020,
+//     "EBITDA": 1404123000,
+//     "Price/Sales": 2.8396711,
+//     "Price/Book": 25.64,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HSY"
+//   },
+//   {
+//     "Symbol": "MOS",
+//     "Name": "The Mosaic Company",
+//     "Sector": "Materials",
+//     "Price": 24.13,
+//     "Price/Earnings": 23.66,
+//     "Dividend Yield": 0.3960396,
+//     "Earnings/Share": 0.85,
+//     "52 Week Low": 34.36,
+//     "52 Week High": 19.23,
+//     "Market Cap": 9726962131,
+//     "EBITDA": 1165100000,
+//     "Price/Sales": 1.8161958,
+//     "Price/Book": 0.94,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=MOS"
+//   },
+//   {
+//     "Symbol": "TRV",
+//     "Name": "The Travelers Companies Inc.",
+//     "Sector": "Financials",
+//     "Price": 135.01,
+//     "Price/Earnings": 16.48,
+//     "Dividend Yield": 2.0261714,
+//     "Earnings/Share": 7.31,
+//     "52 Week Low": 150.55,
+//     "52 Week High": 113.76,
+//     "Market Cap": 38903131815,
+//     "EBITDA": 0,
+//     "Price/Sales": 1.33382,
+//     "Price/Book": 1.63,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TRV"
+//   },
+//   {
+//     "Symbol": "DIS",
+//     "Name": "The Walt Disney Company",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 101.35,
+//     "Price/Earnings": 17.78,
+//     "Dividend Yield": 1.6036655,
+//     "Earnings/Share": 5.7,
+//     "52 Week Low": 116.1,
+//     "52 Week High": 96.2,
+//     "Market Cap": 157817273295,
+//     "EBITDA": 12544000000,
+//     "Price/Sales": 3.9635563,
+//     "Price/Book": 3.82,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=DIS"
+//   },
+//   {
+//     "Symbol": "TMO",
+//     "Name": "Thermo Fisher Scientific",
+//     "Sector": "Health Care",
+//     "Price": 198.73,
+//     "Price/Earnings": 21.84,
+//     "Dividend Yield": 0.3276319,
+//     "Earnings/Share": 5.6,
+//     "52 Week Low": 226.44,
+//     "52 Week High": 151.69,
+//     "Market Cap": 83226586345,
+//     "EBITDA": 4751300000,
+//     "Price/Sales": 4.015666,
+//     "Price/Book": 3.38,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TMO"
+//   },
+//   {
+//     "Symbol": "TIF",
+//     "Name": "Tiffany & Co.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 99.62,
+//     "Price/Earnings": 27,
+//     "Dividend Yield": 1.9402406,
+//     "Earnings/Share": 3.55,
+//     "52 Week Low": 111.44,
+//     "52 Week High": 77.93,
+//     "Market Cap": 12810515320,
+//     "EBITDA": 949500000,
+//     "Price/Sales": 4.516748,
+//     "Price/Book": 3.97,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TIF"
+//   },
+//   {
+//     "Symbol": "TWX",
+//     "Name": "Time Warner Inc.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 93.02,
+//     "Price/Earnings": 15.35,
+//     "Dividend Yield": 1.6927768,
+//     "Earnings/Share": 6.62,
+//     "52 Week Low": 103.9,
+//     "52 Week High": 85.88,
+//     "Market Cap": 74185800000,
+//     "EBITDA": 7671000000,
+//     "Price/Sales": 2.3735986,
+//     "Price/Book": 2.73,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TWX"
+//   },
+//   {
+//     "Symbol": "TJX",
+//     "Name": "TJX Companies Inc.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 74.36,
+//     "Price/Earnings": 21.01,
+//     "Dividend Yield": 1.64042,
+//     "Earnings/Share": 3.46,
+//     "52 Week Low": 81.46,
+//     "52 Week High": 66.44,
+//     "Market Cap": 48181450881,
+//     "EBITDA": 4600216000,
+//     "Price/Sales": 1.9293598,
+//     "Price/Book": 10.35,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TJX"
+//   },
+//   {
+//     "Symbol": "TMK",
+//     "Name": "Torchmark Corp.",
+//     "Sector": "Financials",
+//     "Price": 80.52,
+//     "Price/Earnings": 17.02,
+//     "Dividend Yield": 0.7204611,
+//     "Earnings/Share": 4.5,
+//     "52 Week Low": 93.595,
+//     "52 Week High": 73.53,
+//     "Market Cap": 9614412169,
+//     "EBITDA": 0,
+//     "Price/Sales": 3.1079664,
+//     "Price/Book": 1.88,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TMK"
+//   },
+//   {
+//     "Symbol": "TSS",
+//     "Name": "Total System Services",
+//     "Sector": "Information Technology",
+//     "Price": 81.17,
+//     "Price/Earnings": 25.85,
+//     "Dividend Yield": 0.6091133,
+//     "Earnings/Share": 3.16,
+//     "52 Week Low": 89.92,
+//     "52 Week High": 50.96,
+//     "Market Cap": 15694951118,
+//     "EBITDA": 1097534000,
+//     "Price/Sales": 3.175548,
+//     "Price/Book": 6.57,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TSS"
+//   },
+//   {
+//     "Symbol": "TSCO",
+//     "Name": "Tractor Supply Company",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 65.94,
+//     "Price/Earnings": 19.57,
+//     "Dividend Yield": 1.6030874,
+//     "Earnings/Share": 3.3,
+//     "52 Week Low": 82.68,
+//     "52 Week High": 49.87,
+//     "Market Cap": 8459271203,
+//     "EBITDA": 859519000,
+//     "Price/Sales": 1.1642125,
+//     "Price/Book": 6.01,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TSCO"
+//   },
+//   {
+//     "Symbol": "TDG",
+//     "Name": "TransDigm Group",
+//     "Sector": "Industrials",
+//     "Price": 283,
+//     "Price/Earnings": 23.76,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 7.92,
+//     "52 Week Low": 321.38,
+//     "52 Week High": 203.72,
+//     "Market Cap": 15241203731,
+//     "EBITDA": 1635916000,
+//     "Price/Sales": 4.268832,
+//     "Price/Book": "",
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TDG"
+//   },
+//   {
+//     "Symbol": "TRIP",
+//     "Name": "TripAdvisor",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 40.05,
+//     "Price/Earnings": 58.04,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 0.81,
+//     "52 Week Low": 53.29,
+//     "52 Week High": 29.5,
+//     "Market Cap": 5700998508,
+//     "EBITDA": 234000000,
+//     "Price/Sales": 4.5925775,
+//     "Price/Book": 3.49,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TRIP"
+//   },
+//   {
+//     "Symbol": "FOXA",
+//     "Name": "Twenty-First Century Fox Class A",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 34.56,
+//     "Price/Earnings": 17.81,
+//     "Dividend Yield": 0.9983361,
+//     "Earnings/Share": 1.59,
+//     "52 Week Low": 39.135,
+//     "52 Week High": 24.81,
+//     "Market Cap": 44027094922,
+//     "EBITDA": 5280000000,
+//     "Price/Sales": 2.1080317,
+//     "Price/Book": 4.11,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FOXA"
+//   },
+//   {
+//     "Symbol": "FOX",
+//     "Name": "Twenty-First Century Fox Class B",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 34.09,
+//     "Price/Earnings": 17.57,
+//     "Dividend Yield": 1.0084034,
+//     "Earnings/Share": 1.59,
+//     "52 Week Low": 38.56,
+//     "52 Week High": 24.3,
+//     "Market Cap": 66135313503,
+//     "EBITDA": 5280000000,
+//     "Price/Sales": 3.1654842,
+//     "Price/Book": 4.04,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FOX"
+//   },
+//   {
+//     "Symbol": "TSN",
+//     "Name": "Tyson Foods",
+//     "Sector": "Consumer Staples",
+//     "Price": 73.92,
+//     "Price/Earnings": 13.92,
+//     "Dividend Yield": 1.6353229,
+//     "Earnings/Share": 4.79,
+//     "52 Week Low": 84.65,
+//     "52 Week High": 57.2,
+//     "Market Cap": 26957526800,
+//     "EBITDA": 2521000000,
+//     "Price/Sales": 0.93730986,
+//     "Price/Book": 2.55,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=TSN"
+//   },
+//   {
+//     "Symbol": "USB",
+//     "Name": "U.S. Bancorp",
+//     "Sector": "Financials",
+//     "Price": 52.65,
+//     "Price/Earnings": 15.35,
+//     "Dividend Yield": 2.189781,
+//     "Earnings/Share": 3.52,
+//     "52 Week Low": 58.5,
+//     "52 Week High": 49.535,
+//     "Market Cap": 90940115897,
+//     "EBITDA": 0,
+//     "Price/Sales": 3.7773547,
+//     "Price/Book": 2.09,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=USB"
+//   },
+//   {
+//     "Symbol": "UDR",
+//     "Name": "UDR Inc",
+//     "Sector": "Real Estate",
+//     "Price": 32.92,
+//     "Price/Earnings": 17.79,
+//     "Dividend Yield": 3.668639,
+//     "Earnings/Share": 1.08,
+//     "52 Week Low": 40.71,
+//     "52 Week High": 33.31,
+//     "Market Cap": 9050154422,
+//     "EBITDA": 665141000,
+//     "Price/Sales": 12.365829,
+//     "Price/Book": 3.27,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UDR"
+//   },
+//   {
+//     "Symbol": "ULTA",
+//     "Name": "Ulta Salon Cosmetics & Fragrance Inc",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 209.09,
+//     "Price/Earnings": 32.07,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 6.52,
+//     "52 Week Low": 314.86,
+//     "52 Week High": 187.96,
+//     "Market Cap": 13300000127,
+//     "EBITDA": 1002093000,
+//     "Price/Sales": 3.3779113,
+//     "Price/Book": 8.04,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ULTA"
+//   },
+//   {
+//     "Symbol": "UAA",
+//     "Name": "Under Armour Class A",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 13.14,
+//     "Price/Earnings": 32.05,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 0.45,
+//     "52 Week Low": 23.46,
+//     "52 Week High": 11.4,
+//     "Market Cap": 5856913571,
+//     "EBITDA": 399277000,
+//     "Price/Sales": 1.602308,
+//     "Price/Book": 2.72,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UAA"
+//   },
+//   {
+//     "Symbol": "UA",
+//     "Name": "Under Armour Class C",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 11.95,
+//     "Price/Earnings": 29.15,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 0.45,
+//     "52 Week Low": 21.805,
+//     "52 Week High": 10.36,
+//     "Market Cap": 5366628950,
+//     "EBITDA": 399277000,
+//     "Price/Sales": 1.4738787,
+//     "Price/Book": 2.5,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UA"
+//   },
+//   {
+//     "Symbol": "UNP",
+//     "Name": "Union Pacific",
+//     "Sector": "Industrials",
+//     "Price": 124.86,
+//     "Price/Earnings": 22.06,
+//     "Dividend Yield": 2.062655,
+//     "Earnings/Share": 13.52,
+//     "52 Week Low": 143.05,
+//     "52 Week High": 101.06,
+//     "Market Cap": 101513290382,
+//     "EBITDA": 10169000000,
+//     "Price/Sales": 4.8605075,
+//     "Price/Book": "",
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UNP"
+//   },
+//   {
+//     "Symbol": "UAL",
+//     "Name": "United Continental Holdings",
+//     "Sector": "Industrials",
+//     "Price": 63.37,
+//     "Price/Earnings": 8.85,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 7.05,
+//     "52 Week Low": 83.04,
+//     "52 Week High": 56.51,
+//     "Market Cap": 19363059152,
+//     "EBITDA": 5929000000,
+//     "Price/Sales": 0.5020496,
+//     "Price/Book": 2.09,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UAL"
+//   },
+//   {
+//     "Symbol": "UNH",
+//     "Name": "United Health Group Inc.",
+//     "Sector": "Health Care",
+//     "Price": 216.46,
+//     "Price/Earnings": 21.47,
+//     "Dividend Yield": 1.3284917,
+//     "Earnings/Share": 10.71,
+//     "52 Week Low": 250.79,
+//     "52 Week High": 156.49,
+//     "Market Cap": 218834811333,
+//     "EBITDA": 17454000000,
+//     "Price/Sales": 1.0903316,
+//     "Price/Book": 4.71,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UNH"
+//   },
+//   {
+//     "Symbol": "UPS",
+//     "Name": "United Parcel Service",
+//     "Sector": "Industrials",
+//     "Price": 109.28,
+//     "Price/Earnings": 18.27,
+//     "Dividend Yield": 2.9666696,
+//     "Earnings/Share": 5.62,
+//     "52 Week Low": 135.53,
+//     "52 Week High": 102.12,
+//     "Market Cap": 96436356833,
+//     "EBITDA": 7919000000,
+//     "Price/Sales": 1.4744618,
+//     "Price/Book": 64.7,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UPS"
+//   },
+//   {
+//     "Symbol": "URI",
+//     "Name": "United Rentals, Inc.",
+//     "Sector": "Industrials",
+//     "Price": 161.99,
+//     "Price/Earnings": 16.33,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 15.72,
+//     "52 Week Low": 189,
+//     "52 Week High": 100.621,
+//     "Market Cap": 14654954091,
+//     "EBITDA": 2760000000,
+//     "Price/Sales": 2.1782618,
+//     "Price/Book": 4.53,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=URI"
+//   },
+//   {
+//     "Symbol": "UTX",
+//     "Name": "United Technologies",
+//     "Sector": "Industrials",
+//     "Price": 127.48,
+//     "Price/Earnings": 19.26,
+//     "Dividend Yield": 2.1216943,
+//     "Earnings/Share": 5.7,
+//     "52 Week Low": 139.24,
+//     "52 Week High": 107.05,
+//     "Market Cap": 105387272474,
+//     "EBITDA": 10584000000,
+//     "Price/Sales": 1.7324123,
+//     "Price/Book": 3.4,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UTX"
+//   },
+//   {
+//     "Symbol": "UHS",
+//     "Name": "Universal Health Services, Inc.",
+//     "Sector": "Health Care",
+//     "Price": 114.87,
+//     "Price/Earnings": 15.36,
+//     "Dividend Yield": 0.34153005,
+//     "Earnings/Share": 7.14,
+//     "52 Week Low": 129.74,
+//     "52 Week High": 95.26,
+//     "Market Cap": 11116075286,
+//     "EBITDA": 1676204000,
+//     "Price/Sales": 1.3158662,
+//     "Price/Book": 2.21,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UHS"
+//   },
+//   {
+//     "Symbol": "UNM",
+//     "Name": "Unum Group",
+//     "Sector": "Financials",
+//     "Price": 47.87,
+//     "Price/Earnings": 11.51,
+//     "Dividend Yield": 1.8189007,
+//     "Earnings/Share": 4.38,
+//     "52 Week Low": 58.73,
+//     "52 Week High": 43.55,
+//     "Market Cap": 11256432318,
+//     "EBITDA": 0,
+//     "Price/Sales": 0.9984924,
+//     "Price/Book": 1.19,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UNM"
+//   },
+//   {
+//     "Symbol": "VFC",
+//     "Name": "V.F. Corp.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 78.75,
+//     "Price/Earnings": 25.9,
+//     "Dividend Yield": 2.2865665,
+//     "Earnings/Share": 2.55,
+//     "52 Week Low": 82.95,
+//     "52 Week High": 48.05,
+//     "Market Cap": 31797645904,
+//     "EBITDA": 1624441000,
+//     "Price/Sales": 3.7110944,
+//     "Price/Book": 7.89,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VFC"
+//   },
+//   {
+//     "Symbol": "VLO",
+//     "Name": "Valero Energy",
+//     "Sector": "Energy",
+//     "Price": 86.77,
+//     "Price/Earnings": 18.74,
+//     "Dividend Yield": 3.5618877,
+//     "Earnings/Share": 9.24,
+//     "52 Week Low": 99.95,
+//     "52 Week High": 60.69,
+//     "Market Cap": 39312309113,
+//     "EBITDA": 5401000000,
+//     "Price/Sales": 0.4211918,
+//     "Price/Book": 1.93,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VLO"
+//   },
+//   {
+//     "Symbol": "VAR",
+//     "Name": "Varian Medical Systems",
+//     "Sector": "Health Care",
+//     "Price": 112.82,
+//     "Price/Earnings": 29.93,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 2.69,
+//     "52 Week Low": 130.29,
+//     "52 Week High": 77.73,
+//     "Market Cap": 10692681720,
+//     "EBITDA": 500600000,
+//     "Price/Sales": 3.9652252,
+//     "Price/Book": 7.32,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VAR"
+//   },
+//   {
+//     "Symbol": "VTR",
+//     "Name": "Ventas Inc",
+//     "Sector": "Real Estate",
+//     "Price": 50.92,
+//     "Price/Earnings": 12.21,
+//     "Dividend Yield": 5.965641,
+//     "Earnings/Share": 1.86,
+//     "52 Week Low": 72.36,
+//     "52 Week High": 51.8,
+//     "Market Cap": 18865999082,
+//     "EBITDA": 1935931000,
+//     "Price/Sales": 7.0740495,
+//     "Price/Book": 1.76,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VTR"
+//   },
+//   {
+//     "Symbol": "VRSN",
+//     "Name": "Verisign Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 105.62,
+//     "Price/Earnings": 29.5,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 3.43,
+//     "52 Week Low": 118.28,
+//     "52 Week High": 81.17,
+//     "Market Cap": 10754983829,
+//     "EBITDA": 767864000,
+//     "Price/Sales": 12.401829,
+//     "Price/Book": 10.82,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VRSN"
+//   },
+//   {
+//     "Symbol": "VRSK",
+//     "Name": "Verisk Analytics",
+//     "Sector": "Industrials",
+//     "Price": 92.28,
+//     "Price/Earnings": 28.84,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 3.45,
+//     "52 Week Low": 100.54,
+//     "52 Week High": 75.6,
+//     "Market Cap": 15594677147,
+//     "EBITDA": 1011200000,
+//     "Price/Sales": 9.935474,
+//     "Price/Book": 9.34,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VRSK"
+//   },
+//   {
+//     "Symbol": "VZ",
+//     "Name": "Verizon Communications",
+//     "Sector": "Telecommunication Services",
+//     "Price": 49.04,
+//     "Price/Earnings": 13.08,
+//     "Dividend Yield": 4.626544,
+//     "Earnings/Share": 7.36,
+//     "52 Week Low": 54.77,
+//     "52 Week High": 42.8,
+//     "Market Cap": 208092277044,
+//     "EBITDA": 45745000000,
+//     "Price/Sales": 1.6452544,
+//     "Price/Book": 7.96,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VZ"
+//   },
+//   {
+//     "Symbol": "VRTX",
+//     "Name": "Vertex Pharmaceuticals Inc",
+//     "Sector": "Health Care",
+//     "Price": 151.6,
+//     "Price/Earnings": 252.67,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 1.04,
+//     "52 Week Low": 174.955,
+//     "52 Week High": 84.39,
+//     "Market Cap": 39369386348,
+//     "EBITDA": 97562000,
+//     "Price/Sales": 16.185404,
+//     "Price/Book": 21.91,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VRTX"
+//   },
+//   {
+//     "Symbol": "VIAB",
+//     "Name": "Viacom Inc.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 32.71,
+//     "Price/Earnings": 8.68,
+//     "Dividend Yield": 2.622091,
+//     "Earnings/Share": 4.68,
+//     "52 Week Low": 46.72,
+//     "52 Week High": 22.13,
+//     "Market Cap": 10601008017,
+//     "EBITDA": 5600000000,
+//     "Price/Sales": 1.0924768,
+//     "Price/Book": 2.08,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VIAB"
+//   },
+//   {
+//     "Symbol": "V",
+//     "Name": "Visa Inc.",
+//     "Sector": "Information Technology",
+//     "Price": 113.86,
+//     "Price/Earnings": 32.72,
+//     "Dividend Yield": 0.70204765,
+//     "Earnings/Share": 2.8,
+//     "52 Week Low": 126.88,
+//     "52 Week High": 84.88,
+//     "Market Cap": 270038723213,
+//     "EBITDA": 13086000000,
+//     "Price/Sales": 14.433654,
+//     "Price/Book": 9.4,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=V"
+//   },
+//   {
+//     "Symbol": "VNO",
+//     "Name": "Vornado Realty Trust",
+//     "Sector": "Real Estate",
+//     "Price": 66.18,
+//     "Price/Earnings": 16.22,
+//     "Dividend Yield": 3.744428,
+//     "Earnings/Share": 4.33,
+//     "52 Week Low": 111.72,
+//     "52 Week High": 66.0101,
+//     "Market Cap": 12778779911,
+//     "EBITDA": 0,
+//     "Price/Sales": 7.1491003,
+//     "Price/Book": 3.63,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VNO"
+//   },
+//   {
+//     "Symbol": "VMC",
+//     "Name": "Vulcan Materials",
+//     "Sector": "Materials",
+//     "Price": 121.47,
+//     "Price/Earnings": 40.9,
+//     "Dividend Yield": 0.7797879,
+//     "Earnings/Share": 3.1,
+//     "52 Week Low": 141.2,
+//     "52 Week High": 108.95,
+//     "Market Cap": 16964162228,
+//     "EBITDA": 970976000,
+//     "Price/Sales": 5.7576876,
+//     "Price/Book": 3.54,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VMC"
+//   },
+//   {
+//     "Symbol": "WMT",
+//     "Name": "Wal-Mart Stores",
+//     "Sector": "Consumer Staples",
+//     "Price": 100.02,
+//     "Price/Earnings": 23.1,
+//     "Dividend Yield": 1.983471,
+//     "Earnings/Share": 4.39,
+//     "52 Week Low": 109.98,
+//     "52 Week High": 66.89,
+//     "Market Cap": 304680931618,
+//     "EBITDA": 30721000000,
+//     "Price/Sales": 0.82099426,
+//     "Price/Book": 3.89,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WMT"
+//   },
+//   {
+//     "Symbol": "WBA",
+//     "Name": "Walgreens Boots Alliance",
+//     "Sector": "Consumer Staples",
+//     "Price": 68.22,
+//     "Price/Earnings": 13.38,
+//     "Dividend Yield": 2.2368238,
+//     "Earnings/Share": 3.78,
+//     "52 Week Low": 88,
+//     "52 Week High": 63.82,
+//     "Market Cap": 70862541911,
+//     "EBITDA": 7083000000,
+//     "Price/Sales": 0.5904388,
+//     "Price/Book": 3.06,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WBA"
+//   },
+//   {
+//     "Symbol": "WM",
+//     "Name": "Waste Management Inc.",
+//     "Sector": "Industrials",
+//     "Price": 79.12,
+//     "Price/Earnings": 25.36,
+//     "Dividend Yield": 2.0800195,
+//     "Earnings/Share": 2.66,
+//     "52 Week Low": 89.73,
+//     "52 Week High": 69.55,
+//     "Market Cap": 35488486675,
+//     "EBITDA": 3896000000,
+//     "Price/Sales": 3.2787669,
+//     "Price/Book": 6.73,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WM"
+//   },
+//   {
+//     "Symbol": "WAT",
+//     "Name": "Waters Corporation",
+//     "Sector": "Health Care",
+//     "Price": 191.79,
+//     "Price/Earnings": 26.64,
+//     "Dividend Yield": 0,
+//     "Earnings/Share": 0.19,
+//     "52 Week Low": 220.2,
+//     "52 Week High": 145.94,
+//     "Market Cap": 16064078572,
+//     "EBITDA": 773932000,
+//     "Price/Sales": 6.9824114,
+//     "Price/Book": 6.15,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WAT"
+//   },
+//   {
+//     "Symbol": "WEC",
+//     "Name": "Wec Energy Group Inc",
+//     "Sector": "Utilities",
+//     "Price": 59.5,
+//     "Price/Earnings": 19.57,
+//     "Dividend Yield": 3.691948,
+//     "Earnings/Share": 3.79,
+//     "52 Week Low": 70.09,
+//     "52 Week High": 56.63,
+//     "Market Cap": 18890296993,
+//     "EBITDA": 2736500000,
+//     "Price/Sales": 2.4834197,
+//     "Price/Book": 2.1,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WEC"
+//   },
+//   {
+//     "Symbol": "WFC",
+//     "Name": "Wells Fargo",
+//     "Sector": "Financials",
+//     "Price": 55.4,
+//     "Price/Earnings": 13.58,
+//     "Dividend Yield": 2.7111576,
+//     "Earnings/Share": 4.07,
+//     "52 Week Low": 66.31,
+//     "52 Week High": 49.27,
+//     "Market Cap": 281463620775,
+//     "EBITDA": 0,
+//     "Price/Sales": 2.8728192,
+//     "Price/Book": 1.58,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WFC"
+//   },
+//   {
+//     "Symbol": "HCN",
+//     "Name": "Welltower Inc.",
+//     "Sector": "Real Estate",
+//     "Price": 54.67,
+//     "Price/Earnings": 12.74,
+//     "Dividend Yield": 6.1538463,
+//     "Earnings/Share": 2.81,
+//     "52 Week Low": 78.17,
+//     "52 Week High": 55.29,
+//     "Market Cap": 20943679019,
+//     "EBITDA": 1908253000,
+//     "Price/Sales": 6.725218,
+//     "Price/Book": 1.49,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HCN"
+//   },
+//   {
+//     "Symbol": "WDC",
+//     "Name": "Western Digital",
+//     "Sector": "Information Technology",
+//     "Price": 80.09,
+//     "Price/Earnings": 10.19,
+//     "Dividend Yield": 2.389201,
+//     "Earnings/Share": 1.29,
+//     "52 Week Low": 95.77,
+//     "52 Week High": 71.38,
+//     "Market Cap": 24760297793,
+//     "EBITDA": 5169000000,
+//     "Price/Sales": 1.245503,
+//     "Price/Book": 2,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WDC"
+//   },
+//   {
+//     "Symbol": "WU",
+//     "Name": "Western Union Co",
+//     "Sector": "Information Technology",
+//     "Price": 18.81,
+//     "Price/Earnings": 10.17,
+//     "Dividend Yield": 3.5915854,
+//     "Earnings/Share": 0.51,
+//     "52 Week Low": 22.21,
+//     "52 Week High": 18.39,
+//     "Market Cap": 8951609207,
+//     "EBITDA": 694600000,
+//     "Price/Sales": 2.22677,
+//     "Price/Book": 12.65,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WU"
+//   },
+//   {
+//     "Symbol": "WRK",
+//     "Name": "WestRock Company",
+//     "Sector": "Materials",
+//     "Price": 60.93,
+//     "Price/Earnings": 23.26,
+//     "Dividend Yield": 2.6699784,
+//     "Earnings/Share": 2.77,
+//     "52 Week Low": 71.55,
+//     "52 Week High": 49.23,
+//     "Market Cap": 16433340688,
+//     "EBITDA": 2262300000,
+//     "Price/Sales": 1.075785,
+//     "Price/Book": 1.58,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WRK"
+//   },
+//   {
+//     "Symbol": "WY",
+//     "Name": "Weyerhaeuser Corp.",
+//     "Sector": "Real Estate",
+//     "Price": 33.6,
+//     "Price/Earnings": 34.29,
+//     "Dividend Yield": 3.7079954,
+//     "Earnings/Share": 0.77,
+//     "52 Week Low": 37.89,
+//     "52 Week High": 30.9504,
+//     "Market Cap": 26070297960,
+//     "EBITDA": 1365000000,
+//     "Price/Sales": 3.6396794,
+//     "Price/Book": 2.9,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WY"
+//   },
+//   {
+//     "Symbol": "WHR",
+//     "Name": "Whirlpool Corp.",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 164.95,
+//     "Price/Earnings": 11.77,
+//     "Dividend Yield": 2.5652986,
+//     "Earnings/Share": 4.51,
+//     "52 Week Low": 202.99,
+//     "52 Week High": 158.8,
+//     "Market Cap": 12177920000,
+//     "EBITDA": 1842000000,
+//     "Price/Sales": 0.58064795,
+//     "Price/Book": 2.57,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WHR"
+//   },
+//   {
+//     "Symbol": "WMB",
+//     "Name": "Williams Cos.",
+//     "Sector": "Energy",
+//     "Price": 28.56,
+//     "Price/Earnings": 48.41,
+//     "Dividend Yield": 4,
+//     "Earnings/Share": -0.57,
+//     "52 Week Low": 33.67,
+//     "52 Week High": 26.8188,
+//     "Market Cap": 24802396470,
+//     "EBITDA": 3955000000,
+//     "Price/Sales": 4.2982845,
+//     "Price/Book": 3.01,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WMB"
+//   },
+//   {
+//     "Symbol": "WLTW",
+//     "Name": "Willis Towers Watson",
+//     "Sector": "Financials",
+//     "Price": 152.36,
+//     "Price/Earnings": 18.67,
+//     "Dividend Yield": 1.347058,
+//     "Earnings/Share": 3.07,
+//     "52 Week Low": 165,
+//     "52 Week High": 120.869,
+//     "Market Cap": 20780269334,
+//     "EBITDA": 1440000000,
+//     "Price/Sales": 3.4484663,
+//     "Price/Book": 2.1,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WLTW"
+//   },
+//   {
+//     "Symbol": "WYN",
+//     "Name": "Wyndham Worldwide",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 113.56,
+//     "Price/Earnings": 18.77,
+//     "Dividend Yield": 1.9541779,
+//     "Earnings/Share": 5.53,
+//     "52 Week Low": 127.96,
+//     "52 Week High": 80.11,
+//     "Market Cap": 11993835688,
+//     "EBITDA": 1232000000,
+//     "Price/Sales": 2.7332082,
+//     "Price/Book": 18.91,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WYN"
+//   },
+//   {
+//     "Symbol": "WYNN",
+//     "Name": "Wynn Resorts Ltd",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 169.28,
+//     "Price/Earnings": 31.7,
+//     "Dividend Yield": 1.1279043,
+//     "Earnings/Share": 7.27,
+//     "52 Week Low": 203.63,
+//     "52 Week High": 92.67,
+//     "Market Cap": 18225400525,
+//     "EBITDA": 1501301000,
+//     "Price/Sales": 2.478658,
+//     "Price/Book": 51.69,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=WYNN"
+//   },
+//   {
+//     "Symbol": "XEL",
+//     "Name": "Xcel Energy Inc",
+//     "Sector": "Utilities",
+//     "Price": 42.44,
+//     "Price/Earnings": 18.14,
+//     "Dividend Yield": 3.3914273,
+//     "Earnings/Share": 2.21,
+//     "52 Week Low": 52.22,
+//     "52 Week High": 41.16,
+//     "Market Cap": 21559611927,
+//     "EBITDA": 3885828000,
+//     "Price/Sales": 2.520456,
+//     "Price/Book": 1.94,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XEL"
+//   },
+//   {
+//     "Symbol": "XRX",
+//     "Name": "Xerox Corp.",
+//     "Sector": "Information Technology",
+//     "Price": 29.8,
+//     "Price/Earnings": 8.87,
+//     "Dividend Yield": 3.207184,
+//     "Earnings/Share": 0.59,
+//     "52 Week Low": 37.42,
+//     "52 Week High": 26.64,
+//     "Market Cap": 7938833340,
+//     "EBITDA": 1191000000,
+//     "Price/Sales": 0.7877656,
+//     "Price/Book": 1.49,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XRX"
+//   },
+//   {
+//     "Symbol": "XLNX",
+//     "Name": "Xilinx Inc",
+//     "Sector": "Information Technology",
+//     "Price": 62.82,
+//     "Price/Earnings": 27.19,
+//     "Dividend Yield": 2.0904882,
+//     "Earnings/Share": 2.32,
+//     "52 Week Low": 77.26,
+//     "52 Week High": 54.99,
+//     "Market Cap": 17064975551,
+//     "EBITDA": 845468000,
+//     "Price/Sales": 7.101206,
+//     "Price/Book": 7.22,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XLNX"
+//   },
+//   {
+//     "Symbol": "XL",
+//     "Name": "XL Capital",
+//     "Sector": "Financials",
+//     "Price": 41.26,
+//     "Price/Earnings": -19.93,
+//     "Dividend Yield": 2.0952382,
+//     "Earnings/Share": -2.24,
+//     "52 Week Low": 47.27,
+//     "52 Week High": 33.77,
+//     "Market Cap": 10753423590,
+//     "EBITDA": 0,
+//     "Price/Sales": 0.84394187,
+//     "Price/Book": 0.97,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XL"
+//   },
+//   {
+//     "Symbol": "XYL",
+//     "Name": "Xylem Inc.",
+//     "Sector": "Industrials",
+//     "Price": 70.24,
+//     "Price/Earnings": 30.94,
+//     "Dividend Yield": 1.1700794,
+//     "Earnings/Share": 1.83,
+//     "52 Week Low": 76.81,
+//     "52 Week High": 46.86,
+//     "Market Cap": 12915021000,
+//     "EBITDA": 722000000,
+//     "Price/Sales": 2.7262094,
+//     "Price/Book": 5.31,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=XYL"
+//   },
+//   {
+//     "Symbol": "YUM",
+//     "Name": "Yum! Brands Inc",
+//     "Sector": "Consumer Discretionary",
+//     "Price": 76.3,
+//     "Price/Earnings": 27.25,
+//     "Dividend Yield": 1.7970798,
+//     "Earnings/Share": 4.07,
+//     "52 Week Low": 86.93,
+//     "52 Week High": 62.85,
+//     "Market Cap": 27003303098,
+//     "EBITDA": 2289000000,
+//     "Price/Sales": 6.3136363,
+//     "Price/Book": 212.08,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=YUM"
+//   },
+//   {
+//     "Symbol": "ZBH",
+//     "Name": "Zimmer Biomet Holdings",
+//     "Sector": "Health Care",
+//     "Price": 115.53,
+//     "Price/Earnings": 14.32,
+//     "Dividend Yield": 0.7948336,
+//     "Earnings/Share": 9.01,
+//     "52 Week Low": 133.49,
+//     "52 Week High": 108.17,
+//     "Market Cap": 24454698119,
+//     "EBITDA": 2007400000,
+//     "Price/Sales": 3.1648953,
+//     "Price/Book": 2.39,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ZBH"
+//   },
+//   {
+//     "Symbol": "ZION",
+//     "Name": "Zions Bancorp",
+//     "Sector": "Financials",
+//     "Price": 50.71,
+//     "Price/Earnings": 17.73,
+//     "Dividend Yield": 1.480933,
+//     "Earnings/Share": 2.6,
+//     "52 Week Low": 55.61,
+//     "52 Week High": 38.43,
+//     "Market Cap": 10670678640,
+//     "EBITDA": 0,
+//     "Price/Sales": 3.7945793,
+//     "Price/Book": 1.42,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ZION"
+//   },
+//   {
+//     "Symbol": "ZTS",
+//     "Name": "Zoetis",
+//     "Sector": "Health Care",
+//     "Price": 71.51,
+//     "Price/Earnings": 32.8,
+//     "Dividend Yield": 0.68237203,
+//     "Earnings/Share": 1.65,
+//     "52 Week Low": 80.13,
+//     "52 Week High": 52,
+//     "Market Cap": 35991109776,
+//     "EBITDA": 1734000000,
+//     "Price/Sales": 9.280896,
+//     "Price/Book": 18.09,
+//     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ZTS"
+//   }
+// ]))
 
 /***/ })
 
