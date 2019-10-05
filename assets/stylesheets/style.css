@@ -1,8 +1,7 @@
 .main{
     display: flex
 }
-.info{
-    /* width: 20% */
-    /* padding: 100px */
+svg{
+    display: flex;
+    justify-content: center
 }
-
