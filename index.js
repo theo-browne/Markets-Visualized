@@ -4,12 +4,12 @@ const raw = require("./companies2")
 const topo = require("topojson-client")
 const geo = require("d3-geomap")
 const selection = require("d3-selection")
-
+const geojson = require("./countries.json")
 
 const root = d3.hierarchy(parse(raw))
 // console.log(root)
 const nodes = d3.pack();
-nodes.size([800, 800]);
+nodes.size([600, 600]);
 root.sum((el) => {
     return el.value;
 });
@@ -17,8 +17,8 @@ nodes(root);
 d3.select('.circles')
     .append('svg')
     .attr('transform', 'translate(50,50)')
-    .attr('width', 800)
-    .attr('height', 800)
+    .attr('width', 600)
+    .attr('height', 600)
     .selectAll('circle')
     .data(root.descendants())
     .enter()
@@ -96,7 +96,7 @@ var ribbonGenerator = d3.ribbon().radius(100);
     .append("svg")
         .attr('width', "30vw")
         .attr('height', "30vh")
-    .attr('transform', 'translate(50,50)')
+    .attr('transform', 'translate(50,-50)')
     .selectAll('path')
     .data(links)
     .enter()
@@ -104,3 +104,21 @@ var ribbonGenerator = d3.ribbon().radius(100);
     .attr('d', ribbonGenerator)
     .attr('transform', 'translate(150,150)')
     .attr("fill", "blue")
+
+const projection = d3.geoEquirectangular()
+    .scale(50)
+    .center([-3.0026, 16.7666])
+    // .translate([480, 250])
+    var geoGenerator = d3.geoPath()
+    .projection(projection)
+
+d3.select('#map')
+    .append("svg")
+    .attr("height", 400)
+    .attr("width", 400)
+    .selectAll('path')
+    .data(geojson.features)
+    .enter()
+    .append('path')
+    .attr('d', geoGenerator)
+    .attr('transform', 'translate(-300,0)')
