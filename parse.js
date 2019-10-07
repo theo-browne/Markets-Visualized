@@ -12,7 +12,8 @@ const parse = (data) => {
         parsed[el["Sector"]].push({
             "name" : el["Name"],
             "value": el["Market Cap"],
-            "sector": el["Sector"]
+            "sector": el["Sector"],
+            "symbol": el["Symbol"]
         })
     })
     let res = {

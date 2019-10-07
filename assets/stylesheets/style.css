@@ -1,7 +1,11 @@
 .main{
-    display: flex
+    display: flex;
+    justify-content: space-around
 }
 svg{
     display: flex;
     justify-content: center
+}
+html{
+    font-family: 'Playfair Display', serif;
 }
