@@ -9,3 +9,8 @@ svg{
 html{
     font-family: 'Playfair Display', serif;
 }
+.right{
+    box-sizing: border-box;
+    padding:10px;
+    width: 40%
+}

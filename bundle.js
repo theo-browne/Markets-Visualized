@@ -514,21 +514,6 @@ var raw = [{
   "Price/Book": 4.7,
   "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GOOGL"
 }, {
-  "Symbol": "GOOG",
-  "Name": "Alphabet Inc Class C",
-  "Sector": "Information Technology",
-  "Price": 1001.52,
-  "Price/Earnings": 40.29,
-  "Dividend Yield": 0,
-  "Earnings/Share": 22.27,
-  "52 Week Low": 1186.89,
-  "52 Week High": 803.1903,
-  "Market Cap": 728535558140,
-  "EBITDA": 32714000000,
-  "Price/Sales": 6.772653,
-  "Price/Book": 4.67,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=GOOG"
-}, {
   "Symbol": "MO",
   "Name": "Altria Group Inc",
   "Sector": "Consumer Staples",
@@ -1143,22 +1128,23 @@ var raw = [{
   "Price/Sales": 5.6912947,
   "Price/Book": 3.98,
   "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BDX"
-}, {
-  "Symbol": "BRK.B",
-  "Name": "Berkshire Hathaway",
-  "Sector": "Financials",
-  "Price": 191.42,
-  "Price/Earnings": 30.43,
-  "Dividend Yield": 0,
-  "Earnings/Share": 9.76,
-  "52 Week Low": 217.62,
-  "52 Week High": 160.93,
-  "Market Cap": 261401203633,
-  "EBITDA": 0,
-  "Price/Sales": 1.4328232,
-  "Price/Book": 1.58,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BRK.B"
-}, {
+}, // {
+//   "Symbol": "BRK.B",
+//   "Name": "Berkshire Hathaway",
+//   "Sector": "Financials",
+//   "Price": 191.42,
+//   "Price/Earnings": 30.43,
+//   "Dividend Yield": 0,
+//   "Earnings/Share": 9.76,
+//   "52 Week Low": 217.62,
+//   "52 Week High": 160.93,
+//   "Market Cap": 261401203633,
+//   "EBITDA": 0,
+//   "Price/Sales": 1.4328232,
+//   "Price/Book": 1.58,
+//   "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=BRK.B"
+// },
+{
   "Symbol": "BBY",
   "Name": "Best Buy Co. Inc.",
   "Sector": "Consumer Discretionary",
@@ -5059,21 +5045,6 @@ var raw = [{
   "Price/Book": 0.85,
   "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NWSA"
 }, {
-  "Symbol": "NWS",
-  "Name": "News Corp. Class B",
-  "Sector": "Consumer Discretionary",
-  "Price": 15.85,
-  "Price/Earnings": 44.03,
-  "Dividend Yield": 1.2269939,
-  "Earnings/Share": -1.28,
-  "52 Week Low": 17.7,
-  "52 Week High": 12.35,
-  "Market Cap": 9496735699,
-  "EBITDA": 679000000,
-  "Price/Sales": 1.5718216,
-  "Price/Book": 0.86,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=NWS"
-}, {
   "Symbol": "NEE",
   "Name": "NextEra Energy",
   "Sector": "Utilities",
@@ -6889,21 +6860,6 @@ var raw = [{
   "Price/Book": 4.11,
   "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FOXA"
 }, {
-  "Symbol": "FOX",
-  "Name": "Twenty-First Century Fox Class B",
-  "Sector": "Consumer Discretionary",
-  "Price": 34.09,
-  "Price/Earnings": 17.57,
-  "Dividend Yield": 1.0084034,
-  "Earnings/Share": 1.59,
-  "52 Week Low": 38.56,
-  "52 Week High": 24.3,
-  "Market Cap": 66135313503,
-  "EBITDA": 5280000000,
-  "Price/Sales": 3.1654842,
-  "Price/Book": 4.04,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=FOX"
-}, {
   "Symbol": "TSN",
   "Name": "Tyson Foods",
   "Sector": "Consumer Staples",
@@ -6978,21 +6934,6 @@ var raw = [{
   "Price/Sales": 1.602308,
   "Price/Book": 2.72,
   "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UAA"
-}, {
-  "Symbol": "UA",
-  "Name": "Under Armour Class C",
-  "Sector": "Consumer Discretionary",
-  "Price": 11.95,
-  "Price/Earnings": 29.15,
-  "Dividend Yield": 0,
-  "Earnings/Share": 0.45,
-  "52 Week Low": 21.805,
-  "52 Week High": 10.36,
-  "Market Cap": 5366628950,
-  "EBITDA": 399277000,
-  "Price/Sales": 1.4738787,
-  "Price/Book": 2.5,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=UA"
 }, {
   "Symbol": "UNP",
   "Name": "Union Pacific",
@@ -7736,7 +7677,7 @@ d3.select('.circles').append('svg').attr('transform', 'translate(0,50)').attr('w
   d3.select(this).attr("stroke", null);
 }).on("click", function (d) {
   if (d.data["sector"]) {
-    document.querySelector(".sector").textContent = d.data["sector"] + " : " + d.data.name;
+    document.querySelector(".sector").textContent = d.data["sector"] + ": " + d.data.name;
     fetch("https://financialmodelingprep.com/api/v3/company/profile/".concat(d.data["symbol"]), {
       method: 'GET'
     }).then(function (res) {
@@ -7745,6 +7686,19 @@ d3.select('.circles').append('svg').attr('transform', 'translate(0,50)').attr('w
       console.log(json);
       document.querySelector(".description").textContent = json["profile"]["description"];
       document.querySelector(".logo")["src"] = json["profile"]["image"];
+      var value = "";
+
+      for (var i = 0; i < json["profile"]["mktCap"].length - 3; i++) {
+        if (i % 3 === 0 && i) {
+          value += ",";
+        }
+
+        value += json["profile"]["mktCap"][i];
+      }
+
+      document.querySelector(".value").textContent = "Company Value: $" + value;
+      document.querySelector(".beta").textContent = "Market Beta: " + json["profile"]["beta"];
+      document.querySelector(".ceo").textContent = "CEO: " + json["profile"]["ceo"];
     });
     var query = d.data["name"].split(" ").filter(function (el) {
       return el !== "Co." && el !== "Cos.";
@@ -7771,6 +7725,10 @@ d3.select('.circles').append('svg').attr('transform', 'translate(0,50)').attr('w
   } else {
     document.querySelector(".sector").textContent = d.data.name;
     document.querySelector(".description").textContent = "";
+    document.querySelector(".ceo").textContent = "";
+    document.querySelector(".beta").textContent = "";
+    document.querySelector(".value").textContent = "";
+    document.querySelector(".logo")["src"] = "";
   }
 }).attr('cx', function (d) {
   return d.x;

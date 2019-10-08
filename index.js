@@ -70,7 +70,7 @@ d3.select('.circles')
     .on("click", function(d){
         
         if(d.data["sector"]){
-            document.querySelector(".sector").textContent = d.data["sector"] + " : " + d.data.name
+            document.querySelector(".sector").textContent = d.data["sector"] + ": " + d.data.name
             fetch(`https://financialmodelingprep.com/api/v3/company/profile/${d.data["symbol"]}`, {
                 method: 'GET'
             }).then(function (res) {
@@ -79,6 +79,18 @@ d3.select('.circles')
                 console.log(json)
                 document.querySelector(".description").textContent = json["profile"]["description"]
                 document.querySelector(".logo")["src"] = json["profile"]["image"]
+                let value = "";
+                for (let i = 0; i < json["profile"]["mktCap"].length - 3; i++) {
+                    if (i % 3 === 0 && i) {
+                        value += ","
+                    }
+                    value += json["profile"]["mktCap"][i]
+                    
+                }
+                document.querySelector(".value").textContent = "Company Value: $" + value
+                document.querySelector(".beta").textContent = "Market Beta: " + json["profile"]["beta"]
+                document.querySelector(".ceo").textContent = "CEO: " + json["profile"]["ceo"]
+       
             });
             let query = d.data["name"].split(" ").filter(el => el !== "Co." && el !== "Cos." ).map(el => {
                 let newEl = '' 
@@ -102,6 +114,10 @@ d3.select('.circles')
         } else {
             document.querySelector(".sector").textContent = d.data.name
             document.querySelector(".description").textContent = ""
+            document.querySelector(".ceo").textContent = ""
+            document.querySelector(".beta").textContent = ""
+            document.querySelector(".value").textContent = ""
+            document.querySelector(".logo")["src"] = ""
         }
        
     })
