@@ -103,14 +103,6 @@ d3.select('.circles')
                 }
                 return newEl
             }).join("+")
-            fetch(`https://kgsearch.googleapis.com/v1/entities:search?query=${query}&key=AIzaSyD1jqXFp1x1N3Skgh8hQrwG-TTMvjt7Ewo&limit=1&indent=True`, {
-                method: 'GET'
-            }).then(function (res) {
-                return res.json();
-            }).then(function (json) {
-                console.log(json)
-
-            });
         } else {
             document.querySelector(".sector").textContent = d.data.name
             document.querySelector(".description").textContent = ""
