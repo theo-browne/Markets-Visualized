@@ -28,7 +28,17 @@ const parse = (data) => {
     })
     return res
 }
-module.exports = parse
+
+const sectorValue = (data, sector) => {
+    let sectorVal = 0
+    data.forEach(el => {
+        if (el["Sector"]  === sector){
+            sectorVal += el["Market Cap"]
+        }
+    })
+    return sectorVal
+}
+module.exports = {parse, sectorValue}
 
 // console.log(parse([
 //   {
