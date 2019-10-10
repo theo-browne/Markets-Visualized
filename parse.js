@@ -77,7 +77,8 @@ const pieData = (data, sector) => {
     let res = {
         datasets: [{
              data: [],
-            backgroundColor: []
+            backgroundColor: [], 
+            symbols: []
             }],
         labels: []
     }

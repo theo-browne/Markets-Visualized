@@ -5920,22 +5920,22 @@
     "Price/Book": 6.88,
     "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PX"
   },
-  {
-    "Symbol": "PCLN",
-    "Name": "Priceline.com Inc",
-    "Sector": "Consumer Discretionary",
-    "Price": 1806.06,
-    "Price/Earnings": 24.26,
-    "Dividend Yield": 0,
-    "Earnings/Share": 42.66,
-    "52 Week Low": 2067.99,
-    "52 Week High": 1589,
-    "Market Cap": 91817448863,
-    "EBITDA": 4803487000,
-    "Price/Sales": 9.176564,
-    "Price/Book": 6.92,
-    "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PCLN"
-  },
+  // {
+  //   "Symbol": "PCLN",
+  //   "Name": "Priceline.com Inc",
+  //   "Sector": "Consumer Discretionary",
+  //   "Price": 1806.06,
+  //   "Price/Earnings": 24.26,
+  //   "Dividend Yield": 0,
+  //   "Earnings/Share": 42.66,
+  //   "52 Week Low": 2067.99,
+  //   "52 Week High": 1589,
+  //   "Market Cap": 91817448863,
+  //   "EBITDA": 4803487000,
+  //   "Price/Sales": 9.176564,
+  //   "Price/Book": 6.92,
+  //   "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PCLN"
+  // },
   {
     "Symbol": "PFG",
     "Name": "Principal Financial Group",

@@ -5644,22 +5644,23 @@ var raw = [{
   "Price/Sales": 3.887915,
   "Price/Book": 6.88,
   "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PX"
-}, {
-  "Symbol": "PCLN",
-  "Name": "Priceline.com Inc",
-  "Sector": "Consumer Discretionary",
-  "Price": 1806.06,
-  "Price/Earnings": 24.26,
-  "Dividend Yield": 0,
-  "Earnings/Share": 42.66,
-  "52 Week Low": 2067.99,
-  "52 Week High": 1589,
-  "Market Cap": 91817448863,
-  "EBITDA": 4803487000,
-  "Price/Sales": 9.176564,
-  "Price/Book": 6.92,
-  "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PCLN"
-}, {
+}, // {
+//   "Symbol": "PCLN",
+//   "Name": "Priceline.com Inc",
+//   "Sector": "Consumer Discretionary",
+//   "Price": 1806.06,
+//   "Price/Earnings": 24.26,
+//   "Dividend Yield": 0,
+//   "Earnings/Share": 42.66,
+//   "52 Week Low": 2067.99,
+//   "52 Week High": 1589,
+//   "Market Cap": 91817448863,
+//   "EBITDA": 4803487000,
+//   "Price/Sales": 9.176564,
+//   "Price/Book": 6.92,
+//   "SEC Filings": "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PCLN"
+// },
+{
   "Symbol": "PFG",
   "Name": "Principal Financial Group",
   "Sector": "Financials",
@@ -7631,14 +7632,7 @@ var raw = __webpack_require__(/*! ./companies2 */ "./companies2.js");
 
 var handleClick = function handleClick(d) {
   if (d.data["sector"]) {
-    fetch("https://financialmodelingprep.com/api/v3/company/profile/".concat(d.data["symbol"]), {
-      method: 'GET'
-    }).then(function (res) {
-      return res.json();
-    }).then(function (json) {
-      set(d, json);
-      chart(d, d.data["sector"]);
-    });
+    dataCall(d.data["symbol"], d);
   } else {
     var sector;
 
@@ -7649,38 +7643,53 @@ var handleClick = function handleClick(d) {
     }
 
     clear(d);
-    chart(d, sector);
+    chart(sector);
   }
 };
 
-var set = function set(d, json) {
-  var value = "";
+var dataCall = function dataCall(symbol, d) {
+  fetch("https://financialmodelingprep.com/api/v3/company/profile/".concat(symbol), {
+    method: 'GET'
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    set(d, json);
+    chart(d.data["sector"]);
+  });
+};
 
-  for (var i = 0; i < json["profile"]["mktCap"].length - 3; i++) {
+var set = function set(d, json) {
+  var value = [];
+  var mkt = json["profile"]["mktCap"].split("").reverse().slice(3);
+
+  for (var i = 0; i < mkt.length; i++) {
     if (i % 3 === 0 && i) {
-      value += ",";
+      value.push(',');
     }
 
-    value += json["profile"]["mktCap"][i];
+    value.push(mkt[i]);
   }
 
+  var marketCap = value.reverse().join("");
   var marketShare = d.data["value"] / sectorValue(raw, d.data["sector"]);
   marketShare = parseFloat(marketShare).toFixed(6).slice(2, 4) + "." + parseFloat(marketShare).toFixed(6).slice(4) + "%";
   if (marketShare[0] == "0") marketShare = marketShare.slice(1);
   document.querySelector(".description").textContent = json["profile"]["description"];
   document.querySelector(".logo")["src"] = json["profile"]["image"];
-  document.querySelector(".value").textContent = "Company Value: $" + value;
+  document.querySelector(".value").textContent = "Company Value: $" + marketCap;
   document.querySelector(".beta").textContent = "Market Beta: " + json["profile"]["beta"];
   document.querySelector(".ceo").textContent = "CEO: " + json["profile"]["ceo"];
   document.querySelector(".market-share").textContent = "Market Share: " + marketShare;
   document.querySelector(".sector").textContent = "Sector: " + d.data["sector"];
   document.querySelector(".company").textContent = "Company: " + d.data["name"];
+  document.querySelector(".sector-description").textContent = sectorDescription(d.data["sector"]);
 };
 
-var chart = function chart(d, sector) {
-  var ctx = document.getElementById("donut").getContext("2d"); // const ctx = 'donut'
+var chart = function chart(sector) {
+  var canvas = document.getElementById("donut"); // canvas.width = "30%"
+  // canvas.height = "10%"
 
-  console.log(ctx["chart"]);
+  var ctx = canvas.getContext("2d");
   Chart.defaults.global.legend.display = false;
   var pie = sector === "S&P" ? marketData(raw, sector) : pieData(raw, sector);
 
@@ -7690,13 +7699,19 @@ var chart = function chart(d, sector) {
   } else {
     var doughnutChart = new Chart(ctx, {
       type: 'doughnut',
-      data: pie
+      data: pie,
+      options: {
+        onClick: function onClick(e, arr) {
+          getSymbol(raw, arr[0]["_model"]["label"]);
+        }
+      }
     });
     ctx["chart"] = doughnutChart;
   }
 };
 
 var clear = function clear(d) {
+  document.querySelector(".sector-description").textContent = sectorDescription(d.data["name"]);
   document.querySelector(".sector").textContent = d.data.name;
   document.querySelector(".description").textContent = "";
   document.querySelector(".ceo").textContent = "";
@@ -7704,6 +7719,91 @@ var clear = function clear(d) {
   document.querySelector(".value").textContent = "";
   document.querySelector(".logo")["src"] = "";
   document.querySelector(".company").textContent = "";
+  document.querySelector(".market-share").textContent = "";
+};
+
+var sectorDescription = function sectorDescription(sector) {
+  var res = '';
+
+  switch (sector) {
+    case "Health Care":
+      res += "Health care consists of medical supply companies, pharmaceutical companies, and scientific-based operations or services that aim to improve the human body or mind. Familiar names include Johnson & Johnson, a medical device and pharmaceutical company that owns Tylenol, and Abiomed, which manufacture medical implant devices";
+      break;
+
+    case "Industrials":
+      res += "Industrials include a wide range of companies from airlines and railroads companies to military weapons manufacturers. Since the range of companies is so large, the sector has 14 different industries. Some of the industries are Aerospace & Defense, Construction & Engineering, and Professional Services Industry. Best known names within this sector are Delta Air Lines and Southwest Airlines, FedEx Corporation, and Boeing Company.";
+      break;
+
+    case "Information Technology":
+      res += "The informational technology sector consists of companies that develop or distribute technological items or services and include internet companies. Products that include technology is almost endless and includes computers, microprocessors, operating systems. Example of companies in this sector includes big names like Microsoft Corporation, Oracle Corp., and Mastercard Inc. This sector has seen a lot of change in recent years because of the rise in technology-based companies.";
+      break;
+
+    case "Utilities":
+      res += "Utility companies provide or generate electricity, water, and gas to buildings and households. For example, Duke Energy generates and distributes electricity, and Southern Company provides gas and electricity. Many utility companies are also developing renewable solar, wind, and hydro facilities to be more environmentally friendly.";
+      break;
+
+    case "Real Estate":
+      res += "As the name suggests, the newest addition to the S&P sectors includes all the Real Estate Investment Trusts (REITs) except for mortgage REITs. The real estate sector makes up 2.9% of the S&P 500. Companies in the sector include American Tower Corp., Boston Properties, and Equinix.";
+      break;
+
+    case "Energy":
+      res += "The energy sector consists of all companies that play a part in the oil, gas, and consumable fuels business. This includes companies that find, drill, and extract the commodity. It also includes the companies that refine the material and companies that provide or manufacturer the equipment used in the process. Companies like Exxon Mobil and Chevron extract and refine gas, while companies like Kinder Morgan contain and transport the oil to gas stations.";
+      break;
+
+    case "Materials":
+      res += "Companies within the materials sector provide the raw material needed for other sectors to function. This includes the mining companies that provide gold, zinc, and copper and forestry companies that provide logs. Companies that are not typically associated with materials but are in the sector are containers and packaging companies, such as the Intertape Polymer Group, a company that produces tapes.";
+      break;
+
+    case "Consumer Discretionary":
+      res += "Discretionary consumer products are luxury items or experiences that are not necessary for survival. The demand for these items depends on the economic conditions and wealth of individuals. Products include cars, jewelry, sporting goods, and electronic devices. Luxury experiences include trips, stays at hotels, or dining in a posh restaurant. Most companies in this sector are easily recognized. Some examples include Starbucks, Best Buy, and Amazon.";
+      break;
+
+    case "Financials":
+      res += "The financial sector includes all companies that revolve around the movement of money. It includes banks, credit card issuers, credit unions, insurance companies, and mortgage real estate investment trusts (REITs). Companies within this sector are relatively stable as they are mostly matured and already established. Banks in this sector include Bank of America Corp, JPMorgan Chase & Co., and Goldman Sachs. Other names include Berkshire Hathaway, American Express, and Aon plc.";
+      break;
+
+    case "S&P":
+      res += "The S&P 500 index – the first stock market index to be published daily- was launched in 1957. It is a leading indicator of the health of the American stock market, despite the fact that it only includes large-cap companies, because it includes a large part of the total worth of publicly-traded American companies.";
+      break;
+
+    case "Telecommunication Services":
+      res += "The telecommunication services sector consists of companies that keep people connected. This includes internet providers and phone plan providers. ";
+      break;
+
+    case "Consumer Staples":
+      res += "Consumer staples companies provide all the necessities of life. This includes food and beverage companies, household product providers, and personal product providers. Consumer staple companies are well known since people see it in stores regularly or in their surroundings. For example, Procter & Gamble is a famous company within this sector and produces bleach and laundry detergent under brand names such as Dawn and Tide. Another example is Kroger, which is the largest supermarket chain in the U.S. and distributes food, beverages, and household products.";
+      break;
+
+    default:
+      res += "NONE";
+      break;
+  }
+
+  res += ' -Corporate Finance Insitute';
+  return res;
+};
+
+var getSymbol = function getSymbol(data, name) {
+  data.forEach(function (el) {
+    if (el["Name"] === name) {
+      var d = {
+        data: {
+          "name": el["Name"],
+          "value": el["Market Cap"],
+          "sector": el["Sector"],
+          "symbol": el["Symbol"]
+        }
+      };
+      fetch("https://financialmodelingprep.com/api/v3/company/profile/".concat(el["Symbol"]), {
+        method: 'GET'
+      }).then(function (res) {
+        return res.json();
+      }).then(function (json) {
+        console.log('hello');
+        set(d, json);
+      });
+    }
+  });
 };
 
 module.exports = handleClick; // function(d) {
@@ -7790,12 +7890,12 @@ var Chart = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Ch
 var root = d3.hierarchy(parse(raw)); // console.log(root)
 
 var nodes = d3.pack();
-nodes.size([600, 600]);
+nodes.size([550, 550]);
 root.sum(function (el) {
   return el.value;
 });
 nodes(root);
-d3.select('.circles').append('svg').attr('transform', 'translate(0,50)').attr('width', 600).attr('height', 600).selectAll('circle').data(root.descendants()).enter().append('circle').style("opacity", 0.1).attr("fill", function (d) {
+d3.select('.circles').append('svg').attr('transform', 'translate(-50,0)').attr('width', 550).attr('height', 550).selectAll('circle').data(root.descendants()).enter().append('circle').style("opacity", 0.1).attr("fill", function (d) {
   switch (d.data["name"]) {
     default:
       return "blue";
@@ -69405,7 +69505,8 @@ var pieData = function pieData(data, sector) {
   var res = {
     datasets: [{
       data: [],
-      backgroundColor: []
+      backgroundColor: [],
+      symbols: []
     }],
     labels: []
   };

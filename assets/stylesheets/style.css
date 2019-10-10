@@ -1,6 +1,11 @@
 .main{
     display: flex;
-    justify-content: space-around
+   
+}
+.circles{
+     position: fixed;
+    top: 10px;
+    left: 100px;
 }
 svg{
     display: flex;
@@ -12,9 +17,28 @@ html{
 .right{
     box-sizing: border-box;
     padding:10px;
-    width: 40%;
-    justify-content: center
+    /* width: 40%; */
+    justify-content: center;
+    margin-left: 600px
 }
 #donut{
     height: fit-content
+}
+
+.sector-text{
+    padding-top: 70px
+}
+.sector-description{
+    font-size: 12px
+}
+.company-head{
+    display: flex;
+    justify-content: space-between
+}
+.company-info{
+    display: flex;
+    justify-content: space-between
+}
+.sector{
+    margin-top: 0
 }

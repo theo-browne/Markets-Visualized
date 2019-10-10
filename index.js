@@ -13,16 +13,16 @@ const Chart = require('chart.js')
 const root = d3.hierarchy(parse(raw))
 // console.log(root)
 const nodes = d3.pack();
-nodes.size([600, 600]);
+nodes.size([550, 550]);
 root.sum((el) => {
     return el.value;
 });
 nodes(root);
 d3.select('.circles')
     .append('svg')
-    .attr('transform', 'translate(0,50)')
-    .attr('width', 600)
-    .attr('height', 600)
+    .attr('transform', 'translate(-50,0)')
+    .attr('width', 550)
+    .attr('height', 550)
     .selectAll('circle')
     .data(root.descendants())
     .enter()
