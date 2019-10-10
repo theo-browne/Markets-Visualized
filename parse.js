@@ -1,6 +1,17 @@
 // import {raw} from './companies2.js'
 const d3 = require("d3")
-
+const COLORS = [
+    '17,25,74',
+    '23,34,99',
+    '27,42,115',
+    '32,58, 120',
+    '48,102, 150',
+    '60,140,170',
+    '80,60,180',
+    '115,170,170',
+    '175, 215,200',
+    '220,235,200'
+]
 const parse = (data) => {
     let parsed = {
 
@@ -23,6 +34,7 @@ const parse = (data) => {
     Object.keys(parsed).forEach(key => {
         res["children"].push({
             "name": key,
+            "type": "sector",
             "children": parsed[key]
         })
     })
@@ -38,7 +50,53 @@ const sectorValue = (data, sector) => {
     })
     return sectorVal
 }
-module.exports = {parse, sectorValue}
+const marketData = (data) => {
+    let sectors = {}
+    data.forEach((el) => {
+        console.log('hello')
+        if (sectors[el["Sector"]]) {
+            sectors[el["Sector"]] += el["Market Cap"]
+        } else {
+            sectors[el["Sector"]] = el["Market Cap"]
+        }
+    })
+    let backgroundColor = COLORS.concat('17,25,74').map(el => 'rgba(' + el + ',1)' )
+    let res = {
+        datasets: [{
+            data: Object.values(sectors), 
+            backgroundColor
+        }],
+        labels: Object.keys(sectors)
+    }
+    
+    return res
+}
+
+const pieData = (data, sector) => {
+
+    let res = {
+        datasets: [{
+             data: [],
+            backgroundColor: []
+            }],
+        labels: []
+    }
+    let pos = 0
+    data.forEach((el) => {
+        if (el["Sector"] === sector) {
+            res.datasets[0].data.push(el["Market Cap"])
+            res.labels.push(el["Name"])
+            let idx = pos %  COLORS.length 
+            pos = (pos === COLORS.length -1 ) ? 0 : pos + 1
+            
+            res.datasets[0].backgroundColor.push('rgba(' + COLORS[pos] + ',1)')
+        }
+    })
+   
+    return res
+} 
+
+module.exports = {parse, sectorValue, pieData, marketData}
 
 // console.log(parse([
 //   {

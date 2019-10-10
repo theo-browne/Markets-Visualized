@@ -12,5 +12,9 @@ html{
 .right{
     box-sizing: border-box;
     padding:10px;
-    width: 40%
+    width: 40%;
+    justify-content: center
+}
+#donut{
+    height: fit-content
 }
