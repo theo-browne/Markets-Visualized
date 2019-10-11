@@ -12,7 +12,7 @@ const Chart = require('chart.js')
 
 let btn = document.getElementById("about-btn").addEventListener('click', (e)=> {
     document.querySelector(".sector").textContent = ""
-    document.querySelector(".sector-description").textContent = "Welcome to Markets today! The circles represent the S&P 500 (one of the largest US stock market indexes. The outer bubbles represent sectors of the index while the inner bubbles represent individual companies. Click on the bubbles and explore!"
+    document.querySelector(".sector-description").textContent = "Welcome to Markets today! The circles represent the S&P 500 (one of the largest US stock market indexes). The outer bubbles represent sectors of the index while the inner bubbles represent individual companies. Click on the bubbles and explore!"
     document.querySelector(".description").textContent = ""
     document.querySelector(".ceo").textContent = ""
     document.querySelector(".beta").textContent = ""

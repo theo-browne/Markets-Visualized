@@ -7890,7 +7890,7 @@ var Chart = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Ch
 
 var btn = document.getElementById("about-btn").addEventListener('click', function (e) {
   document.querySelector(".sector").textContent = "";
-  document.querySelector(".sector-description").textContent = "Welcome to Markets today! The circles represent the S&P 500 (one of the largest US stock market indexes. The outer bubbles represent sectors of the index while the inner bubbles represent individual companies. Click on the bubbles and explore!";
+  document.querySelector(".sector-description").textContent = "Welcome to Markets today! The circles represent the S&P 500 (one of the largest US stock market indexes). The outer bubbles represent sectors of the index while the inner bubbles represent individual companies. Click on the bubbles and explore!";
   document.querySelector(".description").textContent = "";
   document.querySelector(".ceo").textContent = "";
   document.querySelector(".beta").textContent = "";
@@ -69456,9 +69456,21 @@ module.exports = function(module) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // import {raw} from './companies2.js'
-var d3 = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+var d3 = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js"); // const COLORS = [
+//     '17,25,74',
+//     '23,34,99',
+//     '27,42,115',
+//     '32,58, 120',
+//     '48,102, 150',
+//     '60,140,170',
+//     '80,60,180',
+//     '115,170,170',
+//     '175, 215,200',
+//     '220,235,200'
+// ]
 
-var COLORS = ['17,25,74', '23,34,99', '27,42,115', '32,58, 120', '48,102, 150', '60,140,170', '80,60,180', '115,170,170', '175, 215,200', '220,235,200'];
+
+var COLORS = ['37,111,115', '97,53,136', '208, 37, 117', '59,58,137', '86,174,210', '73,179,84', '228,116,63', '89,158,208', '90,158,124', '89,90,92', '228,175,64', '134,210,242', '202,216,75', '246, 201,178', '155,197,135', '220,235,200'];
 
 var parse = function parse(data) {
   var parsed = {};
