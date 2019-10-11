@@ -85,9 +85,7 @@ html{
     cursor: pointer;
 }
 
-.header li:hover{
-    cursor: pointer;
-}
+
 
 .chart-container{
     display: none
@@ -98,5 +96,11 @@ html{
 }
 
 .link{
-    display: block
+    display: flex;
+    justify-content: space-around
+}
+.header img {
+    width:20px;
+    height: 20px;
+
 }
