@@ -60,15 +60,17 @@ const chart = (sector) => {
     Chart.defaults.global.legend.display = false
     let pie = (sector === "S&P") ? marketData(raw, sector) : pieData(raw, sector)
     if(ctx["chart"]){
+        Chart.defaults.global.elements.arc.borderWidth = 2
         ctx["chart"].data = pie
         ctx["chart"].update()
     } else {
+        document.querySelector(".chart-container").classList.add("show")
         const doughnutChart = new Chart(ctx, {
             type: 'doughnut',
             data: pie,
             options: {
                 onClick: function(e, arr) {
-                    
+
                     getSymbol(raw, arr[0]["_model"]["label"])
                 }
             }
@@ -118,7 +120,7 @@ const sectorDescription = (sector) => {
         res += "Discretionary consumer products are luxury items or experiences that are not necessary for survival. The demand for these items depends on the economic conditions and wealth of individuals. Products include cars, jewelry, sporting goods, and electronic devices. Luxury experiences include trips, stays at hotels, or dining in a posh restaurant. Most companies in this sector are easily recognized. Some examples include Starbucks, Best Buy, and Amazon."
         break
         case "Financials":
-        res +=  "The financial sector includes all companies that revolve around the movement of money. It includes banks, credit card issuers, credit unions, insurance companies, and mortgage real estate investment trusts (REITs). Companies within this sector are relatively stable as they are mostly matured and already established. Banks in this sector include Bank of America Corp, JPMorgan Chase & Co., and Goldman Sachs. Other names include Berkshire Hathaway, American Express, and Aon plc."
+        res +=  "The financial sector includes all companies that revolve around the movement of money. It includes banks, credit card issuers, credit unions, insurance companies, and mortgage real estate investment trusts (REITs). Companies within this sector are relatively stable as they are mostly matured and already established. Banks in this sector include Bank of America Corp, JPMorgan Chase & Co., and Goldman Sachs. Other names include American Express, and Aon plc."
         break
         case "S&P":
         res += "The S&P 500 index – the first stock market index to be published daily- was launched in 1957. It is a leading indicator of the health of the American stock market, despite the fact that it only includes large-cap companies, because it includes a large part of the total worth of publicly-traded American companies."
@@ -155,7 +157,7 @@ const getSymbol = (data, name) => {
             }).then(function (res) {
                 return res.json();
             }).then(function (json) {
-                console.log('hello')
+                
                 set(d,json)
             });
         }

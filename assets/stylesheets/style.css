@@ -1,19 +1,29 @@
 .main{
     display: flex;
-   
+    margin-top: 80px
 }
+
+.nav{
+    position: fixed;
+    top: 0;
+    width: 100%
+}
+
 .circles{
      position: fixed;
-    top: 10px;
+    top: 80px;
     left: 100px;
 }
+
 svg{
     display: flex;
     justify-content: center
 }
+
 html{
     font-family: 'Playfair Display', serif;
 }
+
 .right{
     box-sizing: border-box;
     padding:10px;
@@ -21,6 +31,7 @@ html{
     justify-content: center;
     margin-left: 600px
 }
+
 #donut{
     height: fit-content
 }
@@ -28,17 +39,64 @@ html{
 .sector-text{
     padding-top: 70px
 }
+
 .sector-description{
     font-size: 12px
 }
+
 .company-head{
     display: flex;
     justify-content: space-between
 }
+
 .company-info{
     display: flex;
     justify-content: space-between
 }
+
 .sector{
     margin-top: 0
+}
+
+.header{
+    display: block;
+    text-align: center;
+    list-style: none;
+    position: fixed;
+    top: 0;
+    justify-content: center;
+    width: 100%;
+    z-index: 2;
+    background-color: white
+}
+.header h1 {
+    margin-bottom: 0;
+    margin-top: 5px;
+    width:80%;
+    border-bottom: 1px solid lightgray;
+    margin-left: 10%
+}
+
+#about-btn{
+    border: none
+}
+
+#about-btn:hover{
+    cursor: pointer;
+}
+
+.header li:hover{
+    cursor: pointer;
+}
+
+.chart-container{
+    display: none
+}
+
+.show{
+    display: block
+}
+
+.link{
+    display: block
 }

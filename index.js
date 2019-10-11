@@ -10,6 +10,27 @@ const handleClick = require('./handle')
 const fetch = require('node-fetch');
 const Chart = require('chart.js')
 
+let btn = document.getElementById("about-btn").addEventListener('click', (e)=> {
+    document.querySelector(".sector").textContent = ""
+    document.querySelector(".sector-description").textContent = "Welcome to Markets today! The circles represent the S&P 500 (one of the largest US stock market indexes. The outer bubbles represent sectors of the index while the inner bubbles represent individual companies. Click on the bubbles and explore!"
+    document.querySelector(".description").textContent = ""
+    document.querySelector(".ceo").textContent = ""
+    document.querySelector(".beta").textContent = ""
+    document.querySelector(".value").textContent = ""
+    document.querySelector(".logo")["src"] = ""
+    document.querySelector(".company").textContent = ""
+    document.querySelector(".market-share").textContent = ""
+    let canvas = document.getElementById("donut")
+    let ctx = canvas.getContext("2d")
+    if (ctx["chart"]) {
+        document.querySelector(".chart-container").classList.remove("show")
+        Chart.defaults.global.elements.arc.borderWidth = 0
+        ctx["chart"].update()
+        ctx["chart"] = false
+    }
+})
+
+
 const root = d3.hierarchy(parse(raw))
 // console.log(root)
 const nodes = d3.pack();

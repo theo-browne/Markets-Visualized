@@ -53,7 +53,7 @@ const sectorValue = (data, sector) => {
 const marketData = (data) => {
     let sectors = {}
     data.forEach((el) => {
-        console.log('hello')
+        
         if (sectors[el["Sector"]]) {
             sectors[el["Sector"]] += el["Market Cap"]
         } else {

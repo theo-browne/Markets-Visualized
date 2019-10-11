@@ -7694,9 +7694,11 @@ var chart = function chart(sector) {
   var pie = sector === "S&P" ? marketData(raw, sector) : pieData(raw, sector);
 
   if (ctx["chart"]) {
+    Chart.defaults.global.elements.arc.borderWidth = 2;
     ctx["chart"].data = pie;
     ctx["chart"].update();
   } else {
+    document.querySelector(".chart-container").classList.add("show");
     var doughnutChart = new Chart(ctx, {
       type: 'doughnut',
       data: pie,
@@ -7759,7 +7761,7 @@ var sectorDescription = function sectorDescription(sector) {
       break;
 
     case "Financials":
-      res += "The financial sector includes all companies that revolve around the movement of money. It includes banks, credit card issuers, credit unions, insurance companies, and mortgage real estate investment trusts (REITs). Companies within this sector are relatively stable as they are mostly matured and already established. Banks in this sector include Bank of America Corp, JPMorgan Chase & Co., and Goldman Sachs. Other names include Berkshire Hathaway, American Express, and Aon plc.";
+      res += "The financial sector includes all companies that revolve around the movement of money. It includes banks, credit card issuers, credit unions, insurance companies, and mortgage real estate investment trusts (REITs). Companies within this sector are relatively stable as they are mostly matured and already established. Banks in this sector include Bank of America Corp, JPMorgan Chase & Co., and Goldman Sachs. Other names include American Express, and Aon plc.";
       break;
 
     case "S&P":
@@ -7799,7 +7801,6 @@ var getSymbol = function getSymbol(data, name) {
       }).then(function (res) {
         return res.json();
       }).then(function (json) {
-        console.log('hello');
         set(d, json);
       });
     }
@@ -7887,6 +7888,26 @@ var fetch = __webpack_require__(/*! node-fetch */ "./node_modules/node-fetch/bro
 
 var Chart = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
 
+var btn = document.getElementById("about-btn").addEventListener('click', function (e) {
+  document.querySelector(".sector").textContent = "";
+  document.querySelector(".sector-description").textContent = "Welcome to Markets today! The circles represent the S&P 500 (one of the largest US stock market indexes. The outer bubbles represent sectors of the index while the inner bubbles represent individual companies. Click on the bubbles and explore!";
+  document.querySelector(".description").textContent = "";
+  document.querySelector(".ceo").textContent = "";
+  document.querySelector(".beta").textContent = "";
+  document.querySelector(".value").textContent = "";
+  document.querySelector(".logo")["src"] = "";
+  document.querySelector(".company").textContent = "";
+  document.querySelector(".market-share").textContent = "";
+  var canvas = document.getElementById("donut");
+  var ctx = canvas.getContext("2d");
+
+  if (ctx["chart"]) {
+    document.querySelector(".chart-container").classList.remove("show");
+    Chart.defaults.global.elements.arc.borderWidth = 0;
+    ctx["chart"].update();
+    ctx["chart"] = false;
+  }
+});
 var root = d3.hierarchy(parse(raw)); // console.log(root)
 
 var nodes = d3.pack();
@@ -69480,8 +69501,6 @@ var sectorValue = function sectorValue(data, sector) {
 var marketData = function marketData(data) {
   var sectors = {};
   data.forEach(function (el) {
-    console.log('hello');
-
     if (sectors[el["Sector"]]) {
       sectors[el["Sector"]] += el["Market Cap"];
     } else {
