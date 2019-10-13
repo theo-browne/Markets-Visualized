@@ -7660,7 +7660,7 @@ var dataCall = function dataCall(symbol, d) {
 
 var set = function set(d, json) {
   var value = [];
-  var mkt = json["profile"]["mktCap"].split("").reverse().slice(3);
+  var mkt = String(d.data["value"]).split("").reverse();
 
   for (var i = 0; i < mkt.length; i++) {
     if (i % 3 === 0 && i) {
@@ -7686,9 +7686,7 @@ var set = function set(d, json) {
 };
 
 var chart = function chart(sector) {
-  var canvas = document.getElementById("donut"); // canvas.width = "30%"
-  // canvas.height = "10%"
-
+  var canvas = document.getElementById("donut");
   var ctx = canvas.getContext("2d");
   Chart.defaults.global.legend.display = false;
   var pie = sector === "S&P" ? marketData(raw, sector) : pieData(raw, sector);
@@ -7705,6 +7703,27 @@ var chart = function chart(sector) {
       options: {
         onClick: function onClick(e, arr) {
           getSymbol(raw, arr[0]["_model"]["label"]);
+        },
+        tooltips: {
+          callbacks: {
+            label: function label(tooltipItem, data) {
+              var label = data.labels[tooltipItem.index] || ''; // console.log(data.datasets[0].data[tooltipItem.index])
+
+              var val = String(data.datasets[0].data[tooltipItem.index]).split("").reverse();
+              var mkt = [];
+
+              for (var i = 0; i < val.length; i++) {
+                if (i % 3 === 0 && i) {
+                  mkt.push(',');
+                }
+
+                mkt.push(val[i]);
+              }
+
+              var marketCap = mkt.reverse().join("");
+              return label + ": " + "$" + marketCap;
+            }
+          }
         }
       }
     });
@@ -69537,7 +69556,8 @@ var pieData = function pieData(data, sector) {
     datasets: [{
       data: [],
       backgroundColor: [],
-      symbols: []
+      symbols: [],
+      sectors: []
     }],
     labels: []
   };
@@ -69545,6 +69565,7 @@ var pieData = function pieData(data, sector) {
   data.forEach(function (el) {
     if (el["Sector"] === sector) {
       res.datasets[0].data.push(el["Market Cap"]);
+      res.datasets[0].sectors.push(el["Sector"]);
       res.labels.push(el["Name"]);
       var idx = pos % COLORS.length;
       pos = pos === COLORS.length - 1 ? 0 : pos + 1;

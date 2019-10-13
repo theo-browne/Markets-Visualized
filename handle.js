@@ -26,9 +26,11 @@ const dataCall = (symbol, d) => {
     });
 }
 
+
+
 const set = (d, json) => {
     let value = [];
-    let mkt = json["profile"]["mktCap"].split("").reverse().slice(3)
+    let mkt = String(d.data["value"]).split("").reverse()
     for (let i = 0; i < mkt.length ; i++) {
         if (i % 3 === 0 && i) {
             value.push(',')
@@ -39,6 +41,8 @@ const set = (d, json) => {
 
     let marketShare = d.data["value"] / sectorValue(raw, d.data["sector"])
     marketShare = parseFloat(marketShare).toFixed(6).slice(2, 4) + "." + parseFloat(marketShare).toFixed(6).slice(4) + "%"
+
+    
     if (marketShare[0] == "0") marketShare = marketShare.slice(1)
     document.querySelector(".description").textContent = json["profile"]["description"]
     document.querySelector(".logo")["src"] = json["profile"]["image"]
@@ -53,8 +57,6 @@ const set = (d, json) => {
 
 const chart = (sector) => {
     let canvas = document.getElementById("donut")
-    // canvas.width = "30%"
-    // canvas.height = "10%"
     let ctx = canvas.getContext("2d")
 
     Chart.defaults.global.legend.display = false
@@ -72,7 +74,29 @@ const chart = (sector) => {
                 onClick: function(e, arr) {
 
                     getSymbol(raw, arr[0]["_model"]["label"])
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            
+                            let label = data.labels[tooltipItem.index] || '';
+                            // console.log(data.datasets[0].data[tooltipItem.index])
+                            let val = String(data.datasets[0].data[tooltipItem.index]).split("").reverse()
+                            let mkt = []
+                            for (let i = 0; i < val.length; i++) {
+                                if (i % 3 === 0 && i) {
+                                    mkt.push(',')
+                                }
+                                mkt.push(val[i])
+                            }
+                            let marketCap = mkt.reverse().join("")
+
+                            return label + ": " + "$" + marketCap
                 }
+                    
+                
+            }
+        }
             }
         });
         ctx["chart"] = doughnutChart

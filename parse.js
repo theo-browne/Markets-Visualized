@@ -96,7 +96,8 @@ const pieData = (data, sector) => {
         datasets: [{
              data: [],
             backgroundColor: [], 
-            symbols: []
+            symbols: [],
+            sectors: []
             }],
         labels: []
     }
@@ -104,6 +105,7 @@ const pieData = (data, sector) => {
     data.forEach((el) => {
         if (el["Sector"] === sector) {
             res.datasets[0].data.push(el["Market Cap"])
+            res.datasets[0].sectors.push(el["Sector"])
             res.labels.push(el["Name"])
             let idx = pos %  COLORS.length 
             pos = (pos === COLORS.length -1 ) ? 0 : pos + 1
