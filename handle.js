@@ -175,7 +175,6 @@ const getSymbol = (data, name) => {
             }).then(function (res) {
                 return res.json();
             }).then(function (json) {
-                
                 set(d,json)
             });
         }

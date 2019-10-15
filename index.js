@@ -55,7 +55,7 @@ d3.select('.circles')
         d3.select(this).attr("opacity", .5)
         d3.select(this).append("text")
             .text(function (d) {
-                return d.children === undefined ? d.data.name : 'test';
+                return d.children === undefined ? d.data.name : '';
          })
             .attr("font-size", 80)
             .attr("font-family", "sans-serif")

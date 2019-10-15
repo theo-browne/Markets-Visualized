@@ -7888,7 +7888,7 @@ d3.select('.circles').append('svg').attr('transform', 'translate(-50,0)').attr('
   d3.select(this).attr("stroke", "rgb(0,0,0)");
   d3.select(this).attr("opacity", .5);
   d3.select(this).append("text").text(function (d) {
-    return d.children === undefined ? d.data.name : 'test';
+    return d.children === undefined ? d.data.name : '';
   }).attr("font-size", 80).attr("font-family", "sans-serif").attr("text-anchor", "middle").attr("fill", "black");
 }).on("mouseleave", function () {
   d3.select(this).attr("stroke", null);
