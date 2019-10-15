@@ -72,15 +72,12 @@ const chart = (sector) => {
             data: pie,
             options: {
                 onClick: function(e, arr) {
-
                     getSymbol(raw, arr[0]["_model"]["label"])
                 },
                 tooltips: {
                     callbacks: {
-                        label: function(tooltipItem, data) {
-                            
+                        label: function(tooltipItem, data) {   
                             let label = data.labels[tooltipItem.index] || '';
-                            // console.log(data.datasets[0].data[tooltipItem.index])
                             let val = String(data.datasets[0].data[tooltipItem.index]).split("").reverse()
                             let mkt = []
                             for (let i = 0; i < val.length; i++) {
@@ -93,15 +90,12 @@ const chart = (sector) => {
 
                             return label + ": " + "$" + marketCap
                 }
-                    
-                
             }
         }
             }
         });
         ctx["chart"] = doughnutChart
     }
-    
 }
 
 const clear = (d) => {
@@ -190,60 +184,3 @@ const getSymbol = (data, name) => {
 }
 
 module.exports = handleClick
-
-// function(d) {
-//     if (d.data["sector"]) {
-//         document.querySelector(".sector").textContent = d.data["sector"] + ": " + d.data.name
-//         fetch(`https://financialmodelingprep.com/api/v3/company/profile/${d.data["symbol"]}`, {
-//             method: 'GET'
-//         }).then(function (res) {
-//             return res.json();
-//         }).then(function (json) {
-//             
-
-//             document.querySelector(".description").textContent = json["profile"]["description"]
-//             document.querySelector(".logo")["src"] = json["profile"]["image"]
-//             let value = "";
-//             for (let i = 0; i < json["profile"]["mktCap"].length - 3; i++) {
-//                 if (i % 3 === 0 && i) {
-//                     value += ","
-//                 }
-//                 value += json["profile"]["mktCap"][i]
-
-//             }
-
-//             let marketShare = d.data["value"] / sectorValue(raw, d.data["sector"])
-//             const ctx = 'donut'
-//             Chart.defaults.global.legend.display = false
-//             let pie = pieData(raw, d.data["sector"])
-//             var doughnutChart = new Chart(ctx, {
-//                 type: 'pie',
-//                 data: pie
-//             });
-//             document.querySelector(".value").textContent = "Company Value: $" + value
-//             document.querySelector(".beta").textContent = "Market Beta: " + json["profile"]["beta"]
-//             document.querySelector(".ceo").textContent = "CEO: " + json["profile"]["ceo"]
-//             document.querySelector(".ceo").textContent = "Market Share: " + marketShare
-
-//         });
-//         let query = d.data["name"].split(" ").filter(el => el !== "Co." && el !== "Cos.").map(el => {
-//             let newEl = ''
-//             for (let i = 0; i < el.length; i++) {
-//                 if (el[i] === "&") {
-//                     newEl += '%26'
-//                 } else {
-//                     newEl += el[i]
-//                 }
-//             }
-//             return newEl
-//         }).join("+")
-//     } else {
-//         document.querySelector(".sector").textContent = d.data.name
-//         document.querySelector(".description").textContent = ""
-//         document.querySelector(".ceo").textContent = ""
-//         document.querySelector(".beta").textContent = ""
-//         document.querySelector(".value").textContent = ""
-//         document.querySelector(".logo")["src"] = ""
-//     }
-
-// }

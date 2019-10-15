@@ -2,11 +2,6 @@ const d3 = require("d3")
 const {parse, sectorValue, pieData }= require("./parse")
 const raw = require("./companies2")
 const handleClick = require('./handle')
-// const topo = require("topojson-client")
-// const geo = require("d3-geomap")
-// const selection = require("d3-selection")
-// const geojson = require("./countries.json")
-// const curl = require("curl")
 const fetch = require('node-fetch');
 const Chart = require('chart.js')
 
@@ -32,7 +27,6 @@ let btn = document.getElementById("about-btn").addEventListener('click', (e)=> {
 
 
 const root = d3.hierarchy(parse(raw))
-// console.log(root)
 const nodes = d3.pack();
 nodes.size([550, 550]);
 root.sum((el) => {
