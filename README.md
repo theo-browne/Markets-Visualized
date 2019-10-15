@@ -17,7 +17,7 @@ Markets Visualized was designed to visualize the S&P 500 (a major US Stock index
 
 ------
 
-<!-- ![Screenshots of SafeWalk](https://github.com/ahhchooey/SafeWalk/blob/master/images/safewalk_img.png) -->
+![Screenshots of Markets Visualized](https://user-images.githubusercontent.com/47790228/66791171-edea1180-eea7-11e9-8d74-8f2a465e35c2.png)
 
 
 
