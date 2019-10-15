@@ -33,7 +33,7 @@ Markets Visualized was designed to visualize the S&P 500 (a major US Stock index
 
 ------
 
-### Chart Code Snippets
+### Visualization Code Snippets
 
 Donut Chart 
 ```
