@@ -7849,28 +7849,27 @@ var handleClick = __webpack_require__(/*! ./handle */ "./handle.js");
 
 var fetch = __webpack_require__(/*! node-fetch */ "./node_modules/node-fetch/browser.js");
 
-var Chart = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
+var Chart = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js"); // let btn = document.getElementById("about-btn").addEventListener('click', (e)=> {
+//     document.querySelector(".sector").textContent = ""
+//     document.querySelector(".sector-description").textContent = "Welcome to Markets today! The circles represent the S&P 500 (one of the largest US stock market indexes). The outer bubbles represent sectors of the index while the inner bubbles represent individual companies. Click on the bubbles and explore!"
+//     document.querySelector(".description").textContent = ""
+//     document.querySelector(".ceo").textContent = ""
+//     document.querySelector(".beta").textContent = ""
+//     document.querySelector(".value").textContent = ""
+//     document.querySelector(".logo")["src"] = ""
+//     document.querySelector(".company").textContent = ""
+//     document.querySelector(".market-share").textContent = ""
+//     let canvas = document.getElementById("donut")
+//     let ctx = canvas.getContext("2d")
+//     if (ctx["chart"]) {
+//         document.querySelector(".chart-container").classList.remove("show")
+//         Chart.defaults.global.elements.arc.borderWidth = 0
+//         ctx["chart"].update()
+//         ctx["chart"] = false
+//     }
+// })
 
-var btn = document.getElementById("about-btn").addEventListener('click', function (e) {
-  document.querySelector(".sector").textContent = "";
-  document.querySelector(".sector-description").textContent = "Welcome to Markets today! The circles represent the S&P 500 (one of the largest US stock market indexes). The outer bubbles represent sectors of the index while the inner bubbles represent individual companies. Click on the bubbles and explore!";
-  document.querySelector(".description").textContent = "";
-  document.querySelector(".ceo").textContent = "";
-  document.querySelector(".beta").textContent = "";
-  document.querySelector(".value").textContent = "";
-  document.querySelector(".logo")["src"] = "";
-  document.querySelector(".company").textContent = "";
-  document.querySelector(".market-share").textContent = "";
-  var canvas = document.getElementById("donut");
-  var ctx = canvas.getContext("2d");
 
-  if (ctx["chart"]) {
-    document.querySelector(".chart-container").classList.remove("show");
-    Chart.defaults.global.elements.arc.borderWidth = 0;
-    ctx["chart"].update();
-    ctx["chart"] = false;
-  }
-});
 var root = d3.hierarchy(parse(raw));
 var nodes = d3.pack();
 nodes.size([550, 550]);
@@ -7878,13 +7877,13 @@ root.sum(function (el) {
   return el.value;
 });
 nodes(root);
-d3.select('.circles').append('svg').attr('transform', 'translate(-50,0)').attr('width', 550).attr('height', 550).selectAll('circle').data(root.descendants()).enter().append('circle').style("opacity", 0.1).attr("fill", function (d) {
+d3.select('.circles').append('svg').attr('transform', 'translate(-80,0)').attr('width', 550).attr('height', 550).selectAll('circle').data(root.descendants()).enter().append('circle').style("opacity", 0.1).attr("fill", function (d) {
   switch (d.data["name"]) {
     default:
       return "blue";
       break;
   }
-}).on("mouseover", function () {
+}).on("mouseover", function (d) {
   d3.select(this).attr("stroke", "rgb(0,0,0)");
   d3.select(this).attr("opacity", .5);
   d3.select(this).append("text").text(function (d) {
@@ -69505,6 +69504,10 @@ var pieData = function pieData(data, sector) {
     labels: []
   };
   var pos = 0;
+  data = data.sort(function (a, b) {
+    return a["Market Cap"] < b["Market Cap"] ? 1 : -1;
+  });
+  console.log('hello');
   data.forEach(function (el) {
     if (el["Sector"] === sector) {
       res.datasets[0].data.push(el["Market Cap"]);

@@ -102,6 +102,8 @@ const pieData = (data, sector) => {
         labels: []
     }
     let pos = 0
+    data = data.sort((a, b) => (a["Market Cap"] < b["Market Cap"]) ? 1 : -1)
+  console.log('hello')
     data.forEach((el) => {
         if (el["Sector"] === sector) {
             res.datasets[0].data.push(el["Market Cap"])

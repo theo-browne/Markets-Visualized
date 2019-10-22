@@ -4,26 +4,26 @@ const raw = require("./companies2")
 const handleClick = require('./handle')
 const fetch = require('node-fetch');
 const Chart = require('chart.js')
-
-let btn = document.getElementById("about-btn").addEventListener('click', (e)=> {
-    document.querySelector(".sector").textContent = ""
-    document.querySelector(".sector-description").textContent = "Welcome to Markets today! The circles represent the S&P 500 (one of the largest US stock market indexes). The outer bubbles represent sectors of the index while the inner bubbles represent individual companies. Click on the bubbles and explore!"
-    document.querySelector(".description").textContent = ""
-    document.querySelector(".ceo").textContent = ""
-    document.querySelector(".beta").textContent = ""
-    document.querySelector(".value").textContent = ""
-    document.querySelector(".logo")["src"] = ""
-    document.querySelector(".company").textContent = ""
-    document.querySelector(".market-share").textContent = ""
-    let canvas = document.getElementById("donut")
-    let ctx = canvas.getContext("2d")
-    if (ctx["chart"]) {
-        document.querySelector(".chart-container").classList.remove("show")
-        Chart.defaults.global.elements.arc.borderWidth = 0
-        ctx["chart"].update()
-        ctx["chart"] = false
-    }
-})
+ 
+// let btn = document.getElementById("about-btn").addEventListener('click', (e)=> {
+//     document.querySelector(".sector").textContent = ""
+//     document.querySelector(".sector-description").textContent = "Welcome to Markets today! The circles represent the S&P 500 (one of the largest US stock market indexes). The outer bubbles represent sectors of the index while the inner bubbles represent individual companies. Click on the bubbles and explore!"
+//     document.querySelector(".description").textContent = ""
+//     document.querySelector(".ceo").textContent = ""
+//     document.querySelector(".beta").textContent = ""
+//     document.querySelector(".value").textContent = ""
+//     document.querySelector(".logo")["src"] = ""
+//     document.querySelector(".company").textContent = ""
+//     document.querySelector(".market-share").textContent = ""
+//     let canvas = document.getElementById("donut")
+//     let ctx = canvas.getContext("2d")
+//     if (ctx["chart"]) {
+//         document.querySelector(".chart-container").classList.remove("show")
+//         Chart.defaults.global.elements.arc.borderWidth = 0
+//         ctx["chart"].update()
+//         ctx["chart"] = false
+//     }
+// })
 
 
 const root = d3.hierarchy(parse(raw))
@@ -35,7 +35,7 @@ root.sum((el) => {
 nodes(root);
 d3.select('.circles')
     .append('svg')
-    .attr('transform', 'translate(-50,0)')
+    .attr('transform', 'translate(-80,0)')
     .attr('width', 550)
     .attr('height', 550)
     .selectAll('circle')
@@ -50,7 +50,7 @@ d3.select('.circles')
                 break;
         }
     })
-    .on("mouseover", function () {
+    .on("mouseover", function (d) {
         d3.select(this).attr("stroke", "rgb(0,0,0)")
         d3.select(this).attr("opacity", .5)
         d3.select(this).append("text")
@@ -61,6 +61,11 @@ d3.select('.circles')
             .attr("font-family", "sans-serif")
             .attr("text-anchor", "middle")
             .attr("fill", "black")
+
+           
+
+        
+            
     })
     .on("mouseleave", function() {
         d3.select(this).attr("stroke", null)

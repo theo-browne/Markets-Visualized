@@ -21,7 +21,8 @@ svg{
 }
 
 html{
-    font-family: 'Playfair Display', serif;
+    font-family: 'Merriweather', serif;
+
 }
 
 .right{
@@ -29,7 +30,8 @@ html{
     padding:10px;
     /* width: 40%; */
     justify-content: center;
-    margin-left: 600px
+    margin-left: 600px;
+    width: 600px
 }
 
 #donut{
@@ -41,7 +43,7 @@ html{
 }
 
 .sector-description, .description{
-    font-size: 12px
+    font-size: 14px
 }
 
 .company-head{
@@ -54,9 +56,11 @@ html{
     justify-content: space-between
 }
 
-.sector{
-    margin-top: 0
+.sector, .company{
+    margin-top: 0;
+    font-size: 30px
 }
+
 
 .header{
     display: block;
@@ -97,11 +101,11 @@ html{
 
 .link{
     display: flex;
-    justify-content: space-around
+    justify-content: center
 }
 .header img {
-    width:20px;
-    height: 20px;
+    width:30px;
+    height: 30px;
 
 }
 .logo{
