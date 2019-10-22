@@ -3,7 +3,9 @@
     margin-top: 80px;
     justify-content: space-around
 }
-
+h1{
+    font-size: 40px
+}
 .nav{
     position: fixed;
     top: 0;
