@@ -7732,7 +7732,7 @@ var chart = function chart(sector) {
 
 var clear = function clear(d) {
   document.querySelector(".sector-description").textContent = sectorDescription(d.data["name"]);
-  document.querySelector(".sector").textContent = d.data.name;
+  document.querySelector(".sector").textContent = "Sector: " + d.data.name;
   document.querySelector(".description").textContent = "";
   document.querySelector(".ceo").textContent = "";
   document.querySelector(".beta").textContent = "";
