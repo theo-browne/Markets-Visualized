@@ -7893,7 +7893,10 @@ d3.select('.circles').append('svg').attr('transform', 'translate(-80,60)').attr(
   }).attr('y', function (d) {
     return d.y;
   }).attr("font-size", 80).attr("font-family", "sans-serif").attr("text-anchor", "middle").attr("fill", "black").attr('opacity', 1).attr('z-index', 100);
-  document.querySelector(".name").textContent = d.data.name;
+  console.log(d);
+  var cat = d.data["type"] === 'sector' ? "Sector: " : "Company: ";
+  if (d.data.name === "S&P") cat = "Index: ";
+  document.querySelector(".name").textContent = cat + d.data.name;
 }).on("mouseleave", function () {
   d3.select(this).attr("stroke", null);
   document.querySelector(".name").textContent = "";

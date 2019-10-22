@@ -65,7 +65,10 @@ d3.select('.circles')
             .attr("fill", "black")     
             .attr('opacity', 1)
             .attr('z-index', 100)
-            document.querySelector(".name").textContent = d.data.name
+            console.log(d)
+        let cat = (d.data["type"] === 'sector') ? "Sector: " : "Company: "
+        if (d.data.name === "S&P") cat = "Index: "
+            document.querySelector(".name").textContent = cat + d.data.name
     })
     .on("mouseleave", function() {
         d3.select(this).attr("stroke", null)
