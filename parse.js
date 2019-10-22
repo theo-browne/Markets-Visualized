@@ -78,10 +78,13 @@ const marketData = (data) => {
             sectors[el["Sector"]] = el["Market Cap"]
         }
     })
+    let sectorData = Object.values(sectors).sort((a,b) => a-b).reverse()
+    console.log(sectorData)
+    // console.log(sectors)
     let backgroundColor = COLORS.concat('17,25,74').map(el => 'rgba(' + el + ',1)' )
     let res = {
         datasets: [{
-            data: Object.values(sectors), 
+            data: sectorData, 
             backgroundColor
         }],
         labels: Object.keys(sectors)

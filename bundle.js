@@ -69488,12 +69488,17 @@ var marketData = function marketData(data) {
       sectors[el["Sector"]] = el["Market Cap"];
     }
   });
+  var sectorData = Object.values(sectors).sort(function (a, b) {
+    return a - b;
+  }).reverse();
+  console.log(sectorData); // console.log(sectors)
+
   var backgroundColor = COLORS.concat('17,25,74').map(function (el) {
     return 'rgba(' + el + ',1)';
   });
   var res = {
     datasets: [{
-      data: Object.values(sectors),
+      data: sectorData,
       backgroundColor: backgroundColor
     }],
     labels: Object.keys(sectors)
