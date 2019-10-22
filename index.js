@@ -35,7 +35,7 @@ root.sum((el) => {
 nodes(root);
 d3.select('.circles')
     .append('svg')
-    .attr('transform', 'translate(-80,0)')
+    .attr('transform', 'translate(-80,20)')
     .attr('width', 550)
     .attr('height', 550)
     .selectAll('circle')

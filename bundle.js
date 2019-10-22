@@ -7877,7 +7877,7 @@ root.sum(function (el) {
   return el.value;
 });
 nodes(root);
-d3.select('.circles').append('svg').attr('transform', 'translate(-80,0)').attr('width', 550).attr('height', 550).selectAll('circle').data(root.descendants()).enter().append('circle').style("opacity", 0.1).attr("fill", function (d) {
+d3.select('.circles').append('svg').attr('transform', 'translate(-80,20)').attr('width', 550).attr('height', 550).selectAll('circle').data(root.descendants()).enter().append('circle').style("opacity", 0.1).attr("fill", function (d) {
   switch (d.data["name"]) {
     default:
       return "blue";
@@ -69507,7 +69507,6 @@ var pieData = function pieData(data, sector) {
   data = data.sort(function (a, b) {
     return a["Market Cap"] < b["Market Cap"] ? 1 : -1;
   });
-  console.log('hello');
   data.forEach(function (el) {
     if (el["Sector"] === sector) {
       res.datasets[0].data.push(el["Market Cap"]);

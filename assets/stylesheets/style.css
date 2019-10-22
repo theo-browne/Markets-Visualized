@@ -34,7 +34,7 @@ html{
     /* width: 40%; */
     justify-content: center;
     margin-left: 600px;
-    width: 600px
+    /* width: 600px */
 }
 
 #donut{
@@ -61,7 +61,7 @@ html{
 
 .sector, .company{
     margin-top: 0;
-    font-size: 30px
+    font-size: 30px;
 }
 
 
