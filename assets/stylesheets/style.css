@@ -1,6 +1,7 @@
 .main{
     display: flex;
-    margin-top: 80px
+    margin-top: 80px;
+    justify-content: space-around
 }
 
 .nav{
