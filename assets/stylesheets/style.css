@@ -33,7 +33,7 @@ html{
     padding:10px;
     /* width: 40%; */
     justify-content: center;
-    margin-left: 600px;
+    /* margin-left: 600px; */
     /* width: 600px */
 }
 
@@ -111,6 +111,8 @@ html{
     height: 30px;
 
 }
-.logo{
-    
+.hover-info{
+    width: 600px;
+    /* display: flex; */
+    text-align: center;
 }

@@ -7877,7 +7877,7 @@ root.sum(function (el) {
   return el.value;
 });
 nodes(root);
-d3.select('.circles').append('svg').attr('transform', 'translate(-80,20)').attr('width', 550).attr('height', 550).selectAll('circle').data(root.descendants()).enter().append('circle').style("opacity", 0.1).attr("fill", function (d) {
+d3.select('.circles').append('svg').attr('transform', 'translate(-80,60)').attr('width', 550).attr('height', 550).selectAll('circle').data(root.descendants()).enter().append('circle').style("opacity", 0.3).attr("fill", function (d) {
   switch (d.data["name"]) {
     default:
       return "blue";
@@ -7885,12 +7885,18 @@ d3.select('.circles').append('svg').attr('transform', 'translate(-80,20)').attr(
   }
 }).on("mouseover", function (d) {
   d3.select(this).attr("stroke", "rgb(0,0,0)");
-  d3.select(this).attr("opacity", .5);
+  d3.select(this).attr("opacity", 1);
   d3.select(this).append("text").text(function (d) {
     return d.children === undefined ? d.data.name : '';
-  }).attr("font-size", 80).attr("font-family", "sans-serif").attr("text-anchor", "middle").attr("fill", "black");
+  }).attr('x', function (d) {
+    return d.x;
+  }).attr('y', function (d) {
+    return d.y;
+  }).attr("font-size", 80).attr("font-family", "sans-serif").attr("text-anchor", "middle").attr("fill", "black").attr('opacity', 1).attr('z-index', 100);
+  document.querySelector(".name").textContent = d.data.name;
 }).on("mouseleave", function () {
   d3.select(this).attr("stroke", null);
+  document.querySelector(".name").textContent = "";
 }).on("click", function (d) {
   handleClick(d);
 }).attr('cx', function (d) {
@@ -7899,9 +7905,11 @@ d3.select('.circles').append('svg').attr('transform', 'translate(-80,20)').attr(
   return d.y;
 }).attr('r', function (d) {
   return d.r;
-}).attr("text-anchor", "middle").append("title").text(function (d) {
-  return d.data["name"];
-});
+}).attr("text-anchor", "middle"); // .append("title")
+// .attr('fill', 'red')
+// .text(function(d){
+//     return d.data["name"]
+// })
 
 /***/ }),
 
