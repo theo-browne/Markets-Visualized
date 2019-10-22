@@ -51,8 +51,30 @@ d3.select('.circles')
         }
     })
     .on("mouseover", function (d) {
+        let cat = (d.data["type"] === 'sector') ? "Sector: " : "Company: "
+        if (d.data.name === "S&P") cat = "Index: "
+        let color;
+        switch (cat) {
+            case "Sector: ":
+                color = 'red'
+                break;
+            case "Company: ":
+                color = 'orange'
+                break;
+            case "Index: ":
+                color = 'purple'
+                break;
+
+
+            default:
+                break;
+        }
+        document.querySelector(".name").textContent = cat
+        document.querySelector(".name").style.color = color
+        document.querySelector(".inner-name").textContent = d.data.name
         d3.select(this).attr("stroke", "rgb(0,0,0)")
         d3.select(this).attr("opacity", 1)
+        .attr('fill', color)
         d3.select(this).append("text")
             .text(function (d) {
                 return d.children === undefined ? d.data.name : '';
@@ -66,13 +88,14 @@ d3.select('.circles')
             .attr('opacity', 1)
             .attr('z-index', 100)
             console.log(d)
-        let cat = (d.data["type"] === 'sector') ? "Sector: " : "Company: "
-        if (d.data.name === "S&P") cat = "Index: "
-            document.querySelector(".name").textContent = cat + d.data.name
+        
+
     })
     .on("mouseleave", function() {
         d3.select(this).attr("stroke", null)
+            .attr('fill', 'blue')
         document.querySelector(".name").textContent = ""
+        document.querySelector(".inner-name").textContent = ""
     })
     .on("click", function(d){
         handleClick(d)

@@ -113,9 +113,20 @@ html{
 }
 .hover-info{
     width: 600px;
+    
     /* display: flex; */
-    text-align: center;
+    /* text-align: center; */
      /* position: fixed;
     top: 80px;
     left: 100px; */
+}
+.name{
+    display: flex;
+    padding-right: 5px
+}
+.inner-name{
+    display: flex;
+}
+.circle-header{
+    display: flex;
 }

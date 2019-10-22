@@ -7884,8 +7884,32 @@ d3.select('.circles').append('svg').attr('transform', 'translate(-80,60)').attr(
       break;
   }
 }).on("mouseover", function (d) {
+  var cat = d.data["type"] === 'sector' ? "Sector: " : "Company: ";
+  if (d.data.name === "S&P") cat = "Index: ";
+  var color;
+
+  switch (cat) {
+    case "Sector: ":
+      color = 'red';
+      break;
+
+    case "Company: ":
+      color = 'orange';
+      break;
+
+    case "Index: ":
+      color = 'purple';
+      break;
+
+    default:
+      break;
+  }
+
+  document.querySelector(".name").textContent = cat;
+  document.querySelector(".name").style.color = color;
+  document.querySelector(".inner-name").textContent = d.data.name;
   d3.select(this).attr("stroke", "rgb(0,0,0)");
-  d3.select(this).attr("opacity", 1);
+  d3.select(this).attr("opacity", 1).attr('fill', color);
   d3.select(this).append("text").text(function (d) {
     return d.children === undefined ? d.data.name : '';
   }).attr('x', function (d) {
@@ -7894,12 +7918,10 @@ d3.select('.circles').append('svg').attr('transform', 'translate(-80,60)').attr(
     return d.y;
   }).attr("font-size", 80).attr("font-family", "sans-serif").attr("text-anchor", "middle").attr("fill", "black").attr('opacity', 1).attr('z-index', 100);
   console.log(d);
-  var cat = d.data["type"] === 'sector' ? "Sector: " : "Company: ";
-  if (d.data.name === "S&P") cat = "Index: ";
-  document.querySelector(".name").textContent = cat + d.data.name;
 }).on("mouseleave", function () {
-  d3.select(this).attr("stroke", null);
+  d3.select(this).attr("stroke", null).attr('fill', 'blue');
   document.querySelector(".name").textContent = "";
+  document.querySelector(".inner-name").textContent = "";
 }).on("click", function (d) {
   handleClick(d);
 }).attr('cx', function (d) {
