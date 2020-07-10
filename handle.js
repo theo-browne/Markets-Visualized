@@ -16,7 +16,7 @@ const handleClick = (d) => {
     }
 }
 const dataCall = (symbol, d) => {
-    fetch(`https://financialmodelingprep.com/api/v3/company/profile/${symbol}`, {
+    fetch(`https://financialmodelingprep.com/api/v3/company/profile/${symbol}?apikey=52b0f90609fc2c39b03c2c566e43d248`, {
         method: 'GET'
     }).then(function (res) {
         return res.json();
@@ -170,7 +170,7 @@ const getSymbol = (data, name) => {
                 "symbol": el["Symbol"]
                 }
             }
-            fetch(`https://financialmodelingprep.com/api/v3/company/profile/${el["Symbol"]}`, {
+            fetch(`https://financialmodelingprep.com/api/v3/company/profile/${el["Symbol"]}?apikey=52b0f90609fc2c39b03c2c566e43d248`, {
                 method: 'GET'
             }).then(function (res) {
                 return res.json();
